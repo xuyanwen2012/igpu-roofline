@@ -34,7 +34,15 @@ void main(){
  for(uint t=0;t<p.loops;t++){
   [[unroll]]for(uint k=0;k<ACC;k++)acc[k]+=data[(base+(t*ACC+k)*w)%COUNT];
  }
- T sum=T(0.0);
+ // Final reduction in FP32 (outside the timed loop body): each FP16 accumulator stays
+ // an exactly representable integer (<= 16*128), while their sum may exceed 2048.
+#if WIDTH==1
+ float sum=0.0;
+#elif WIDTH==2
+ vec2 sum=vec2(0.0);
+#else
+ vec4 sum=vec4(0.0);
+#endif
  [[unroll]]for(uint k=0;k<ACC;k++)sum+=acc[k];
 #else
  uint slot=(l*STRIDE)%COUNT;

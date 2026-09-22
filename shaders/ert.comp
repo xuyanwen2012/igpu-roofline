@@ -2,13 +2,17 @@
 // v2 Empirical Roofline Toolkit style kernel (LBNL ERT): each element is loaded
 // once, receives FLOPS dependent FMAs per component, and is stored once, so one
 // kernel family sweeps arithmetic intensity FLOPS*8/32 FLOP/byte from memory-
-// bound to compute-bound. Four elements per iteration add ILP across chains.
+// bound to compute-bound. ELEMS elements per iteration give ELEMS independent chains
+// (ILP); Mali-G1 FP32 needs ~16 independent chains per thread to saturate FMA.
 //
 // The chain is ERT's Horner form y = y*x + alpha with x taken from the element
 // itself. An affine chain with uniform coefficients (x = x*a + b) must not be
 // used: a compiler may compose it into a single FMA (observed on Mali-G710).
 // x is scaled by 1/16 so the recurrence converges (|x| < 0.5).
 #extension GL_EXT_control_flow_attributes : require
+#ifndef ELEMS
+#define ELEMS 4
+#endif
 layout(local_size_x_id=0) in;
 layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
 layout(binding=0) readonly buffer A { vec4 a[]; };
@@ -17,13 +21,24 @@ void main(){
  uint id=gl_GlobalInvocationID.x, nt=gl_NumWorkGroups.x*gl_WorkGroupSize.x;
  vec4 alpha=vec4(uintBitsToFloat(p.seed)), beta=vec4(uintBitsToFloat(p.offset));
  for(uint t=0;t<p.loops;t++){
-  for(uint i=id;i<p.n;i+=4*nt){
-   vec4 x[4],y[4];
-   [[unroll]]for(uint e=0;e<4;e++){x[e]=a[min(i+e*nt,p.n-1)]*0.0625;y[e]=beta;}
-   [[unroll]]for(uint f=0;f<FLOPS;f++){
-    [[unroll]]for(uint e=0;e<4;e++)y[e]=fma(y[e],x[e],alpha);
+  for(uint i=id;i<p.n;i+=ELEMS*nt){
+   vec4 x[ELEMS],y[ELEMS];
+   [[unroll]]for(uint e=0;e<ELEMS;e++){x[e]=a[min(i+e*nt,p.n-1)]*0.0625;y[e]=beta;}
+#if FLOPS>32 && !defined(FULL_UNROLL)
+   // Chunked: 32 unrolled steps per loop trip bounds code size. Same math and count;
+   // the fully unrolled form is kept as a control (on Mali-G1 both ran at the same
+   // speed, so code size was not what limited high-F throughput).
+   for(uint f=0;f<FLOPS/32;f++){
+    [[unroll]]for(uint u=0;u<32;u++){
+     [[unroll]]for(uint e=0;e<ELEMS;e++)y[e]=fma(y[e],x[e],alpha);
+    }
    }
-   [[unroll]]for(uint e=0;e<4;e++)if(i+e*nt<p.n)d[i+e*nt]=y[e];
+#else
+   [[unroll]]for(uint f=0;f<FLOPS;f++){
+    [[unroll]]for(uint e=0;e<ELEMS;e++)y[e]=fma(y[e],x[e],alpha);
+   }
+#endif
+   [[unroll]]for(uint e=0;e<ELEMS;e++)if(i+e*nt<p.n)d[i+e*nt]=y[e];
   }
  }
 }
