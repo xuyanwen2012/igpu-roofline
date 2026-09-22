@@ -6,21 +6,30 @@ configurations are skipped), so re-running the same plan resumes it.
 import datetime
 import json
 import math
+import statistics
 import time
 
 from . import paths
+from .device import utc_now
 from .measure import ARRAYS_PER_OP
 
 MiB = 1024 ** 2
 
 PLANS = {
-    # ~15-20 min: every family once at its most informative settings, no sustained runs.
-    "quick": dict(level="quick", warmup_seconds=0.25, sustain=None),
-    # All sweeps + one 300 s sustained run per roof.
-    "standard": dict(level="full", warmup_seconds=1.0, sustain=dict(batches=1, duration=300, cooldown=90)),
+    # Every family once at its most informative settings; roofs confirmed by 3 repeats
+    # of the best candidate; no sustained runs.
+    "quick": dict(level="quick", warmup_seconds=0.25, confirm=dict(top=1, reps=3), sustain=None),
+    # All sweeps, top-3 candidates x 5 repeats per roof, one 300 s sustained run per roof.
+    "standard": dict(level="full", warmup_seconds=1.0, confirm=dict(top=3, reps=5),
+                     sustain=dict(batches=1, duration=300, cooldown=90)),
     # As standard, with three sustained batches for batch-to-batch repeatability.
-    "gold": dict(level="full", warmup_seconds=1.0, sustain=dict(batches=3, duration=300, cooldown=90)),
+    "gold": dict(level="full", warmup_seconds=1.0, confirm=dict(top=3, reps=5),
+                 sustain=dict(batches=3, duration=300, cooldown=90)),
 }
+
+# A result may define a roof only if it is quiet, long enough and not dominated by
+# fixed dispatch cost (see quality()).
+QUALITY = dict(max_cv=0.05, max_fixed_fraction=0.10)
 
 
 def is_control(c: dict) -> bool:
@@ -108,19 +117,53 @@ def memory(s, plan):
             s.run(c, "sweep-memory")
 
 
+def matrix_grid(m: dict, caps: dict, quick: bool) -> list[tuple[int, int]]:
+    """(workgroup size, workgroups) points for one cooperative-matrix variant.
+
+    Every data type gets the same grid. One 16-lane subgroup per workgroup and <= 512
+    workgroups left Mali-G1 MC12 far from saturated (int8 4x16x16: 2.9 -> 5.3 TOP/s at
+    16384 workgroups), so the grid reaches 16384 workgroups and 4 subgroups per group.
+    Output is capped at 256 MiB.
+    """
+    sg = caps["subgroup"]
+    out_bytes = m["chains"] * m["m"] * m["matrix_n"] * (2 if m["dtype"] == "fp16" else 4)
+    wgs = [sg] if quick else [sg, 4 * sg]
+    groups = (4096, 16384) if quick else (64, 512, 4096, 16384)
+    return [(wg, g) for wg in wgs for g in groups
+            if wg <= caps["max_workgroup_invocations"] and g * out_bytes <= 256 * MiB]
+
+
+def matrix_coverage(s) -> list[dict]:
+    """Device-supported subgroup shapes with no compiled variant (never skipped silently)."""
+    names = {(0, 0, 0, 0): "fp16", (0, 0, 1, 1): "fp16_fp32", (3, 3, 5, 5): "int8"}
+    have = {(m["m"], m["matrix_n"], m["k"], m["dtype"]) for m in s.variants(family="matrix")}
+    missing = [x for x in s.caps.get("matrix_shapes", []) if x["scope"] == 3
+               and (x["m"], x["n"], x["k"], names.get((x["a"], x["b"], x["c"], x["result"]))) not in have]
+    (s.out / "matrix-coverage.json").write_text(json.dumps(dict(
+        device_shapes=s.caps.get("matrix_shapes", []), not_compiled=missing,
+        note="Only fp16, fp16->fp32 and int8 (s8 x s8 -> s32) variants are built; other type combinations are listed here."), indent=2))
+    return missing
+
+
 def compute(s, plan):
     """FMA / int8 dot / cooperative matrix over vector width, chains and launch size."""
     quick = plan["level"] == "quick"
+    missing = matrix_coverage(s)
+    if missing:
+        print(f"{s.device.serial} matrix shapes supported but not compiled: {len(missing)} (see matrix-coverage.json)", flush=True)
     for m in s.manifest:
         if m["family"] not in ("alu", "dot", "matrix") or not s.eligible(m):
             continue
-        wgs = [s.caps["subgroup"]] if m["family"] == "matrix" else ([256] if quick else [64, 128, 256])
-        groups = [512] if quick else ([64, 512, 4096] if m["family"] == "matrix" and m["dtype"] == "fp16" else [64, 512])
-        for wg in wgs:
-            for g in groups:
-                c = s.base(m, plan["warmup_seconds"])
-                c.update(wg=wg, groups=g)
-                s.run(c, "sweep-compute")
+        if m["family"] == "matrix":
+            points = matrix_grid(m, s.caps, quick)
+        else:
+            # 512 x 256 threads did not saturate Mali-G1 MC12 FP32; go to 8192 workgroups.
+            points = [(wg, g) for wg in ([256] if quick else [64, 128, 256])
+                      for g in ((2048,) if quick else (64, 512, 2048, 8192))]
+        for wg, g in points:
+            c = s.base(m, plan["warmup_seconds"])
+            c.update(wg=wg, groups=g)
+            s.run(c, "sweep-compute")
 
 
 def shared(s, plan):
@@ -164,7 +207,10 @@ def latency(s, plan):
 
     def chase(tag, size, stride, order, min_loops, **extra):
         nodes = size // stride
-        passes = 2 if order == "random" else 1
+        # Two passes per dispatch for every order: the differential (L vs L/2 loops) is
+        # then one warm pass. One pass per dispatch measured cold lines (Mali-G1: 474 ns
+        # at 1 MiB in the line-size test vs 109 ns warm in the capacity test).
+        passes = 2
         c = s.base(m, plan["warmup_seconds"])
         c.update(wg=1, groups=1, n=size // 4, calibrate=False, samples=9 if order == "random" else 5,
                  loops=max(min_loops, min(-(-passes * nodes // 16), 65536)),
@@ -184,7 +230,7 @@ def latency(s, plan):
             chase("latency-tlb", size, page, "random", 4096, page_size=page)
     for size in (MiB, 64 * MiB):  # first-level line, last-level/DRAM line
         for stride in (4, 8, 16, 32, 64, 128, 256, 512, 1024):
-            chase("latency-stride", size, stride, "sequential", 1)
+            chase("latency-stride", size, stride, "sequential", 2)
 
 
 def ert(s, plan):
@@ -209,32 +255,128 @@ def memory_type(s, plan):
                 s.run(c, "control-memory-type")
 
 
-# --- sustained -----------------------------------------------------------------------
-def select_roofs(s) -> dict:
-    """Fastest accepted configuration per roof, from the short-run sweeps."""
-    winners = {}
-    for p in list(s.out.glob("sweep-*/*.json")) + list(s.out.glob("first-look/*.json")):
+# --- device-state sentinel -------------------------------------------------------------
+def probe(s, label: str, plan) -> dict:
+    """Fixed FP32 FMA configuration used as a clock proxy.
+
+    Without a readable GPU clock, a device can change state invisibly: on Mali-G1 the
+    same binary and configuration fell from 3.48 to 2.2 TFLOP/s hours later at 35 C
+    with the screen on. Measured before/after every stage; the report flags stages whose
+    sentinel is < 90 % of the session's best.
+    """
+    c = s.base(s.variant("alu_fp32_v4_c16"), plan["warmup_seconds"])
+    c.update(wg=256, groups=512, probe=label, probe_utc=utc_now())
+    row = s.run(c, "probe")
+    if row.get("accepted"):
+        rate = row["accounting"]["float_ops"] / row["median_seconds"] / 1e12
+        print(f"{s.device.serial} probe {label} {rate:.3f} TFLOP/s", flush=True)
+    return row
+
+
+# --- roof selection: quality gates, then confirmation -----------------------------------
+def quality(r: dict) -> list[str]:
+    """Reasons a result may not define a roof (empty list = eligible)."""
+    why = []
+    if not r.get("accepted"):
+        why.append("rejected")
+    if r.get("cv", 1) > QUALITY["max_cv"]:
+        why.append("cv")
+    if r.get("below_target_duration"):
+        why.append("short")
+    d = r.get("differential")
+    if d and (not d.get("valid") or d.get("fixed_fraction", 0) > QUALITY["max_fixed_fraction"]):
+        why.append("fixed_cost")
+    return why
+
+
+def roof_key(stage: str, r: dict):
+    c, a = r.get("config", {}), r.get("accounting", {})
+    if not c or c["family"] in ("latency", "ert", "copy") or is_control(c):
+        return None
+    f = c["family"]
+    key = f + "_" + c.get("dtype", "") + (f"_{c['op']}" if f in ("memory", "shared") else "")
+    if f == "memory":
+        if stage == "sweep-cache" or c.get("role") == "cache":
+            return "cache_read_effective" if 32768 <= a.get("working_set_bytes", 0) <= 4 * MiB else None
+        if a.get("working_set_bytes", 0) < 256 * MiB:
+            return None
+    return key
+
+
+def rate(r: dict) -> float:
+    c, a = r["config"], r["accounting"]
+    f = c["family"]
+    work = (a.get("integer_ops", 0) + a.get("float_ops", 0) if f in ("alu", "dot", "matrix")
+            else a["logical_shared_bytes"] if f == "shared" else a["logical_global_bytes"])
+    return work / r["median_seconds"]
+
+
+def candidates(s, top: int) -> dict:
+    """Best `top` quality-gated sweep results per roof (first-look is a smoke test only)."""
+    best, gated = {}, {}
+    for p in s.out.glob("sweep-*/*.json"):
         if p.name.endswith((".config.json", ".telemetry.json")):
             continue
         r = json.loads(p.read_text())
-        c, a = r.get("config", {}), r.get("accounting", {})
-        if not r.get("accepted") or c["family"] in ("latency", "ert") or is_control(c):
+        if not r.get("accepted") or r.get("config", {}).get("runner_sha256") != s.runner_sha:
             continue
-        f = c["family"]
-        key = f + "_" + c.get("dtype", "") + (f"_{c['op']}" if f in ("memory", "shared") else "")
-        if f == "memory":
-            if p.parent.name == "sweep-cache":
-                if not 32768 <= a.get("working_set_bytes", 0) <= 4 * MiB:
-                    continue
-                key = "cache_read_effective"
-                r["config"] = dict(c, role="cache")
-            elif a.get("working_set_bytes", 0) < 256 * MiB:
-                continue
-        work = (a.get("integer_ops", 0) + a.get("float_ops", 0) if f in ("alu", "dot", "matrix")
-                else a["logical_shared_bytes"] if f == "shared" else a["logical_global_bytes"])
-        rate = work / r["median_seconds"]
-        if key not in winners or rate > winners[key][0]:
-            winners[key] = (rate, r)
+        key = roof_key(p.parent.name, r)
+        if not key:
+            continue
+        if p.parent.name == "sweep-cache":
+            r["config"] = dict(r["config"], role="cache")
+        why = quality(r)
+        if why:
+            gated.setdefault(key, []).append(dict(name=r["config"]["name"], rate=rate(r), why=why))
+        else:
+            best.setdefault(key, []).append(r)
+    chosen = {k: sorted(v, key=rate, reverse=True)[:top] for k, v in best.items()}
+    (s.out / "roof-candidates.json").write_text(json.dumps(dict(
+        quality=QUALITY,
+        selected={k: [dict(name=r["config"]["name"], rate=rate(r), raw=r["raw"]) for r in v] for k, v in chosen.items()},
+        gated_but_faster={k: [g for g in v if k in chosen and g["rate"] > rate(chosen[k][0])] for k, v in gated.items()},
+        roofs_without_quality_candidate=sorted(set(gated) - set(chosen))), indent=2))
+    return chosen
+
+
+def confirm(s, plan):
+    """Winner's-curse control: re-measure the top candidates of every roof in fresh
+    processes, round-robin, alternating direction each repeat so drift hits all alike."""
+    cfg = plan["confirm"]
+    work = [(k, r) for k, v in sorted(candidates(s, cfg["top"]).items()) for r in v]
+    for i in range(cfg["reps"]):
+        for n, (key, r) in enumerate(work if i % 2 == 0 else work[::-1]):
+            if n % 25 == 0:
+                probe(s, f"confirm_{i}_{n}", plan)
+            c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True,
+                     loops=1 if r["config"]["family"] == "memory" else 128)
+            s.run(c, "confirm")
+
+
+def select_roofs(s) -> dict:
+    """Per roof: the candidate with the best median over its confirmation repeats
+    (at most one repeat may fail the quality gates); returns a representative row."""
+    groups = {}
+    for p in s.out.glob("confirm/*.json"):
+        if p.name.endswith((".config.json", ".telemetry.json")):
+            continue
+        r = json.loads(p.read_text())
+        c = r["config"]
+        if c.get("runner_sha256") != s.runner_sha:
+            continue
+        ident = json.dumps({k: v for k, v in c.items() if k != "replicate"}, sort_keys=True)
+        groups.setdefault((c["confirm_key"], ident), []).append(r)
+    winners = {}
+    for (key, _), rows in groups.items():
+        ok = [r for r in rows if not quality(r)]
+        if len(ok) < max(2, len(rows) - 1):
+            continue
+        med = statistics.median(rate(r) for r in ok)
+        pick = min(ok, key=lambda r: abs(rate(r) - med))
+        if key not in winners or med > winners[key][0]:
+            winners[key] = (med, pick)
+    if not winners:
+        raise RuntimeError("no confirmed roofs; run the confirm stage first")
     return {k: v[1] for k, v in winners.items()}
 
 
@@ -245,12 +387,15 @@ def sustain(s, plan):
     sustained_sha = paths.digest(paths.RUNNER_SUSTAINED)
     same = lambda d: {k: v for k, v in d.items() if k not in ("duration_seconds", "warmup_seconds")}
     for batch in range(cfg["batches"]):
+        probe(s, f"sustain_{batch}", plan)
         for key, r in sorted(winners.items()):
+            base_batch = r.get("batch_dispatches", 1)
             c = dict(r["config"], loops=r["effective_loops"], calibrate=False, duration_seconds=cfg["duration"],
                      executable="roofline_sustained",
-                     batch_dispatches=min(128, max(1, math.ceil(0.005 / r["median_seconds"]))),
+                     batch_dispatches=min(256, base_batch * max(1, math.ceil(0.005 / r["median_seconds"]))),
                      reference_runner_sha256=r["config"]["runner_sha256"], runner_sha256=sustained_sha)
-            c.pop("warmup_seconds", None)
+            for k in ("warmup_seconds", "replicate", "confirm_key"):
+                c.pop(k, None)
             done = [q for q in (s.out / f"sustain-{batch}").glob(c["name"] + "_*.json")
                     if not q.name.endswith((".config.json", ".telemetry.json"))
                     and (lambda x: x.get("accepted") and same(x["config"]) == same(c))(json.loads(q.read_text()))]
@@ -312,11 +457,16 @@ def run_plan(s, plan_name: str):
             datetime.timezone.utc).isoformat(), **extra), indent=2))
 
     started = time.time()
-    for step in [deploy, capabilities, pipeline_stats, offline_isa] + SHORT_STAGES:
+    for step in [deploy, capabilities, pipeline_stats, offline_isa] + SHORT_STAGES + [confirm]:
         name = step.__name__
         mark(name)
         print(f"=== {s.device.serial} {name}", flush=True)
+        measuring = step in SHORT_STAGES or step is confirm
+        if measuring:
+            probe(s, f"{name}_start", plan)
         step(s, plan)
+        if measuring:
+            probe(s, f"{name}_end", plan)
     if plan["sustain"]:
         mark("sustain")
         print(f"=== {s.device.serial} sustain", flush=True)

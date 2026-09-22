@@ -10,6 +10,7 @@ import statistics
 from pathlib import Path
 
 from . import paths
+from .stages import quality
 
 os.environ.setdefault("MPLCONFIGDIR", str(paths.BUILD / "matplotlib-cache"))
 import matplotlib  # noqa: E402
@@ -111,8 +112,10 @@ def analyze(folder: Path) -> dict:
              and r["config"].get("reference_runner_sha256", r["config"].get("runner_sha256")) in runners
              and not r["source"].startswith(("validate/", "sustain-preflight-"))]
 
-    peak, sustained = {}, {}
+    peak, sustained, confirmed = {}, {}, {}
     for r in valid:
+        if r["source"].startswith(("first-look/", "probe/")):
+            continue  # smoke test and device-state sentinel never define roofs
         c = r["config"]
         if c["family"] == "memory" and c.get("role") != "cache":
             ws = r["accounting"].get("working_set_bytes", 0)
@@ -134,6 +137,11 @@ def analyze(folder: Path) -> dict:
         if d and d.get("valid"):
             item["differential"] = work / d["incremental_seconds_for_L"] / scale
             item["fixed_fraction"] = d["fixed_fraction"]
+        if r["source"].startswith("confirm/"):
+            ident = json.dumps({k: v for k, v in r["config"].items() if k != "replicate"}, sort_keys=True)
+            item["ok"] = not quality(r)
+            confirmed.setdefault(key, {}).setdefault(ident, []).append(item)
+            continue
         if r["source"].startswith("sustain-"):
             item.update(value=work / r["last60"]["median_seconds"] / scale, steady=r["steady_last60"],
                         gpu_duty_fraction=r.get("gpu_timestamp_duty_fraction"),
@@ -142,13 +150,38 @@ def analyze(folder: Path) -> dict:
         elif key not in peak or item["value"] > peak[key]["value"]:
             peak[key] = item
 
+    # A confirmed roof replaces the single sweep maximum: median over the repeats of the
+    # best candidate (fresh processes, interleaved order), with the repeat range kept.
+    for key, cands in confirmed.items():
+        best = None
+        for items in cands.values():
+            ok = [x for x in items if x["ok"]]
+            if len(ok) < max(2, len(items) - 1):
+                continue
+            vals = sorted(x["value"] for x in ok)
+            med = statistics.median(vals)
+            if best is None or med > best["value"]:
+                rep = min(ok, key=lambda x: abs(x["value"] - med))
+                best = dict(rep, value=med, best=max(x["best"] for x in ok), confirmed=True, repeats=len(ok),
+                            repeat_min=vals[0], repeat_max=vals[-1], repeat_spread=(vals[-1] - vals[0]) / med)
+        if best:
+            if key in peak:
+                best["sweep_best_unconfirmed"] = peak[key]["value"]
+            peak[key] = best
+    # Sentinel timeline (clock proxy measured before/after every stage).
+    probes = sorted((r["config"].get("probe_utc", ""), r["config"].get("probe", ""),
+                     r["accounting"]["float_ops"] / r["median_seconds"] / 1e12)
+                    for r in all_rows if r["source"].startswith("probe/") and r.get("accepted") and r.get("accounting"))
+    top = max((x[2] for x in probes), default=0)
+    sentinel = dict(config="alu_fp32_v4_c16 wg256 groups512", unit="TFLOP/s", best=top, degraded_below=0.9 * top,
+                    timeline=[dict(utc=u, label=lab, value=v, degraded=v < 0.9 * top) for u, lab, v in probes])
     sustained_summary = {k: dict(value=statistics.median(x["value"] for x in vs), unit=vs[0]["unit"], batches=len(vs),
                                  all_steady=all(x["steady"] for x in vs), values=[x["value"] for x in vs],
                                  gpu_duty_fractions=[x["gpu_duty_fraction"] for x in vs], sources=[x["source"] for x in vs])
                          for k, vs in sustained.items()}
     roofs, basis = choose_roofs(peak, sustained_summary)
     plans = sorted({r.get("plan") for r in all_rows if r.get("plan")})
-    summary = dict(device=caps["gpu"], serial=caps["serial"], plans=plans, roof_basis=basis,
+    summary = dict(device=caps["gpu"], serial=caps["serial"], plans=plans, roof_basis=basis, sentinel=sentinel,
                    clock_state=caps.get("clock_state"), short_run=peak, sustained=sustained_summary,
                    ridges=dict(short_run=hierarchical_ridges(peak), roofs=hierarchical_ridges(roofs)),
                    physical_dram_bandwidth=None, physical_cache_bandwidth=None,
@@ -207,6 +240,27 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
         diff = f"{v['differential']:.3f} (fixed {v['fixed_fraction']:.0%})" if "differential" in v else "—"
         sus = (f"{sv['value']:.3f} ({sv['batches']}×" + ("" if sv["all_steady"] else ", not steady") + ")") if sv else "—"
         lines.append(f"| {k}{tags} | {v['value']:.3f} | {v['best']:.3f} | {diff} | {sus} | {v['unit']} |")
+    lines += ["", "## Roof confirmation", "",
+              "Each roof's top candidates were re-measured in fresh processes, round-robin with alternating order. "
+              "The roof is the median of the best candidate's repeats; the sweep maximum (a single run) is shown for "
+              "comparison. Roofs without a quality-passing candidate (CV <= 5 %, not short, fixed cost <= 10 %) are "
+              "marked unconfirmed.", "",
+              "| roof | confirmed median | repeat range | repeats | sweep max (unconfirmed) |", "|---|---:|---:|---:|---:|"]
+    for k in sorted(peak):
+        v = peak[k]
+        if v.get("confirmed"):
+            sweep = f"{v['sweep_best_unconfirmed']:.3f}" if "sweep_best_unconfirmed" in v else "—"
+            lines.append(f"| {k} | {v['value']:.3f} | {v['repeat_min']:.3f}–{v['repeat_max']:.3f} ({v['repeat_spread']:.1%}) "
+                         f"| {v['repeats']} | {sweep} |")
+        elif not is_control(k):
+            lines.append(f"| {k} | unconfirmed | — | — | {v['value']:.3f} |")
+    sen = summary["sentinel"]
+    lines += ["", "## Device-state sentinel", "",
+              f"`{sen['config']}` measured before and after every stage. Values below 90 % of the session best "
+              f"({sen['best']:.3f} TFLOP/s) mark a stage that ran on a throttled or otherwise degraded device; "
+              "re-measure those stages.", "", "| UTC | label | TFLOP/s | state |", "|---|---|---:|---|"]
+    lines += [f"| {x['utc'][:19]} | {x['label']} | {x['value']:.3f} | {'**degraded**' if x['degraded'] else 'ok'} |"
+              for x in sen["timeline"]]
     lines += ["", f"## Ridge points ({basis} roofs)", "",
               "Arithmetic intensity (ops per byte of that level) at which each compute roof meets each memory roof.", "",
               "| compute roof | " + " | ".join(summary["ridges"]["roofs"]) + " |",

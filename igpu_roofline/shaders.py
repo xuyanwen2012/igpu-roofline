@@ -70,15 +70,26 @@ def catalogue() -> list[tuple[str, str, dict, dict]]:
             dict(family="dot", width=1, chains=chains, dtype="int8", dots_per_step=8))
 
     add("pchase", "pchase", {}, dict(family="latency", width=1, dtype="uint32"))
-    for flops in (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024):
+    ert_flops = (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024)
+    for flops in ert_flops:
         add(f"ert_f{flops}", "ert", dict(FLOPS=flops),
             dict(family="ert", width=4, dtype="fp32", flops_per_element=flops))
+    # More independent element chains per thread: 4 chains cannot saturate FMA on GPUs
+    # that need ~16 (Mali-G1 FP32), which made the ERT plateau a latency limit.
+    for elems in (8, 16):
+        for flops in ert_flops:
+            add(f"ert_f{flops}_e{elems}", "ert", dict(FLOPS=flops, ELEMS=elems),
+                dict(family="ert", width=4, dtype="fp32", flops_per_element=flops, elems=elems))
+    # Control: ERT's original fully unrolled body for F > 32 (code-size check).
+    for flops in (64, 128, 256, 512, 1024):
+        add(f"ert_f{flops}_full", "ert", dict(FLOPS=flops, FULL_UNROLL=1),
+            dict(family="ert", width=4, dtype="fp32", flops_per_element=flops, full_unroll=True))
 
     # Cooperative matrix. Only shapes the device reports are run (see Session.eligible).
     shapes = ([(64, n, 16, "fp16") for n in (16, 32, 64)] + [(64, n, 32, "int8") for n in (16, 32, 64)]
               + [(4, 8, 8, "fp16"), (16, 32, 32, "fp16"), (4, 16, 16, "int8"),
                  (4, 8, 8, "fp16_fp32"), (16, 32, 32, "fp16_fp32"),
-                 (16, 16, 16, "fp16"), (16, 16, 16, "fp16_fp32"), (16, 16, 32, "int8")])
+                 (16, 16, 16, "fp16"), (16, 16, 16, "fp16_fp32"), (16, 16, 16, "int8"), (16, 16, 32, "int8")])
     for m, n, k, dtype in shapes:
         a_type = "int8_t" if dtype == "int8" else "float16_t"
         c_type = "int32_t" if dtype == "int8" else "float16_t" if dtype == "fp16" else "float"

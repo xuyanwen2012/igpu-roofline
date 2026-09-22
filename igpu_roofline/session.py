@@ -170,8 +170,12 @@ class Session:
         if samples:
             row.update(stats([s["seconds"] for s in samples]))
             row["effective_loops"] = samples[0]["loops"]
-            row["accounting"] = accounting(c, samples[0]["loops"])
-            row["below_target_duration"] = row["median_seconds"] < 0.002
+            # Calibration may raise dispatches per sample when a loop count is capped
+            # (bounded FP16 accumulation); account for the batch the runner actually used.
+            batch = samples[0].get("batch_dispatches", c.get("batch_dispatches", 1))
+            row["batch_dispatches"] = batch
+            row["accounting"] = accounting(dict(c, batch_dispatches=batch), samples[0]["loops"])
+            row["below_target_duration"] = row["median_seconds"] < 0.8 * c.get("target_seconds", 0.005)
             halves = {e["sample"]: e for e in events if e.get("event") == "sample_half"}
             if halves:
                 row["differential"] = differential(samples, halves)

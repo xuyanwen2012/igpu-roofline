@@ -69,7 +69,11 @@ def expected(meta: dict) -> dict:
     if family == "latency":
         return {"load_StorageBuffer": 16, "store_StorageBuffer": 1}
     if family == "ert":
-        return {"fma": 4 * meta["flops_per_element"], "load_StorageBuffer": 4, "store_StorageBuffer": 4}
+        # Bodies with F > 32 are chunked into 32 unrolled steps per loop trip unless
+        # FULL_UNROLL; ELEMS independent elements (chains) per thread.
+        flops, elems = meta["flops_per_element"], meta.get("elems", 4)
+        steps = flops if flops <= 32 or meta.get("full_unroll") else 32
+        return {"fma": elems * steps, "load_StorageBuffer": elems, "store_StorageBuffer": elems}
     return {}
 
 

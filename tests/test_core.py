@@ -160,3 +160,46 @@ def test_plans():
     assert PLANS["quick"]["sustain"] is None
     assert PLANS["gold"]["sustain"]["batches"] == 3
     assert all(p["warmup_seconds"] > 0 for p in PLANS.values())
+
+
+# --- roof selection and hardening ---------------------------------------------------------
+from igpu_roofline.spirv_audit import expected  # noqa: E402
+from igpu_roofline.stages import QUALITY, matrix_grid, quality  # noqa: E402
+
+
+def _row(**kw):
+    r = dict(accepted=True, cv=0.01, below_target_duration=False, differential=dict(valid=True, fixed_fraction=0.02))
+    r.update(kw)
+    return r
+
+
+def test_quality_gates():
+    assert quality(_row()) == []
+    assert "cv" in quality(_row(cv=QUALITY["max_cv"] * 10))
+    assert "short" in quality(_row(below_target_duration=True))
+    assert "fixed_cost" in quality(_row(differential=dict(valid=True, fixed_fraction=0.67)))
+    assert "fixed_cost" in quality(_row(differential=dict(valid=False, fixed_fraction=0.0)))
+    assert "rejected" in quality(_row(accepted=False))
+    assert quality(_row(differential=None)) == []  # streaming kernels have no differential
+
+
+def test_matrix_grid_reaches_large_launches_for_every_dtype():
+    caps = dict(subgroup=16, max_workgroup_invocations=1024)
+    small = dict(chains=8, m=4, matrix_n=16, dtype="int8")
+    assert (16, 16384) in matrix_grid(small, caps, quick=True)
+    assert {(16, 16384), (64, 16384), (64, 64)} <= set(matrix_grid(small, caps, quick=False))
+    big = dict(chains=8, m=64, matrix_n=64, dtype="fp16_fp32")
+    assert all(g * 8 * 64 * 64 * 4 <= 256 * 1024 ** 2 for _, g in matrix_grid(big, caps, quick=False))
+
+
+def test_ert_ledger_chunking_and_ilp():
+    assert expected(dict(family="ert", flops_per_element=16))["fma"] == 64
+    assert expected(dict(family="ert", flops_per_element=1024))["fma"] == 4 * 32
+    assert expected(dict(family="ert", flops_per_element=1024, elems=16))["fma"] == 16 * 32
+    assert expected(dict(family="ert", flops_per_element=1024, full_unroll=True))["fma"] == 4096
+    assert expected(dict(family="ert", flops_per_element=8, elems=8))["load_StorageBuffer"] == 8
+
+
+def test_plans_confirm_roofs():
+    assert PLANS["quick"]["confirm"] == dict(top=1, reps=3)
+    assert all(PLANS[p]["confirm"] == dict(top=3, reps=5) for p in ("standard", "gold"))

@@ -44,8 +44,8 @@ Plans:
 
 | plan | contents | time |
 |---|---|---|
-| `quick` (default) | every family at its most informative settings, 0.25 s warm-up per config | ~10 min |
-| `standard` | all sweeps, 1 s warm-up per config, one 300 s sustained run per roof | ~3 h |
+| `quick` (default) | every family at its most informative settings, 0.25 s warm-up per config; best candidate per roof confirmed 3× | ~15 min (estimate, not yet re-timed) |
+| `standard` | all sweeps, 1 s warm-up per config, top 3 candidates per roof confirmed 5×, one 300 s sustained run per roof | ~3.5 h (estimate) |
 | `gold` | as standard with three sustained batches (repeatability) | ~7 h |
 
 `quick` is a screening plan: it samples each axis coarsely, so compute and DRAM roofs

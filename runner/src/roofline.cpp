@@ -91,6 +91,9 @@ int main(int argc,char** argv){
  VkQueryPoolCreateInfo qc{VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO};qc.queryType=VK_QUERY_TYPE_TIMESTAMP;qc.queryCount=2;VkQueryPool qp;CHECK(vkCreateQueryPool(c.dev,&qc,nullptr,&qp));
  VkCommandBufferAllocateInfo ca{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};ca.commandPool=c.pool;ca.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;ca.commandBufferCount=1;VkCommandBuffer cb;CHECK(vkAllocateCommandBuffers(c.dev,&ca,&cb));
  VkFenceCreateInfo fc{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};VkFence fence;CHECK(vkCreateFence(c.dev,&fc,nullptr,&fence));
+ // Dispatches per timed submission; calibration raises it when a loop count is capped
+ // (bounded FP16 accumulation) so every sample still reaches the target duration.
+ uint32_t batch=cfg.value("batch_dispatches",1u);
  const uint32_t pc2=(family=="memory"&&op==0)?cfg.value("replicas",1u):family=="ert"?bits(cfg.value("alpha",0.5f)):17u,pc3=family=="ert"?bits(cfg.value("beta",0.25f)):0u;
  auto execute=[&](uint32_t its){
  CHECK(vkResetCommandBuffer(cb,0));VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};CHECK(vkBeginCommandBuffer(cb,&bi));vkCmdResetQueryPool(cb,qp,0,2);
@@ -98,8 +101,8 @@ int main(int argc,char** argv){
  vkCmdPipelineBarrier(cb,VK_PIPELINE_STAGE_ALL_COMMANDS_BIT|VK_PIPELINE_STAGE_HOST_BIT,VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,0,1,&mb,0,nullptr,0,nullptr);
  vkCmdWriteTimestamp(cb,VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,qp,0);
  if(family=="copy"){VkBufferCopy region{0,0,n*width*4ull};vkCmdCopyBuffer(cb,use[0],use[3],1,&region);}
- else {vkCmdBindPipeline(cb,VK_PIPELINE_BIND_POINT_COMPUTE,pipe);vkCmdBindDescriptorSets(cb,VK_PIPELINE_BIND_POINT_COMPUTE,pl,0,1,&ds,0,nullptr);uint32_t pc[]={n,its,pc2,pc3};vkCmdPushConstants(cb,pl,VK_SHADER_STAGE_COMPUTE_BIT,0,16,pc);for(uint32_t batch=0;batch<cfg.value("batch_dispatches",1u);batch++){
- if(batch){VkMemoryBarrier between{VK_STRUCTURE_TYPE_MEMORY_BARRIER};between.srcAccessMask=VK_ACCESS_SHADER_WRITE_BIT;between.dstAccessMask=VK_ACCESS_SHADER_READ_BIT|VK_ACCESS_SHADER_WRITE_BIT;vkCmdPipelineBarrier(cb,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,0,1,&between,0,nullptr,0,nullptr);}
+ else {vkCmdBindPipeline(cb,VK_PIPELINE_BIND_POINT_COMPUTE,pipe);vkCmdBindDescriptorSets(cb,VK_PIPELINE_BIND_POINT_COMPUTE,pl,0,1,&ds,0,nullptr);uint32_t pc[]={n,its,pc2,pc3};vkCmdPushConstants(cb,pl,VK_SHADER_STAGE_COMPUTE_BIT,0,16,pc);for(uint32_t bi=0;bi<batch;bi++){
+ if(bi){VkMemoryBarrier between{VK_STRUCTURE_TYPE_MEMORY_BARRIER};between.srcAccessMask=VK_ACCESS_SHADER_WRITE_BIT;between.dstAccessMask=VK_ACCESS_SHADER_READ_BIT|VK_ACCESS_SHADER_WRITE_BIT;vkCmdPipelineBarrier(cb,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,0,1,&between,0,nullptr,0,nullptr);}
  vkCmdDispatch(cb,groups,1,1);
  }}
  vkCmdWriteTimestamp(cb,VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,qp,1);
@@ -146,23 +149,25 @@ int main(int argc,char** argv){
  };
  double first=execute(1);puts(json{{"event","first_dispatch"},{"seconds",first},{"qualification","after_host_initialization_not_guaranteed_cold"},{"config",cfg}}.dump().c_str());
  execute(2);auto sanity=validate(2);if(!sanity["pass"].get<bool>()){puts(json{{"event","validation_failed"},{"config",cfg},{"validation",sanity}}.dump().c_str());return 3;}
+ // DVFS warm-up BEFORE calibration: keep the GPU busy with this workload for
+ // warmup_seconds (wall clock) so the governor has ramped before loops are sized and
+ // before the first sample; first/last GPU times
+ // of the warm-up are recorded as evidence of the ramp.
+ {const double warm=cfg.value("warmup_seconds",0.0);auto w0=std::chrono::steady_clock::now();int wn=0;double firstw=0,lastw=0;
+  do{lastw=execute(loops);if(!wn)firstw=lastw;wn++;}while(wn<2||std::chrono::duration<double>(std::chrono::steady_clock::now()-w0).count()<warm);
+  puts(json{{"event","warmup"},{"dispatches",wn},{"first_seconds",firstw},{"last_seconds",lastw},{"wall_seconds",std::chrono::duration<double>(std::chrono::steady_clock::now()-w0).count()},{"batch_dispatches",batch}}.dump().c_str());}
  // Runtime calibration preserves operation accounting; half accumulators stay bounded.
- if(cfg.value("calibrate",true)&&family!="copy")for(int i=0;i<5;i++){double sec=execute(loops);if(sec>=.002||loops>=16384)break;uint32_t lim=family=="shared"&&half?128:family=="matrix"&&half?1024u/K:16384;uint32_t next=std::min<uint32_t>(lim,std::max<uint32_t>(loops+1,uint32_t(loops*std::min(8.0,.003/sec))));if(next<=loops)break;loops=next;}
+ const double target=cfg.value("target_seconds",0.005);
+ if(cfg.value("calibrate",true)&&family!="copy")for(int i=0;i<10;i++){double sec=execute(loops);if(sec>=target)break;uint32_t lim=family=="shared"&&half?128:family=="matrix"&&half?1024u/K:16384;uint32_t next=std::min<uint32_t>(lim,std::max<uint32_t>(loops+1,uint32_t(loops*std::min(8.0,target*1.5/sec))));if(next>loops){loops=next;continue;}
+  uint32_t nb=std::min<uint32_t>(256,std::max<uint32_t>(batch+1,uint32_t(std::ceil(batch*target*1.2/sec))));if(nb<=batch)break;batch=nb;}
  execute(loops);auto val=validate(loops);if(!val["pass"].get<bool>()){puts(json{{"event","validation_failed"},{"config",cfg},{"loops",loops},{"validation",val}}.dump().c_str());return 3;}
  double duration=cfg.value("duration_seconds",0.0);
  // Differential (two-point) timing: interleave loops and loops/2 so the paired
  // difference removes fixed per-dispatch cost (launch, fills, write-back).
  const bool diff=duration<=0&&cfg.value("differential",true)&&family!="copy"&&loops>=2;const uint32_t half_loops=loops/2;
  if(diff){execute(half_loops);auto vh=validate(half_loops);if(!vh["pass"].get<bool>()){puts(json{{"event","validation_failed"},{"config",cfg},{"loops",half_loops},{"validation",vh}}.dump().c_str());return 3;}}
- for(int i=0;i<5;i++)execute(loops);
- // Time-based warm-up: without pinned clocks, keep running the same dispatch until
- // DVFS, caches and power gating settle, so samples do not inherit the previous
- // configuration's clock state.
- {double warm=cfg.value("warmup_seconds",0.0),we=0;int wn=0;auto w0=std::chrono::steady_clock::now();
-  while(we<warm){execute(loops);if(diff)execute(half_loops);wn++;we=std::chrono::duration<double>(std::chrono::steady_clock::now()-w0).count();}
-  puts(json{{"event","warmup"},{"seconds",we},{"dispatches",wn}}.dump().c_str());}
  auto start=std::chrono::steady_clock::now();int samples=cfg.value("samples",21);int i=0;
- do{double sec=execute(loops);double elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();puts(json{{"event","sample"},{"sample",i},{"seconds",sec},{"elapsed_seconds",elapsed},{"loops",loops},{"batch_dispatches",cfg.value("batch_dispatches",1u)},{"validation",val},{"timestamp_period_ns",c.props.limits.timestampPeriod},{"timestamp_valid_bits",c.timestampBits}}.dump().c_str());
+ do{double sec=execute(loops);double elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();puts(json{{"event","sample"},{"sample",i},{"seconds",sec},{"elapsed_seconds",elapsed},{"loops",loops},{"batch_dispatches",batch},{"validation",val},{"timestamp_period_ns",c.props.limits.timestampPeriod},{"timestamp_valid_bits",c.timestampBits}}.dump().c_str());
  if(diff){double sh=execute(half_loops);puts(json{{"event","sample_half"},{"sample",i},{"seconds",sh},{"loops",half_loops}}.dump().c_str());}
  fflush(stdout);i++;if(duration>0&&elapsed>=duration)break;}while(duration>0||i<samples);
  CHECK(vkDeviceWaitIdle(c.dev));for(auto& x:b)freeBuf(c,x);if(deviceLocal)for(auto& x:dv)freeDeviceBuf(c,x);vkDestroyDevice(c.dev,nullptr);vkDestroyInstance(c.inst,nullptr);return 0;
