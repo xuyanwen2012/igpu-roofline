@@ -270,7 +270,7 @@ def probe(s, label: str, plan) -> dict:
     Without a readable GPU clock, a device can change state invisibly: on Mali-G1 the
     same binary and configuration fell from 3.48 to 2.2 TFLOP/s hours later at 35 C
     with the screen on. Measured before/after every stage; the report flags stages whose
-    sentinel is < 90 % of the session's best.
+    sentinel is < 85 % of the median reading (Guard stops the run on a confirmed drop).
     """
     c = s.base(s.variant("alu_fp32_v4_c16"), plan["warmup_seconds"])
     c.update(wg=256, groups=512, probe=label, probe_utc=utc_now())
@@ -290,7 +290,10 @@ class DeviceDegraded(RuntimeError):
 # load. Waiting for the GPU to cool before each configuration keeps short-run roofs
 # in one device state. Sustained stages are not paced (heating is what they measure).
 PACE = dict(start_above_c=50.0, resume_below_c=45.0, max_wait_s=600)
-SENTINEL = dict(every=20, degraded_below=0.9)
+# The sentinel scatters ~+-6 % between processes in the fast state; the slow state is
+# ~35 % lower. So the reference is the MEDIAN of earlier readings (not the max, which is
+# an upper outlier), the threshold 85 %, and a trip is re-measured twice before acting.
+SENTINEL = dict(every=20, degraded_below=0.85, confirm_readings=3)
 
 
 class Guard:
@@ -311,7 +314,11 @@ class Guard:
             r = json.loads(p.read_text())
             if r.get("accepted") and r.get("config", {}).get("runner_sha256") == runner and r.get("accounting"):
                 vals.append(r["accounting"]["float_ops"] / r["median_seconds"] / 1e12)
-        self.reference = max(vals, default=None)  # best sentinel of this runner on this device, any process
+        self.readings = vals  # every accepted sentinel of this runner on this device, any process
+
+    @property
+    def reference(self):
+        return statistics.median(self.readings) if self.readings else None
 
     def _guarded(self, tag: str) -> bool:
         return not (self.busy or tag in self.UNGUARDED or tag.startswith("sustain"))
@@ -336,23 +343,30 @@ class Guard:
         if self.count % SENTINEL["every"] == 0:
             self.check(f"{tag}_{self.count}")
 
-    def check(self, label: str) -> float | None:
+    def _read(self, label: str):
         self.busy = True
         try:
-            started = utc_now()
             row = probe(self.s, label, self.plan)
         finally:
             self.busy = False
-        if not row.get("accepted"):
+        return row["accounting"]["float_ops"] / row["median_seconds"] / 1e12 if row.get("accepted") else None
+
+    def check(self, label: str) -> float | None:
+        started = utc_now()
+        value = self._read(label)
+        if value is None:
             return None
-        value = row["accounting"]["float_ops"] / row["median_seconds"] / 1e12
-        if self.reference is None or value > self.reference:
-            self.reference = value
-        if value < SENTINEL["degraded_below"] * self.reference:
+        ref = self.reference
+        if ref is not None and value < SENTINEL["degraded_below"] * ref:
+            # One low reading is not a state change: re-measure and decide on the median.
+            more = [self._read(f"{label}_recheck{i}") for i in range(1, SENTINEL["confirm_readings"])]
+            value = statistics.median([value] + [v for v in more if v is not None])
+        if ref is not None and value < SENTINEL["degraded_below"] * ref:
             moved = self.quarantine(self.last_good_utc)
-            raise DeviceDegraded(f"sentinel {value:.3f} < {SENTINEL['degraded_below']:.0%} of {self.reference:.3f} "
+            raise DeviceDegraded(f"sentinel {value:.3f} < {SENTINEL['degraded_below']:.0%} of the median {ref:.3f} "
                                  f"TFLOP/s at {label}; {moved} result(s) since {self.last_good_utc} moved to superseded/. "
                                  "Reboot the device, let it cool, and rerun the same command to resume.")
+        self.readings.append(value)
         self.last_good_utc = started
         return value
 

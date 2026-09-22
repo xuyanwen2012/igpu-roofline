@@ -173,8 +173,9 @@ exactly.
 invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
 2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
 measured before and after every stage, every 20 configurations inside a stage, and before
-every sustained batch. If it falls below 90 % of the best sentinel this runner has seen on
-this device, the run stops: every result measured since the last good sentinel is moved
+every sustained batch. If it falls below 85 % of the median of the sentinel readings this
+runner has seen on this device, it is re-measured twice; if the median of the three is
+still below, the run stops (the fast state scatters ~+-6 %, the slow state is ~35 % lower): every result measured since the last good sentinel is moved
 to `superseded/degraded-<utc>/`, the workflow state becomes `paused_device_degraded`,
 and rerunning the same command after a reboot and cool-down resumes and re-measures
 them. REPORT.md still lists every sentinel reading.

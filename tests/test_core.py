@@ -246,3 +246,16 @@ def test_quarantine_moves_only_results_after_last_good_sentinel(tmp_path):
     assert not (tmp_path / "sweep-compute" / "late.json").exists()
     assert (tmp_path / "probe" / "sentinel.json").exists()
     assert len(list((tmp_path / "superseded").glob("degraded-*/sweep-compute/late.*"))) == 3
+
+
+def test_guard_needs_confirmed_drop_against_median(monkeypatch):
+    import igpu_roofline.stages as st
+    g = Guard.__new__(Guard)
+    g.s, g.plan, g.busy, g.readings, g.last_good_utc = None, None, False, [3.3, 3.4, 3.58], "t0"
+    g.quarantine = lambda since: 0
+    seq = iter([3.20, 2.2, 2.25, 2.21])  # one low outlier (passes), then a real drop
+    monkeypatch.setattr(st, "probe", lambda s, label, plan: dict(
+        accepted=True, accounting=dict(float_ops=next(seq) * 1e12), median_seconds=1.0))
+    assert g.check("a") == 3.20            # 3.20 >= 0.85 * median(3.3, 3.4, 3.58)
+    with pytest.raises(st.DeviceDegraded):
+        g.check("b")                       # 2.2, rechecked 2.25 / 2.21 -> degraded
