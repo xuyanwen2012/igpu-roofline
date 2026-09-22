@@ -1,0 +1,29 @@
+#version 450
+// v2 Empirical Roofline Toolkit style kernel (LBNL ERT): each element is loaded
+// once, receives FLOPS dependent FMAs per component, and is stored once, so one
+// kernel family sweeps arithmetic intensity FLOPS*8/32 FLOP/byte from memory-
+// bound to compute-bound. Four elements per iteration add ILP across chains.
+//
+// The chain is ERT's Horner form y = y*x + alpha with x taken from the element
+// itself. An affine chain with uniform coefficients (x = x*a + b) must not be
+// used: a compiler may compose it into a single FMA (observed on Mali-G710).
+// x is scaled by 1/16 so the recurrence converges (|x| < 0.5).
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=0) readonly buffer A { vec4 a[]; };
+layout(binding=3) writeonly buffer D { vec4 d[]; };
+void main(){
+ uint id=gl_GlobalInvocationID.x, nt=gl_NumWorkGroups.x*gl_WorkGroupSize.x;
+ vec4 alpha=vec4(uintBitsToFloat(p.seed)), beta=vec4(uintBitsToFloat(p.offset));
+ for(uint t=0;t<p.loops;t++){
+  for(uint i=id;i<p.n;i+=4*nt){
+   vec4 x[4],y[4];
+   [[unroll]]for(uint e=0;e<4;e++){x[e]=a[min(i+e*nt,p.n-1)]*0.0625;y[e]=beta;}
+   [[unroll]]for(uint f=0;f<FLOPS;f++){
+    [[unroll]]for(uint e=0;e<4;e++)y[e]=fma(y[e],x[e],alpha);
+   }
+   [[unroll]]for(uint e=0;e<4;e++)if(i+e*nt<p.n)d[i+e*nt]=y[e];
+  }
+ }
+}

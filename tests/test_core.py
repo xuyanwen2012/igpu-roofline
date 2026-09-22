@@ -1,0 +1,162 @@
+"""Unit tests for accounting, timing, SPIR-V auditing and report logic (no GPU needed)."""
+import pytest
+
+from igpu_roofline.isa_offline import expected_scalar_fma, fma_equivalents
+from igpu_roofline.measure import accounting, differential
+from igpu_roofline.report import choose_roofs, hierarchical_ridges, is_control, metric
+from igpu_roofline.spirv_audit import check, ledger
+from igpu_roofline.stages import PLANS, is_control as config_is_control
+from igpu_roofline.volatile_workgroup import annotate
+
+
+# --- accounting ------------------------------------------------------------------------
+def test_batch_multiplies_traffic_not_capacity():
+    c = dict(family="memory", op=2, n=1024, width=4, wg=64, groups=16)
+    single, batch = accounting(c, 3), accounting(dict(c, batch_dispatches=8), 3)
+    assert batch["logical_global_bytes"] == single["logical_global_bytes"] * 8
+    assert batch["working_set_bytes"] == single["working_set_bytes"]
+
+
+def test_copy_counts_both_directions():
+    assert accounting(dict(family="memory", op=2, n=1024, width=4, wg=64, groups=16), 3)["logical_global_bytes"] == 1024 * 16 * 2 * 3
+
+
+def test_replicas_are_not_capacity():
+    a = accounting(dict(family="memory", op=0, n=1024, width=1, wg=64, groups=64, replicas=4), 10)
+    assert a["working_set_bytes"] == 4096
+    assert a["logical_global_bytes"] == 4096 * 4 * 10 + 4096 * 4
+
+
+def test_babelstream_dot():
+    a = accounting(dict(family="memory", op=6, n=1024, width=4, wg=64, groups=16), 2)
+    assert a["logical_global_bytes"] == 1024 * 16 * 2 * 2
+    assert a["float_ops"] == 1024 * 4 * 2 * 2
+
+
+def test_matrix_integer_ops_are_not_flops():
+    a = accounting(dict(family="matrix", dtype="int8", m=64, matrix_n=16, k=32, chains=4, wg=64, groups=512), 128)
+    assert a["float_ops"] == 0
+    assert a["integer_ops"] == 2 * 64 * 16 * 32 * 4 * 512 * 128
+
+
+def test_dot8_counts_every_dot():
+    assert accounting(dict(family="dot", chains=4, wg=64, groups=8, dots_per_step=8), 10)["integer_ops"] == 8 * 64 * 8 * 4 * 10 * 8
+
+
+def test_shared_read_counts_accumulators_and_fill():
+    c = dict(family="shared", kind="bw", op=0, dtype="fp32", width=4, wg=64, groups=2, shared_count=256, accumulators=8)
+    a = accounting(c, 16)
+    assert a["logical_shared_bytes"] == 128 * 16 * 16 * 8 + 2 * 256 * 16
+    assert a["barriers_per_workgroup"] == 1
+
+
+def test_shared_write_has_no_fill():
+    c = dict(family="shared", kind="bw", op=2, dtype="fp16", width=2, wg=64, groups=2, shared_count=256, accumulators=8)
+    a = accounting(c, 16)
+    assert a["shared_initialization_bytes"] == 0
+    assert a["logical_shared_bytes"] == 128 * 4 * 16 * 8 + 128 * 4
+    assert a["logical_global_bytes"] == 128 * 2 * 4
+
+
+def test_ert_intensity():
+    a = accounting(dict(family="ert", flops_per_element=64, n=1000, wg=64, groups=4), 3)
+    assert a["float_ops"] / a["logical_global_bytes"] == pytest.approx(64 * 8 / 32)
+
+
+def test_latency_loads():
+    a = accounting(dict(family="latency", n=4096, wg=1, groups=1, chain_stride_bytes=64), 100)
+    assert (a["dependent_loads"], a["working_set_bytes"]) == (1600, 16384)
+
+
+# --- timing ----------------------------------------------------------------------------
+def test_differential_removes_fixed_cost():
+    fixed, per_loop, L, H = 0.001, 0.0001, 100, 50
+    samples = [dict(sample=i, loops=L, seconds=fixed + L * per_loop + (i % 3) * 1e-6) for i in range(9)]
+    halves = {i: dict(sample=i, loops=H, seconds=fixed + H * per_loop + (i % 3) * 1e-6) for i in range(9)}
+    d = differential(samples, halves)
+    assert d["seconds_per_loop"] == pytest.approx(per_loop, abs=1e-9)
+    assert d["fixed_seconds"] == pytest.approx(fixed, abs=1e-5)
+    assert d["valid"]
+
+
+def test_differential_rejects_negative_overhead():
+    d = differential([dict(sample=0, loops=100, seconds=0.010)], {0: dict(sample=0, loops=50, seconds=0.004)})
+    assert not d["valid"]
+
+
+def test_timestamp_wrap_arithmetic():
+    period = 52.08333206176758
+    assert ((3 - ((1 << 48) - 2)) & ((1 << 48) - 1)) * period == pytest.approx(260.4166603088379)
+
+
+# --- SPIR-V ------------------------------------------------------------------------------
+ASM = """%pw = OpTypePointer Workgroup %float
+%ps = OpTypePointer StorageBuffer %float
+%data = OpVariable %pw Workgroup
+%buf = OpVariable %ps StorageBuffer
+%a = OpAccessChain %ps %buf %i
+%x = OpLoad %float %a
+%w = OpAccessChain %pw %data %i
+OpStore %w %x Volatile
+%y = OpExtInst %float %1 Fma %x %x %x
+OpControlBarrier %uint_2 %uint_2 %uint_264
+"""
+
+
+def test_ledger_storage_classes():
+    c = ledger(ASM)
+    assert (c["load_StorageBuffer"], c["store_Workgroup"], c["fma"], c["control_barrier"], c["volatile"]) == (1, 1, 1, 1, 1)
+
+
+def test_ledger_mismatch_is_reported():
+    assert check(dict(family="alu", chains=1), {"fma": 15}) == {"fma": (16, 15)}
+
+
+def test_volatile_only_on_workgroup_accesses():
+    src = ("%pw = OpTypePointer Workgroup %float\n%pf = OpTypePointer Function %float\n%w = OpAccessChain %pw %data %i\n"
+           "%f = OpVariable %pf Function\n%a = OpLoad %float %w\n%b = OpLoad %float %f\nOpStore %w %a\nOpStore %f %b\n")
+    out, n = annotate(src)
+    assert n == 2
+    assert "OpLoad %float %w Volatile" in out and "OpLoad %float %f\n" in out and "OpStore %w %a Volatile" in out
+
+
+def test_volatile_rejects_unknown_mask():
+    with pytest.raises(AssertionError):
+        annotate("%pw = OpTypePointer Workgroup %float\n%w = OpVariable %pw Workgroup\n%x = OpLoad %float %w Aligned 4\n")
+
+
+def test_amd_isa_fma_counting():
+    isa = "  v_fma_f32 v1, v2, v3, v4\n  v_fmac_f32 v1, v2, v3\n  v_pk_fma_f16 v1, v2, v3, v4\n  v_dual_fmac_f32 v1, v2, v3 :: v_dual_fmac_f32 v4, v5, v6\n"
+    assert fma_equivalents(isa) == 1 + 1 + 2 + 2
+    assert expected_scalar_fma(dict(family="alu", chains=16, width=4)) == 1024
+
+
+# --- report logic -------------------------------------------------------------------------
+def test_controls_never_define_roofs():
+    base = {"accounting": {"logical_global_bytes": 1, "logical_shared_bytes": 1}}
+    keys = [metric(dict(base, config=cfg))[0] for cfg in (
+        dict(family="memory", op=2, volatile_global=True), dict(family="memory", op=1, memory_mode="host_coherent"),
+        dict(family="shared", op=0, dtype="fp32"), dict(family="shared", kind="bw", op=0, dtype="fp32"))]
+    assert keys == ["global_copy_volatile", "global_write_hostcoherent", "shared_fp32_read_1acc", "shared_fp32_read"]
+    assert [is_control(k) for k in keys] == [True, True, True, False]
+    assert config_is_control(dict(family="shared", op=0)) and not config_is_control(dict(family="shared", kind="bw", op=0))
+
+
+def test_non_roof_families():
+    assert metric({"config": {"family": "latency"}, "accounting": {}}) is None
+    assert metric({"config": {"family": "ert"}, "accounting": {}}) is None
+
+
+def test_partial_sustained_keeps_short_roofs():
+    short = {"alu_fp32": {"value": 4, "unit": "TFLOP/s"}, "global_copy": {"value": 80, "unit": "GB/s"}}
+    assert choose_roofs(short, {"alu_fp32": {"value": 3, "unit": "TFLOP/s", "batches": 1}}) == (short, "short-run")
+    full = {k: dict(v, batches=3) for k, v in short.items()}
+    assert choose_roofs(short, full) == (full, "sustained")
+    assert hierarchical_ridges(short)["global"]["alu_fp32"] == 50
+
+
+def test_plans():
+    assert set(PLANS) == {"quick", "standard", "gold"}
+    assert PLANS["quick"]["sustain"] is None
+    assert PLANS["gold"]["sustain"]["batches"] == 3
+    assert all(p["warmup_seconds"] > 0 for p in PLANS.values())

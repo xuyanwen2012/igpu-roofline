@@ -1,0 +1,36 @@
+#version 450
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=0) readonly buffer A { float a[]; };
+layout(binding=1) readonly buffer B { float b[]; };
+layout(binding=3) writeonly buffer D { float d[]; };
+void main(){
+ uint id=gl_GlobalInvocationID.x;
+ T x[CHAINS];
+ T alpha, beta;
+#if WIDTH==1
+ alpha=T(a[id]); beta=T(b[id]);
+#else
+ for(uint v=0;v<WIDTH;v++){alpha[v]=S(a[id*WIDTH+v]);beta[v]=S(b[id*WIDTH+v]);}
+#endif
+ [[unroll]] for(uint c=0;c<CHAINS;c++){
+ x[c]=T(float(c+1)*0.0625);
+#if WIDTH!=1
+ for(uint v=0;v<WIDTH;v++)x[c][v]+=S(float(v)*0.015625);
+#endif
+ }
+ for(uint i=0;i<p.loops;i++){
+  [[unroll]] for(uint j=0;j<16;j++){
+   [[unroll]] for(uint c=0;c<CHAINS;c++) x[c]=fma(x[c],alpha,beta*T(float(c+1)));
+  }
+ }
+ [[unroll]] for(uint c=0;c<CHAINS;c++){
+#if WIDTH==1
+ d[id*CHAINS+c]=float(x[c]);
+#else
+ [[unroll]] for(uint v=0;v<WIDTH;v++)d[(id*CHAINS+c)*WIDTH+v]=float(x[c][v]);
+#endif
+ }
+}

@@ -1,0 +1,28 @@
+#version 450
+// v2 integer dot throughput. The operand recurrence (add + mask) that blocks
+// loop-invariant hoisting is shared by DOTS independent dot products, so the
+// auxiliary cost per counted dot drops from 2 extra ops to 2/DOTS.
+#extension GL_EXT_integer_dot_product : require
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=0) readonly buffer A { uint a[]; };
+layout(binding=1) readonly buffer B { uint b[]; };
+layout(binding=3) writeonly buffer D { int d[]; };
+#ifndef DOTS
+#define DOTS 8
+#endif
+void main(){
+ uint id=gl_GlobalInvocationID.x;
+ uint bk[DOTS];
+ [[unroll]]for(uint k=0;k<DOTS;k++)bk[k]=(b[id]+k*0x00010001u)&0x07070707u;
+ int x[CHAINS];
+ [[unroll]]for(uint c=0;c<CHAINS;c++)x[c]=int(c);
+ for(uint i=0;i<p.loops;i++){
+  [[unroll]]for(uint c=0;c<CHAINS;c++){
+   uint v=(a[id]+uint(x[c]))&0x07070707u;
+   [[unroll]]for(uint k=0;k<DOTS;k++)x[c]+=int(dotPacked4x8EXT(v,bk[k]));
+  }
+ }
+ [[unroll]]for(uint c=0;c<CHAINS;c++)d[id*CHAINS+c]=x[c];
+}

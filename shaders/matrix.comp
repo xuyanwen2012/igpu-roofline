@@ -1,0 +1,30 @@
+#version 450
+#extension GL_KHR_cooperative_matrix : require
+#extension GL_KHR_memory_scope_semantics : require
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+#extension GL_EXT_shader_explicit_arithmetic_types_int8 : require
+#extension GL_EXT_shader_explicit_arithmetic_types_int32 : require
+#extension GL_EXT_shader_16bit_storage : require
+#extension GL_EXT_shader_8bit_storage : require
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=0) readonly buffer A { AT a[]; };
+layout(binding=1) readonly buffer B { AT b[]; };
+layout(binding=3) writeonly buffer D { CT d[]; };
+void main(){
+ coopmat<AT,gl_ScopeSubgroup,M,K,gl_MatrixUseA> ma;
+ coopmat<AT,gl_ScopeSubgroup,K,N,gl_MatrixUseB> mb;
+ coopmat<CT,gl_ScopeSubgroup,M,N,gl_MatrixUseAccumulator> acc[CHAINS];
+ coopMatLoad(ma,a,0,K,gl_CooperativeMatrixLayoutRowMajor);
+ coopMatLoad(mb,b,0,N,gl_CooperativeMatrixLayoutRowMajor);
+ [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopmat<CT,gl_ScopeSubgroup,M,N,gl_MatrixUseAccumulator>(CT(c));
+ for(uint i=0;i<p.loops;i++){
+#ifdef RELOAD
+ coopMatLoad(ma,a,0,K,gl_CooperativeMatrixLayoutRowMajor);
+ coopMatLoad(mb,b,0,N,gl_CooperativeMatrixLayoutRowMajor);
+#endif
+ [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopMatMulAdd(ma,mb,acc[c]);
+ }
+ [[unroll]]for(uint c=0;c<CHAINS;c++)coopMatStore(acc[c],d,(gl_WorkGroupID.x*CHAINS+c)*M*N,N,gl_CooperativeMatrixLayoutRowMajor);
+}

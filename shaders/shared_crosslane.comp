@@ -1,0 +1,42 @@
+#version 450
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+layout(local_size_x_id=0) in;
+layout(constant_id=1) const uint COUNT=1024;
+layout(constant_id=2) const uint STRIDE=1;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=3) writeonly buffer D { float d[]; };
+layout(binding=0) readonly buffer A { float a[]; };
+shared T data[COUNT];
+void main(){
+ uint l=gl_LocalInvocationID.x,w=gl_WorkGroupSize.x;
+ for(uint i=l;i<COUNT;i+=w){
+#if WIDTH==1
+ data[(i+1)%COUNT]=T(a[(i+1)%COUNT]);
+#else
+ T x;for(uint v=0;v<WIDTH;v++)x[v]=S(a[((i+1)%COUNT)*WIDTH+v]);data[(i+1)%COUNT]=x;
+#endif
+ }
+ memoryBarrierShared();barrier();
+ T sum=T(0.0);
+ for(uint t=0;t<p.loops;t++){
+#if OP==0
+  uint idx=(l*STRIDE+t*w)%COUNT;
+  // Multiple cross-lane addresses; accumulation kept in FP32 below via output
+  // variants use bounded loops to avoid half overflow.
+  sum+=data[idx];
+#else
+  T v=data[((l+1)%w)*STRIDE];
+  memoryBarrierShared();barrier();
+  data[l*STRIDE]=v;
+  memoryBarrierShared();barrier();
+#endif
+ }
+#if OP!=0
+ sum=data[l*STRIDE];
+#endif
+#if WIDTH==1
+ d[gl_GlobalInvocationID.x]=float(sum);
+#else
+ for(uint v=0;v<WIDTH;v++)d[gl_GlobalInvocationID.x*WIDTH+v]=float(sum[v]);
+#endif
+}

@@ -1,0 +1,146 @@
+# Methodology
+
+Each microbenchmark isolates one hardware resource, saturates it, prevents the compiler
+from removing or folding the work, validates the result, and counts work with a fixed
+formula. This page describes each family, why it is built the way it is, and the
+pitfalls it guards against.
+
+## Common rules
+
+**Enough independent work (Little's law).** A resource is saturated only when
+`independent operations in flight ≥ latency × throughput`. Parallelism comes from many
+invocations (TLP) and from independent chains inside an invocation (ILP); sweeps over
+chains, vector width, workgroup size and group count find where the device saturates.
+
+**The compiler must not cheat.** Inputs come from buffers (not constants), results are
+stored, each chain uses different operands, and workgroup-memory accesses are marked
+SPIR-V `Volatile`. Every variant's SPIR-V is checked at build time against exact
+designed counts (FMA, dot, cooperative-matrix ops, loads/stores per storage class,
+barriers, volatile accesses) — see `igpu_roofline/spirv_audit.py`. Driver statistics
+and ISA are checked on the device (see *Verifying the code*). One real failure mode
+this caught: a chain of affine FMAs with uniform coefficients (`x = x*a + b`) was
+composed into a single FMA by a driver compiler, which inflated the ERT plateau 10×;
+the ERT kernel therefore uses the Horner form `y = y*x + a` with per-element `x`.
+
+**Validate.** The runner recomputes every result on the CPU (exactly for integer and
+memory kernels; with a relative tolerance for float reductions whose summation order
+differs). A configuration that fails validation is recorded but never used.
+
+**Count work with fixed formulas.** FMA = 2 FLOP; int8 dot4 = 8 integer ops; matrix
+multiply-add = 2·M·N·K. Address arithmetic, loop control and operand recurrences are
+not counted, so rates are conservative. Bytes are shader-logical bytes
+(BabelStream conventions), never physical DRAM traffic.
+
+**Time on the GPU.** A timestamp pair brackets each command buffer. The loop count is
+calibrated so a dispatch takes ≥ 2 ms; short dispatches are batched in one command
+buffer (with barriers between them). Reported per configuration: median and minimum
+("best", the STREAM/BabelStream convention) of 21 samples.
+
+**Differential timing.** Samples at L and L/2 loop iterations are interleaved; the
+median paired difference gives the per-loop cost with fixed per-dispatch cost (launch,
+buffer fills, write-back) removed. This matters most for short or latency-bound
+kernels, where fixed cost can exceed half of a dispatch.
+
+**Warm-up.** Without pinned clocks, a short run inherits the clock state left by the
+previous configuration (observed: the same kernel at 7 GB/s or 33 GB/s depending on
+what ran before). Every configuration therefore runs its own dispatch for a fixed time
+(0.25 s in `quick`, 1 s otherwise) before sampling, and GPU clocks are recorded.
+
+**Buffers.** Operands live in DEVICE_LOCAL memory that is not host-visible when the
+driver offers such a type; data moves through host-visible staging copies outside
+timing. (Host-visible coherent+cached memory can be IO-coherent, i.e. snooped, and
+slower; the memory-type control measures the difference directly.)
+
+## Families
+
+**FMA (`alu_*`).** Each invocation runs `chains` independent FMA dependency chains,
+unrolled 16×, on scalars or vectors. Operands are bounded (|a| < 1) so values neither
+overflow nor go denormal; the CPU reference replays the exact FMA sequence, including
+fp16 rounding. The chains × width grid shows how much ILP the device needs and where
+register pressure (spills, occupancy) starts to hurt.
+
+**int8 dot (`dot8_*`).** `dotPacked4x8EXT` with an operand recurrence (`v = (a + x) &
+0x07070707`) so the dot cannot be hoisted out of the loop; the recurrence is shared by
+8 independent dots so its cost per counted dot is small.
+
+**Cooperative matrix (`matrix_*`).** One subgroup multiplies A and B loaded once and
+kept in registers, accumulating into `chains` independent accumulators. This is the
+matrix-unit compute roof, not a GEMM (real GEMMs must also feed operands). Only
+shapes and component types the driver reports are run.
+
+**Global memory (`mem_*`).** BabelStream's copy, mul (scale), add, triad and dot
+(workgroup tree reduction), plus pure read and pure write; grid-stride, coalesced
+accesses; working sets ≥ 256 MiB define the DRAM roof (larger than any on-chip cache).
+`_volatile` variants are a control for compiler interference.
+
+**Cache (`sweep-cache`).** The read kernel over working sets from 4 KiB to 512 MiB,
+re-reading the same data; small sets use replicated workgroups so parallelism stays
+high. Knees move with workgroup size, so they are not capacities — use the pointer
+chase for that.
+
+**Shared memory (`sharedbw_*`).** After one fill and one barrier, each invocation reads
+with `accumulators` independent accumulators (throughput-bound, not bound by one add
+chain), or performs pure writes. Stride sweeps (1, 2, 4, …, 32, 33, 64, 65) expose bank
+conflicts (odd strides should recover under a simple modulo bank mapping); the
+accumulator sweep (4–32) shows whether shared memory is saturated. The fill uses a
+rotated producer so no lane reads its own store. Single-accumulator reads and
+read/write with two barriers per step are kept as controls.
+
+**Latency (`pchase`).** One invocation follows a host-built chain `j = next[j]`
+(Wong et al. 2010; Mei & Chu 2017; Jia et al. 2018):
+- *capacity*: a random single cycle (Sattolo) of 64 B-spaced nodes over 1 KiB–256 MiB;
+- *TLB reach*: one node per page, random order;
+- *line size* (Saavedra): sequential chains of growing stride over a 1 MiB and a 64 MiB array.
+Each dispatch walks the whole chain (≥ 2^16 loads so fixed cost is small, ≤ 2^20 so a
+single serial dispatch stays well below the driver's GPU watchdog — 2^25 serial loads
+caused `VK_ERROR_DEVICE_LOST`). Latency = differential per-loop time / 16.
+
+**ERT (`ert_f*`).** Empirical Roofline Toolkit form: load 16 B, F dependent FMAs per
+component, store 16 B, for F = 1…1024 (AI 0.25–256 FLOP/byte). The measured curve
+shows the real transition from bandwidth-bound to compute-bound and cross-checks the
+separately measured roofs.
+
+**Memory type (`control-memory-type`).** Read, write, copy and triad at 256 MiB with
+DEVICE_LOCAL vs host-visible coherent buffers, arms alternating order, three repeats.
+
+**Sustained.** The fastest configuration of each roof runs for 300 s after a cooldown;
+the last-60 s median is reported with a steadiness test (halves within 5 %, CV ≤ 10 %)
+and the GPU-timestamp duty cycle. Sustained values replace short-run roofs only with
+three batches (`gold`).
+
+## Verifying the code
+
+1. **SPIR-V ledger** — exact static counts per variant, asserted at build time.
+2. **Driver statistics** — `VK_KHR_pipeline_executable_properties`: registers, spills,
+   instruction counts (e.g. Mali reports spills and FMA cycles, Adreno instruction
+   classes), plus ISA text when the driver provides it (e.g. Samsung Xclipse).
+3. **Offline compilers** (optional) — `malioc` for Mali (registers, spills, occupancy);
+   `rga` for AMD RDNA (ISA, VGPRs; an approximation for vendor drivers).
+
+A spilling variant stays in the results (spills only make it slower, so its value is
+still achievable) but is marked.
+
+## Reading the roofline
+
+`attainable(AI) = min(compute roof, bandwidth × AI)`, with `AI = ops / bytes of that
+memory level`. Each memory level has its own roof (hierarchical roofline); the ridge
+point `compute / bandwidth` is the intensity a kernel needs to become compute-bound at
+that level. To place your own kernel: count its ops (FMA = 2) and its bytes per level,
+compute AI, and compare its measured rate to `min(...)`.
+
+## Limits
+
+- No pinned clocks unless you pin them; no hardware counters (physical DRAM/L2 bytes
+  unknown); no vendor theoretical peaks. Results are achievable rates.
+- Static instruction counts are per loop body; malioc's cycle totals are not
+  loop-weighted and are not used to call a bottleneck.
+
+## References
+
+McCalpin, STREAM; Deakin et al., BabelStream; Lo et al., Empirical Roofline Toolkit
+(LBNL); Williams, Waterman, Patterson, "Roofline" (CACM 2009); Saavedra & Smith,
+"Measuring cache and TLB performance" (1995); Wong et al., "Demystifying GPU
+microarchitecture through microbenchmarking" (ISPASS 2010); Mei & Chu, "Dissecting GPU
+memory hierarchy through microbenchmarking" (TPDS 2017); Jia et al., "Dissecting the
+NVIDIA Volta GPU architecture via microbenchmarking" (2018); Google uVkCompute;
+clpeak; vkpeak.

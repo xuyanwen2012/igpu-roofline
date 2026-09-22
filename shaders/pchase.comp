@@ -1,0 +1,16 @@
+#version 450
+// v2 load-to-use latency by pointer chasing (Wong et al. 2010; Mei & Chu 2017;
+// Jia et al. 2018). One invocation follows a host-built chain j = next[j]; each
+// load depends on the previous one, so time / accesses is the average latency.
+#extension GL_EXT_control_flow_attributes : require
+layout(local_size_x=1) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+layout(binding=0) readonly buffer A { uint next[]; };
+layout(binding=3) writeonly buffer D { uint d[]; };
+void main(){
+ uint j=0;
+ for(uint i=0;i<p.loops;i++){
+  [[unroll]]for(uint k=0;k<16;k++)j=next[j];
+ }
+ d[0]=j;
+}

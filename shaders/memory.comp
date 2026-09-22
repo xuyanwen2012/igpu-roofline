@@ -1,0 +1,67 @@
+#version 450
+// Coalesced vector traversal adapted from Google uVkCompute copy_storage_buffer;
+// Copyright Google LLC, Apache-2.0. Added read/write/STREAM and runtime loops.
+// v2: BabelStream kernel set (Copy/Mul/Add/Triad/Dot). VOLATILE is empty for the
+// primary measurement (outputs are stored, so loads cannot be removed) and
+// "volatile" only for the v1-compatible control variant.
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+#ifndef WIDTH
+#define WIDTH 4
+#endif
+#ifndef VOLATILE
+#define VOLATILE
+#endif
+#if WIDTH==1
+#define V float
+#elif WIDTH==2
+#define V vec2
+#else
+#define V vec4
+#endif
+layout(binding=0) readonly VOLATILE buffer A { V a[]; };
+layout(binding=1) readonly VOLATILE buffer B { V b[]; };
+layout(binding=3) writeonly VOLATILE buffer D { V d[]; };
+#if OP==6
+shared V partial[256];
+#endif
+void main(){
+ uint id=gl_GlobalInvocationID.x, nt=gl_NumWorkGroups.x*gl_WorkGroupSize.x;
+ uint base_id=id;
+#if OP==0
+ nt/=p.seed; base_id=id%nt;
+#endif
+ V sum=V(0.0);
+ for(uint t=0;t<p.loops;t++) {
+  for(uint i=base_id;i<p.n;i+=nt){
+#if OP==0
+   sum+=a[i+p.offset];
+#elif OP==1
+   d[i+p.offset]=V(float((i+p.seed)&127u));
+#elif OP==2
+   d[i+p.offset]=a[i+p.offset];
+#elif OP==3
+   d[i+p.offset]=a[i+p.offset]*2.0;
+#elif OP==4
+   d[i+p.offset]=a[i+p.offset]+b[i+p.offset];
+#elif OP==5
+   d[i+p.offset]=fma(a[i+p.offset],V(2.0),b[i+p.offset]);
+#else
+   sum=fma(a[i+p.offset],b[i+p.offset],sum);
+#endif
+  }
+ }
+#if OP==0
+ if(base_id<p.n)d[id]=sum;
+#elif OP==6
+ // BabelStream Dot: per-workgroup tree reduction, one partial per workgroup.
+ uint l=gl_LocalInvocationID.x;
+ partial[l]=sum;
+ barrier();
+ for(uint s=gl_WorkGroupSize.x/2;s>0;s>>=1){
+  if(l<s)partial[l]+=partial[l+s];
+  barrier();
+ }
+ if(l==0)d[gl_WorkGroupID.x]=partial[0];
+#endif
+}

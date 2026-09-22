@@ -1,0 +1,8 @@
+build/
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+results/
+device-overrides/*.local.yaml
+.DS_Store
