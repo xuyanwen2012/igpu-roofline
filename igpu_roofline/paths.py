@@ -17,6 +17,15 @@ INSPECT = ANDROID_BUILD / "inspect"
 # Where the runner lives on an Android device.
 REMOTE_DIR = "/data/local/tmp/igpu-roofline"
 
+HOST_BUILD = BUILD / "host"
+
+
+def use_target(target: str) -> None:
+    """Point RUNNER/RUNNER_SUSTAINED/INSPECT at the Android or host (Linux iGPU) build."""
+    global RUNNER, RUNNER_SUSTAINED, INSPECT
+    build = HOST_BUILD if target == "host" else ANDROID_BUILD
+    RUNNER, RUNNER_SUSTAINED, INSPECT = build / "roofline", build / "roofline_sustained", build / "inspect"
+
 
 def results_root(override: str | None = None) -> pathlib.Path:
     path = override or os.environ.get("IGPU_ROOFLINE_RESULTS") or "~/igpu-roofline-results"

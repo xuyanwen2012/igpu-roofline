@@ -15,7 +15,7 @@ def _load_overrides(path: str | None) -> dict:
 
 def cmd_build(args):
     from .build import build
-    build(args.jobs)
+    build(args.jobs, host=args.host, shaders_too=not args.no_shaders, vulkan_include=args.vulkan_include)
 
 
 def cmd_run(args):
@@ -23,6 +23,20 @@ def cmd_run(args):
     from .session import Session
     from .stages import run_plan
 
+    if args.local:
+        from .device import LocalDevice
+        paths.use_target("host")
+        if not paths.RUNNER.exists() or not paths.SHADER_MANIFEST.exists():
+            sys.exit("Host runner not built yet: run `igpu-roofline build --host` first.")
+        device = LocalDevice(args.local_name, _load_overrides(args.overrides))
+        session = Session(device, paths.results_root(args.results), plan=args.plan)
+        print(f"Plan '{args.plan}' on local GPU ({device.serial}); results in {session.out}", flush=True)
+        run_plan(session, args.plan)
+        if not args.no_report:
+            from .report import analyze
+            analyze(session.out)
+            print(f"Report: {session.out / 'report' / 'REPORT.md'}")
+        return
     if not args.device:
         devices = list_adb_devices()
         if not devices:
@@ -59,10 +73,15 @@ def main(argv=None):
 
     b = sub.add_parser("build", help="compile shaders (with SPIR-V ledger checks) and the Android runner")
     b.add_argument("-j", "--jobs", type=int, default=8)
+    b.add_argument("--host", action="store_true", help="build the runner for this host's GPU instead of Android")
+    b.add_argument("--no-shaders", action="store_true", help="reuse build/shaders (SPIR-V compiled on another machine)")
+    b.add_argument("--vulkan-include", help="directory with vulkan/vulkan.h when system headers are missing")
     b.set_defaults(func=cmd_build)
 
     r = sub.add_parser("run", help="measure a device (resumable); without --device, list devices")
     r.add_argument("--device", help="adb serial")
+    r.add_argument("--local", action="store_true", help="measure this host's own GPU (Linux iGPU) instead of an adb device")
+    r.add_argument("--local-name", help="results folder name for --local (default: <hostname>-<gpu>)")
     r.add_argument("--plan", choices=["quick", "standard", "gold"], default="quick",
                    help="quick ~10 min; standard ~3 h (1 sustained batch); gold ~7 h (3 sustained batches)")
     r.add_argument("--overrides", help="optional device override YAML (see docs/HOW-TO-RUN.md)")

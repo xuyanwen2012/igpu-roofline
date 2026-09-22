@@ -327,9 +327,10 @@ class Guard:
         if not self._guarded(tag):
             return
         d, waited, t0 = self.s.device, 0, time.time()
+        pace = getattr(d, "pace", PACE)  # devices may set their own thresholds
         temp = d.gpu_temp_c()
-        if temp is not None and temp > PACE["start_above_c"]:
-            while temp is not None and temp > PACE["resume_below_c"] and time.time() - t0 < PACE["max_wait_s"]:
+        if temp is not None and temp > pace["start_above_c"]:
+            while temp is not None and temp > pace["resume_below_c"] and time.time() - t0 < pace["max_wait_s"]:
                 time.sleep(10)
                 temp = d.gpu_temp_c()
             waited = time.time() - t0
