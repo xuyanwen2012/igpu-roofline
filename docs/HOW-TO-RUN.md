@@ -11,8 +11,13 @@
 | adb | Android platform-tools |
 
 ```sh
-uv run igpu-roofline build
+git clone https://github.com/xuyanwen2012/igpu-roofline && cd igpu-roofline
+uv sync                      # creates .venv from uv.lock
+uv run igpu-roofline build   # shaders + Android runner
 ```
+
+Every command below is `uv run ...`; with a plain pip install, drop the `uv run` prefix
+(or use `.venv/bin/igpu-roofline`).
 
 `build` compiles every shader variant, checks each against its SPIR-V ledger (the build
 fails on any mismatch), and cross-compiles the runner for arm64 Android.
@@ -20,7 +25,7 @@ fails on any mismatch), and cross-compiles the runner for arm64 Android.
 ## Device setup
 
 1. Enable developer options and USB debugging; accept the host key.
-2. `igpu-roofline run` lists connected devices.
+2. `uv run igpu-roofline run` (no `--device`) lists connected devices.
 3. Keep the device plugged in, screen allowed to turn off, at room temperature, with
    nothing else running. Results record temperatures and GPU clocks.
 
