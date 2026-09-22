@@ -64,7 +64,7 @@ def main(argv=None):
     r = sub.add_parser("run", help="measure a device (resumable); without --device, list devices")
     r.add_argument("--device", help="adb serial")
     r.add_argument("--plan", choices=["quick", "standard", "gold"], default="quick",
-                   help="quick ~20 min; standard ~2.5 h (1 sustained batch); gold ~5-6 h (3 sustained batches)")
+                   help="quick ~10 min; standard ~3 h (1 sustained batch); gold ~7 h (3 sustained batches)")
     r.add_argument("--overrides", help="optional device override YAML (see docs/HOW-TO-RUN.md)")
     r.add_argument("--no-report", action="store_true", help="skip report generation at the end")
     r.set_defaults(func=cmd_run)

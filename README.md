@@ -37,16 +37,16 @@ See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
 uv sync                                    # create .venv and install (uv.lock is committed)
 uv run igpu-roofline build                 # shaders (+ ledger checks) and the Android runner
 uv run igpu-roofline run                   # list connected devices
-uv run igpu-roofline run --device <serial> # quick plan (~20 min), then writes the report
+uv run igpu-roofline run --device <serial> # quick plan (~10 min), then writes the report
 ```
 
 Plans:
 
 | plan | contents | time |
 |---|---|---|
-| `quick` (default) | every family at its most informative settings, 0.25 s warm-up per config | ~20 min |
-| `standard` | all sweeps, 1 s warm-up per config, one 300 s sustained run per roof | ~2.5 h |
-| `gold` | as standard with three sustained batches (repeatability) | ~5–6 h |
+| `quick` (default) | every family at its most informative settings, 0.25 s warm-up per config | ~10 min |
+| `standard` | all sweeps, 1 s warm-up per config, one 300 s sustained run per roof | ~3 h |
+| `gold` | as standard with three sustained batches (repeatability) | ~7 h |
 
 Runs are resumable: re-run the same command and finished configurations are skipped.
 Results go to `~/igpu-roofline-results/<serial>/` (override with `--results` or
