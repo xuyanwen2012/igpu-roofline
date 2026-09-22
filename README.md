@@ -33,11 +33,11 @@ See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
 ## Quick start
 
 ```sh
-# prerequisites: Android NDK (r26+), CMake, Vulkan SDK tools (glslc, spirv-val/dis/as), Python 3.10+, adb
-python3 -m venv .venv && .venv/bin/pip install -e .
-.venv/bin/igpu-roofline build                      # shaders (+ ledger checks) and the Android runner
-.venv/bin/igpu-roofline run                        # list connected devices
-.venv/bin/igpu-roofline run --device <serial>      # quick plan (~20 min), then writes the report
+# prerequisites: uv, Android NDK (r26+), CMake, Vulkan SDK tools (glslc, spirv-val/dis/as), adb
+uv sync                                    # create .venv and install (uv.lock is committed)
+uv run igpu-roofline build                 # shaders (+ ledger checks) and the Android runner
+uv run igpu-roofline run                   # list connected devices
+uv run igpu-roofline run --device <serial> # quick plan (~20 min), then writes the report
 ```
 
 Plans:
@@ -50,7 +50,8 @@ Plans:
 
 Runs are resumable: re-run the same command and finished configurations are skipped.
 Results go to `~/igpu-roofline-results/<serial>/` (override with `--results` or
-`$IGPU_ROOFLINE_RESULTS`); regenerate reports with `igpu-roofline report`.
+`$IGPU_ROOFLINE_RESULTS`); regenerate reports any time with `uv run igpu-roofline report`.
+Tests: `uv run --group dev pytest`.
 
 ## Output
 

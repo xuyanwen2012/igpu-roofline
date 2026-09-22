@@ -4,14 +4,14 @@
 
 | need | notes |
 |---|---|
-| Python ≥ 3.10 | `python3 -m venv .venv && .venv/bin/pip install -e .` (add `'.[test]'` for pytest) |
+| [uv](https://docs.astral.sh/uv/) | `uv sync` creates `.venv` from `uv.lock`; run everything with `uv run ...`. (Plain pip works too: `pip install -e .`) |
 | Android NDK r26+ | found via `$ANDROID_NDK_HOME`, `~/Library/Android/sdk/ndk/*`, `~/Android/Sdk/ndk/*` or `~/android-ndk-*` |
 | CMake ≥ 3.20 | |
 | glslc, spirv-val, spirv-dis, spirv-as | from the Vulkan SDK, or `brew install shaderc spirv-tools` / distro packages |
 | adb | Android platform-tools |
 
 ```sh
-.venv/bin/igpu-roofline build
+uv run igpu-roofline build
 ```
 
 `build` compiles every shader variant, checks each against its SPIR-V ledger (the build
@@ -30,9 +30,9 @@ cooperative matrix) simply skip the corresponding variants.
 ## Running
 
 ```sh
-.venv/bin/igpu-roofline run --device <serial>                  # quick
-.venv/bin/igpu-roofline run --device <serial> --plan standard
-.venv/bin/igpu-roofline run --device <serial> --plan gold
+uv run igpu-roofline run --device <serial>                  # quick
+uv run igpu-roofline run --device <serial> --plan standard
+uv run igpu-roofline run --device <serial> --plan gold
 ```
 
 - **Resume**: rerun the same command. Finished configurations are skipped. If a run
@@ -42,7 +42,7 @@ cooperative matrix) simply skip the corresponding variants.
 - **Devices on another machine**: run the tool on the machine the device is plugged
   into, or point adb at a forwarded adb server with `ADB_SERVER_SOCKET=tcp:<host>:5037`.
 - **Reports**: written at the end of `run`; regenerate any time with
-  `igpu-roofline report [--device <serial>]` (no device needed).
+  `uv run igpu-roofline report [--device <serial>]` (no device needed).
 
 ## Pinning clocks (optional, rooted devices)
 
