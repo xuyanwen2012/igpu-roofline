@@ -112,6 +112,14 @@ class AdbDevice:
         except ValueError:
             return None
 
+    def gpu_temp_c(self) -> float | None:
+        """Hottest current GPU sensor from the thermal HAL (None if the device reports none)."""
+        text = self.shell("dumpsys thermalservice", 30).stdout
+        current = text.split("Current temperatures from HAL:", 1)[-1].split("Current cooling", 1)[0]
+        temps = [float(m[1]) for m in re.finditer(r"Temperature\{mValue=([-\d.]+), mType=\d+, mName=([^,]+),", current)
+                 if "gpu" in m[2].lower()]
+        return max(temps) if temps else None
+
     def telemetry(self) -> dict:
         r = self.shell("dumpsys thermalservice; dumpsys battery; cat /proc/meminfo; cat /proc/loadavg", 30)
         text = r.stdout

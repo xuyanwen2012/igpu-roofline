@@ -31,6 +31,7 @@ class Session:
         self.manifest = json.loads(paths.SHADER_MANIFEST.read_text())
         self.runner_sha = paths.digest(paths.RUNNER)
         self.caps = None
+        self.guard = None  # stages.Guard: thermal pacing and sentinel checks around run()
         cap_file = self.out / "capabilities.json"
         if cap_file.exists():
             self.caps = json.loads(cap_file.read_text())
@@ -124,6 +125,8 @@ class Session:
         if raw.exists():
             raise RuntimeError(f"Unfinished raw file {raw} is kept for inspection; move it aside to re-measure")
 
+        if self.guard:
+            self.guard.before(tag)
         d = self.device
         (folder / f"{key}.config.json").write_text(json.dumps(c, indent=2))
         d.push(folder / f"{key}.config.json", f"{d.remote}/config.json")
@@ -195,4 +198,6 @@ class Session:
             raise RuntimeError(f"GPU fault counter increased during {key}; stop and investigate")
         status = "PASS" if row["accepted"] else "REJECT"
         print(f"{d.serial} {tag} {c['name']} {status} {row.get('median_seconds', 0) * 1e3:.4f} ms", flush=True)
+        if self.guard:
+            self.guard.after(tag)
         return row

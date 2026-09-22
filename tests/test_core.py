@@ -205,3 +205,44 @@ def test_ert_ledger_chunking_and_ilp():
 def test_plans_confirm_roofs():
     assert PLANS["quick"]["confirm"] == dict(top=1, reps=3)
     assert all(PLANS[p]["confirm"] == dict(top=3, reps=5) for p in ("standard", "gold"))
+
+
+# --- device-state guard -------------------------------------------------------------------
+import json as _json  # noqa: E402
+import types  # noqa: E402
+
+from igpu_roofline.device import AdbDevice  # noqa: E402
+from igpu_roofline.stages import Guard  # noqa: E402
+
+THERMAL = """Cached temperatures:
+\tTemperature{mValue=99.0, mType=1, mName=GPU, mStatus=0}
+Current temperatures from HAL:
+\tTemperature{mValue=37.5, mType=0, mName=CPU, mStatus=0}
+\tTemperature{mValue=61.1, mType=1, mName=GPU, mStatus=0}
+Current cooling devices from HAL:
+"""
+
+
+def test_gpu_temperature_reads_current_hal_section():
+    dev = AdbDevice.__new__(AdbDevice)
+    dev.shell = lambda *a, **k: types.SimpleNamespace(stdout=THERMAL)
+    assert dev.gpu_temp_c() == 61.1
+
+
+def test_quarantine_moves_only_results_after_last_good_sentinel(tmp_path):
+    def result(stage, key, utc):
+        d = tmp_path / stage
+        d.mkdir(exist_ok=True)
+        (d / f"{key}.telemetry.json").write_text(_json.dumps([dict(utc=utc)]))
+        (d / f"{key}.json").write_text("{}")
+        (d / f"{key}.jsonl").write_text("")
+    result("sweep-compute", "early", "2026-01-01T00:00:00+00:00")
+    result("sweep-compute", "late", "2026-01-01T00:10:00+00:00")
+    result("probe", "sentinel", "2026-01-01T00:11:00+00:00")
+    g = Guard.__new__(Guard)
+    g.s = types.SimpleNamespace(out=tmp_path)
+    assert g.quarantine("2026-01-01T00:05:00+00:00") == 1
+    assert (tmp_path / "sweep-compute" / "early.json").exists()
+    assert not (tmp_path / "sweep-compute" / "late.json").exists()
+    assert (tmp_path / "probe" / "sentinel.json").exists()
+    assert len(list((tmp_path / "superseded").glob("degraded-*/sweep-compute/late.*"))) == 3

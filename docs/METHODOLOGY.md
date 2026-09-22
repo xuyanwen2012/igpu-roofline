@@ -172,9 +172,18 @@ exactly.
 **Device-state sentinel.** Without a readable GPU clock, a phone can change state
 invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
 2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
-measured before and after every stage (and every 25 runs during confirmation, and before
-every sustained batch). REPORT.md flags stages whose sentinel is below 90 % of the
-session best; re-measure those.
+measured before and after every stage, every 20 configurations inside a stage, and before
+every sustained batch. If it falls below 90 % of the best sentinel this runner has seen on
+this device, the run stops: every result measured since the last good sentinel is moved
+to `superseded/degraded-<utc>/`, the workflow state becomes `paused_device_degraded`,
+and rerunning the same command after a reboot and cool-down resumes and re-measures
+them. REPORT.md still lists every sentinel reading.
+
+**Thermal pacing.** On that phone the slow state began while the GPU was at 61-66 C
+under heavy cooperative-matrix load and lasted until reboot. Before every short-run
+configuration the GPU temperature is read from the thermal HAL; above 50 C the run
+waits (up to 10 min) for 45 C. Waits are logged in `pacing.jsonl`. Sustained stages are
+not paced.
 
 ## Limits
 
