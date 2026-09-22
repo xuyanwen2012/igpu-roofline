@@ -48,6 +48,11 @@ Plans:
 | `standard` | all sweeps, 1 s warm-up per config, one 300 s sustained run per roof | ~3 h |
 | `gold` | as standard with three sustained batches (repeatability) | ~7 h |
 
+`quick` is a screening plan: it samples each axis coarsely, so compute and DRAM roofs
+land within a few percent of a full sweep, while shared-memory roofs (very sensitive to
+workgroup and allocation size) can read ~20% low. Use `standard` or `gold` for roofs you
+will quote.
+
 Runs are resumable: re-run the same command and finished configurations are skipped.
 Results go to `~/igpu-roofline-results/<serial>/` (override with `--results` or
 `$IGPU_ROOFLINE_RESULTS`); regenerate reports any time with `uv run igpu-roofline report`.

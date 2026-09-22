@@ -134,9 +134,11 @@ def shared(s, plan):
         if quick and not (m.get("kind") == "bw" and m["width"] == 4 and m["accumulators"] == 8):
             continue
         scalar = 2 if m["dtype"] == "fp16" else 4
-        # Workgroup size matters as much as stride here (up to 5x on some GPUs), so even
-        # the quick plan sweeps a few workgroup sizes.
-        points = {(64, max_shared, st) for st in strides} | {(wg, max_shared, 1) for wg in (128, 256)}
+        # Workgroup size and allocation size matter as much as stride (together up to 5x
+        # on some GPUs: a small allocation keeps more workgroups resident), so the quick
+        # plan sweeps both coarsely.
+        points = {(64, max_shared, st) for st in strides}
+        points |= {(wg, size, 1) for wg in (64, 128, 256) for size in (4096, max_shared)}
         if not quick:
             points |= {(wg, 4096, 1) for wg in (32, 64, 128, 256)}
             points |= {(64, size, 1) for size in (1024, 2048, 4096, 8192, 16384, max_shared)}
