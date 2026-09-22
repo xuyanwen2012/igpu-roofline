@@ -103,7 +103,7 @@ separately measured roofs.
 **Memory type (`control-memory-type`).** Read, write, copy and triad at 256 MiB with
 DEVICE_LOCAL vs host-visible coherent buffers, arms alternating order, three repeats.
 
-**Sustained.** The fastest configuration of each roof runs for 300 s after a cooldown;
+**Sustained.** The confirmed configuration of each roof (see below) runs for 300 s after a cooldown;
 the last-60 s median is reported with a steadiness test (halves within 5 %, CV ≤ 10 %)
 and the GPU-timestamp duty cycle. Sustained values replace short-run roofs only with
 three batches (`gold`).
@@ -127,6 +127,52 @@ memory level`. Each memory level has its own roof (hierarchical roofline); the r
 point `compute / bandwidth` is the intensity a kernel needs to become compute-bound at
 that level. To place your own kernel: count its ops (FMA = 2) and its bytes per level,
 compute AI, and compare its measured rate to `min(...)`.
+
+## Roof selection and device state
+
+**Warm-up, then calibrate.** Each configuration first runs for `warmup_seconds` of wall
+clock (plan setting), *then* sizes its loop count so a sample lasts >= 5 ms
+(`target_seconds`). When a loop count is capped (bounded FP16 accumulation in matrix
+and shared-memory tests), calibration raises the dispatches per timed submission
+instead; accounting multiplies by the batch the runner actually used. A sample shorter
+than 80 % of the target is flagged `below_target_duration`.
+
+**Quality gates.** A result can define a roof only if CV <= 5 %, it is not short, and its
+differential is valid with fixed cost <= 10 % of the sample. `roof-candidates.json`
+lists faster results that were gated out and why.
+
+**Confirmation (winner's curse).** A sweep runs hundreds of configurations; its maximum
+is biased upward by noise. The `confirm` stage re-measures the top candidates of every
+roof (quick: 1 x 3, standard/gold: 3 x 5) in fresh processes, round-robin, reversing the
+order every repeat. The roof is the median of the best candidate's repeats; REPORT.md
+shows the repeat range next to the single-run sweep maximum. First-look results are a
+smoke test and never define a roof.
+
+**Launch grids.** Cooperative-matrix variants of every data type sweep 1 and 4
+subgroups per workgroup and up to 16384 workgroups (output <= 256 MiB); FMA and dot
+sweep up to 8192 workgroups. On Mali-G1 MC12 (16-lane subgroups) one subgroup per
+workgroup and <= 512 workgroups left int8 4x16x16 at 2.9 TOP/s; 16384 workgroups gave
+5.3 TOP/s. `matrix-coverage.json` lists device-supported shapes that have no compiled
+variant, so a missing shape is never skipped silently (int8 16x16x16 was missing).
+
+**ERT ILP.** ERT variants with 4, 8 and 16 independent element chains per thread; with 4
+the high-intensity plateau on Mali-G1 was an FMA-latency limit (FP32 needs ~16 chains
+there). Bodies with F > 32 run as 32 unrolled steps per loop trip; the fully unrolled
+body is kept as a control (same speed on Mali-G1, so code size was not the limit).
+
+**Line size.** Every pointer-chase dispatch walks its chain twice; the L vs L/2
+differential is one warm pass. One pass per dispatch measured cold lines.
+
+**Shared-memory FP16.** Accumulators stay FP16; the final sum of the accumulators is
+FP32 (outside the timed loop), so results remain exact integers and are validated
+exactly.
+
+**Device-state sentinel.** Without a readable GPU clock, a phone can change state
+invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
+2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
+measured before and after every stage (and every 25 runs during confirmation, and before
+every sustained batch). REPORT.md flags stages whose sentinel is below 90 % of the
+session best; re-measure those.
 
 ## Limits
 
