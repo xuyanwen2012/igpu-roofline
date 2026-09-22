@@ -168,14 +168,16 @@ from igpu_roofline.stages import QUALITY, matrix_grid, quality  # noqa: E402
 
 
 def _row(**kw):
-    r = dict(accepted=True, cv=0.01, below_target_duration=False, differential=dict(valid=True, fixed_fraction=0.02))
+    r = dict(accepted=True, cv=0.01, n=21, below_target_duration=False, differential=dict(valid=True, fixed_fraction=0.02))
     r.update(kw)
     return r
 
 
 def test_quality_gates():
     assert quality(_row()) == []
-    assert "cv" in quality(_row(cv=QUALITY["max_cv"] * 10))
+    assert quality(_row(cv=0.10)) == []                    # 10 % scatter, 21 samples: median SE ~2.7 %
+    assert "noisy_median" in quality(_row(cv=0.53))        # the old int8 roof
+    assert "noisy_median" in quality(_row(cv=0.10, n=5))
     assert "short" in quality(_row(below_target_duration=True))
     assert "fixed_cost" in quality(_row(differential=dict(valid=True, fixed_fraction=0.67)))
     assert "fixed_cost" in quality(_row(differential=dict(valid=False, fixed_fraction=0.0)))

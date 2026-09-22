@@ -27,9 +27,17 @@ PLANS = {
                  sustain=dict(batches=3, duration=300, cooldown=90)),
 }
 
-# A result may define a roof only if it is quiet, long enough and not dominated by
-# fixed dispatch cost (see quality()).
-QUALITY = dict(max_cv=0.05, max_fixed_fraction=0.10)
+# A result may define a roof only if its median is precise, its samples are long enough
+# and it is not dominated by fixed dispatch cost (see quality()). The gate is on the
+# standard error of the median (~1.2533 * CV / sqrt(n)), not on per-sample CV: DRAM and
+# shared-memory samples on phones scatter 6-14 % while a 21-sample median stays ~3 %.
+QUALITY = dict(max_median_se=0.03, max_fixed_fraction=0.10)
+
+
+def median_se(r: dict) -> float:
+    """Relative standard error of the sample median (normal approximation)."""
+    n = r.get("n") or 0
+    return 1.2533 * r.get("cv", 1) / n ** 0.5 if n > 1 else 1.0
 
 
 def is_control(c: dict) -> bool:
@@ -279,8 +287,8 @@ def quality(r: dict) -> list[str]:
     why = []
     if not r.get("accepted"):
         why.append("rejected")
-    if r.get("cv", 1) > QUALITY["max_cv"]:
-        why.append("cv")
+    if median_se(r) > QUALITY["max_median_se"]:
+        why.append("noisy_median")
     if r.get("below_target_duration"):
         why.append("short")
     d = r.get("differential")

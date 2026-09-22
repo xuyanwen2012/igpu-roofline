@@ -137,8 +137,10 @@ and shared-memory tests), calibration raises the dispatches per timed submission
 instead; accounting multiplies by the batch the runner actually used. A sample shorter
 than 80 % of the target is flagged `below_target_duration`.
 
-**Quality gates.** A result can define a roof only if CV <= 5 %, it is not short, and its
-differential is valid with fixed cost <= 10 % of the sample. `roof-candidates.json`
+**Quality gates.** A result can define a roof only if the standard error of its median
+(~1.2533 x CV / sqrt(n)) is <= 3 %, it is not short, and its differential is valid with
+fixed cost <= 10 % of the sample. The gate is on the median, not on per-sample CV: phone
+DRAM and shared-memory samples scatter 6-14 % while the 21-sample median stays within ~3 %. `roof-candidates.json`
 lists faster results that were gated out and why.
 
 **Confirmation (winner's curse).** A sweep runs hundreds of configurations; its maximum

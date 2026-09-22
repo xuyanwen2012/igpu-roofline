@@ -243,7 +243,7 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
     lines += ["", "## Roof confirmation", "",
               "Each roof's top candidates were re-measured in fresh processes, round-robin with alternating order. "
               "The roof is the median of the best candidate's repeats; the sweep maximum (a single run) is shown for "
-              "comparison. Roofs without a quality-passing candidate (CV <= 5 %, not short, fixed cost <= 10 %) are "
+              "comparison. Roofs without a quality-passing candidate (standard error of the median <= 3 %, not short, fixed cost <= 10 %) are "
               "marked unconfirmed.", "",
               "| roof | confirmed median | repeat range | repeats | sweep max (unconfirmed) |", "|---|---:|---:|---:|---:|"]
     for k in sorted(peak):
