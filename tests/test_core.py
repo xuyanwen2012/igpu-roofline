@@ -266,3 +266,9 @@ def test_manifest_runner_for_android_host_and_new_manifests():
     assert manifest_runner({"build/android/roofline": "a"}) == "a"
     assert manifest_runner({"build/host/roofline": "h"}) == "h"
     assert manifest_runner({"runner_sha256": "r", "build/host/roofline": "h"}) == "r"
+
+
+def test_drifting_or_unsteady_rows_are_gated():
+    assert "drifting" in quality(_row(sample_drift=2.4))       # 780M shared read: 15 -> 4.4 ms
+    assert "warmup_unsteady" in quality(_row(warmup=dict(steady=False)))
+    assert quality(_row(sample_drift=0.02, warmup=dict(steady=True))) == []

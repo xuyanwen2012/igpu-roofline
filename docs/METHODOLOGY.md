@@ -130,9 +130,13 @@ compute AI, and compare its measured rate to `min(...)`.
 
 ## Roof selection and device state
 
-**Warm-up, then calibrate.** Each configuration first runs for `warmup_seconds` of wall
-clock (plan setting), *then* sizes its loop count so a sample lasts >= 5 ms
-(`target_seconds`). When a loop count is capped (bounded FP16 accumulation in matrix
+**Calibrate, warm up at full size, re-calibrate.** Each configuration first sizes its
+loop count so a dispatch lasts >= 5 ms (`target_seconds`), then warms up with that
+dispatch for `warmup_seconds` and until the last five dispatch times agree within 3 %
+(cap 4 x `warmup_seconds`), then re-calibrates. Load-based governors key on GPU busy %:
+on a Radeon 780M, 1 s of 0.08 ms dispatches left the clock low and samples ramped from
+15 to 4.4 ms. A result whose warm-up never became steady, or whose last-third median
+differs from its first-third median by > 5 % (`sample_drift`), cannot define a roof. When a loop count is capped (bounded FP16 accumulation in matrix
 and shared-memory tests), calibration raises the dispatches per timed submission
 instead; accounting multiplies by the batch the runner actually used. A sample shorter
 than 80 % of the target is flagged `below_target_duration`.

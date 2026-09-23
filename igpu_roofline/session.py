@@ -180,6 +180,12 @@ class Session:
             row["batch_dispatches"] = batch
             row["accounting"] = accounting(dict(c, batch_dispatches=batch), samples[0]["loops"])
             row["below_target_duration"] = row["median_seconds"] < 0.8 * c.get("target_seconds", 0.005)
+            # Drift within the sample series (a clock still ramping or throttling):
+            # median of the last third relative to the first third.
+            times = [s["seconds"] for s in samples]
+            if len(times) >= 6 and not c.get("duration_seconds"):
+                third = len(times) // 3
+                row["sample_drift"] = statistics.median(times[:third]) / statistics.median(times[-third:]) - 1
             halves = {e["sample"]: e for e in events if e.get("event") == "sample_half"}
             if halves:
                 row["differential"] = differential(samples, halves)

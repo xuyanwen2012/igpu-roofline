@@ -31,7 +31,7 @@ PLANS = {
 # and it is not dominated by fixed dispatch cost (see quality()). The gate is on the
 # standard error of the median (~1.2533 * CV / sqrt(n)), not on per-sample CV: DRAM and
 # shared-memory samples on phones scatter 6-14 % while a 21-sample median stays ~3 %.
-QUALITY = dict(max_median_se=0.03, max_fixed_fraction=0.10)
+QUALITY = dict(max_median_se=0.03, max_fixed_fraction=0.10, max_drift=0.05)
 
 
 def median_se(r: dict) -> float:
@@ -402,6 +402,11 @@ def quality(r: dict) -> list[str]:
     d = r.get("differential")
     if d and (not d.get("valid") or d.get("fixed_fraction", 0) > QUALITY["max_fixed_fraction"]):
         why.append("fixed_cost")
+    w = r.get("warmup") or {}
+    if w.get("steady") is False:
+        why.append("warmup_unsteady")
+    if abs(r.get("sample_drift", 0)) > QUALITY["max_drift"]:
+        why.append("drifting")
     return why
 
 
