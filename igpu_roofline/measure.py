@@ -86,12 +86,24 @@ def accounting(c: dict, loops: int) -> dict:
         a["float_ops"] = threads * width * loops * per if op == 0 else 0
         a["barriers_per_workgroup"] = 1 if bw else 1 + (2 * loops if op else 0)
     elif family == "matrix":
-        ops = 2 * c["m"] * c["matrix_n"] * c["k"] * chains * c["groups"] * loops
+        # Every subgroup of a workgroup runs its own chains (wg may hold several subgroups).
+        subgroups = max(1, c["wg"] // c.get("subgroup", c["wg"]))
+        ops = 2 * c["m"] * c["matrix_n"] * c["k"] * chains * c["groups"] * subgroups * loops
         a["integer_ops" if c["dtype"] == "int8" else "float_ops"] = ops
         ab_bytes = 1 if c["dtype"] == "int8" else 2
         acc_bytes = 2 if c["dtype"] == "fp16" else 4
-        a["logical_global_bytes"] = c["groups"] * ((c["m"] * c["k"] + c["k"] * c["matrix_n"]) * ab_bytes
-                                                   + c["m"] * c["matrix_n"] * chains * acc_bytes)
+        tile_bytes = (c["m"] * c["k"] + c["k"] * c["matrix_n"]) * ab_bytes
+        a["logical_global_bytes"] = c["groups"] * (tile_bytes + c["m"] * c["matrix_n"] * chains * acc_bytes)
+        loads = c["groups"] * subgroups * loops * tile_bytes  # one A+B pair per iteration per subgroup
+        if c.get("feed") == "shared":
+            a["shared_initialization_bytes"] = c["groups"] * c["tiles"] * tile_bytes
+            a["logical_global_bytes"] += c["groups"] * c["tiles"] * tile_bytes
+            a["logical_shared_bytes"] = loads + a["shared_initialization_bytes"]
+            a["matrix_load_bytes"] = loads
+        elif c.get("feed") == "global":
+            a["logical_global_bytes"] += loads
+            a["matrix_load_bytes"] = loads
+            a["working_set_bytes"] = n * tile_bytes
     elif family == "latency":
         a["dependent_loads"] = 16 * loops
         a["working_set_bytes"] = n * 4
@@ -105,7 +117,7 @@ def accounting(c: dict, loops: int) -> dict:
 
     batch = c.get("batch_dispatches", 1)
     for key in ("float_ops", "integer_ops", "logical_global_bytes", "logical_shared_bytes",
-                "shared_initialization_bytes", "shared_final_read_bytes", "barriers_per_workgroup",
+                "shared_initialization_bytes", "shared_final_read_bytes", "barriers_per_workgroup", "matrix_load_bytes",
                 "dependent_loads"):
         if key in a:
             a[key] *= batch

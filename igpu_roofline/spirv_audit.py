@@ -21,7 +21,7 @@ def ledger(asm: str) -> dict:
         if m[2] in POINTER_PRODUCERS:
             id_type[m[1]] = m[3]
 
-    counts = {"fma": 0, "dot": 0, "coopmat_muladd": 0, "control_barrier": 0, "volatile": 0}
+    counts = {"fma": 0, "dot": 0, "coopmat_muladd": 0, "coopmat_load": 0, "control_barrier": 0, "volatile": 0}
     for line in asm.splitlines():
         s = line.strip()
         load = re.match(r"%\w+ = OpLoad %\w+ (%\w+)", s)
@@ -37,6 +37,8 @@ def ledger(asm: str) -> dict:
             counts["dot"] += 1
         if "OpCooperativeMatrixMulAddKHR" in s:
             counts["coopmat_muladd"] += 1
+        if "OpCooperativeMatrixLoadKHR" in s:
+            counts["coopmat_load"] += 1
         if s.startswith("OpControlBarrier"):
             counts["control_barrier"] += 1
         if re.search(r"\bVolatile\b", s):
@@ -52,7 +54,11 @@ def expected(meta: dict) -> dict:
     if family == "dot":
         return {"dot": meta["chains"] * meta.get("dots_per_step", 1)}
     if family == "matrix":
-        return {"coopmat_muladd": meta["chains"]}
+        # A and B once before the loop; fed variants load them again inside the loop.
+        e = {"coopmat_muladd": meta["chains"], "coopmat_load": 4 if meta.get("feed") else 2}
+        if meta.get("feed") == "shared":
+            e["control_barrier"] = 1  # after staging the tiles
+        return e
     if family == "memory":
         op = meta["op"]
         e = {"load_StorageBuffer": [1, 0, 1, 1, 2, 2, 2][op], "store_StorageBuffer": 1}
