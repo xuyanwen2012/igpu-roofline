@@ -103,7 +103,9 @@ class Session:
 
     @property
     def _shader_shas(self) -> dict:
-        return {m["name"]: m["spirv_sha256"] for m in self.manifest}
+        if getattr(self, "_shas", None) is None:
+            self._shas = {m["name"]: m["spirv_sha256"] for m in self.manifest}
+        return self._shas
 
     # --- configuration helpers --------------------------------------------------------
     def variant(self, name: str) -> dict:
