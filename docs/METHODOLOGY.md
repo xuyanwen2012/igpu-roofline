@@ -173,6 +173,20 @@ differential is one warm pass. One pass per dispatch measured cold lines.
 FP32 (outside the timed loop), so results remain exact integers and are validated
 exactly.
 
+**Shared-memory write test.** Every store goes to a distinct address,
+`(l*STRIDE + t*step + k*w) % COUNT` with a runtime `step` (push constant), and stores a
+runtime-uniform value. The first design stored `ACC x loops` times to one slot per lane;
+RADV/ACO folded the whole loop into a single `ds_store` despite SPIR-V `Volatile`
+(verified in the driver-returned ISA), which reported 12-20 TB/s on a Radeon 780M. The
+new form compiles to `ACC` stores per iteration there. Address arithmetic costs about
+two VALU instructions per store, so narrow (scalar) variants can be VALU-bound; the roof
+is the fastest width.
+
+**Timing cross-check.** On the 780M a 0.38 s read sample gave 85.0 GB/s by GPU
+timestamps and 84.7 GB/s by host wall clock (which includes submit/wait), so the
+reported `timestampPeriod` is right; `vkCmdCopyBuffer` gave 74.6 GB/s against 71.4 GB/s
+for the shader copy.
+
 **Device-state sentinel.** Without a readable GPU clock, a phone can change state
 invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
 2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
