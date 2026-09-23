@@ -511,6 +511,10 @@ def texture_key(c: dict, a: dict):
 def rate(r: dict) -> float:
     c, a = r["config"], r["accounting"]
     f = c["family"]
+    # DRAM-fed matrix results are bound by the bytes streamed, not by the matrix unit:
+    # their TOP/s scale with the reuse per load (CHAINS), so the roof is a bandwidth.
+    if f == "matrix" and c.get("feed") and matrix_feed_key(c, a).endswith("_dram"):
+        return a["logical_global_bytes"] / r["median_seconds"]
     work = (a.get("integer_ops", 0) + a.get("float_ops", 0) if f in ("alu", "dot", "matrix")
             else a["logical_shared_bytes"] if f == "shared" else a["logical_global_bytes"])
     return work / r["median_seconds"]

@@ -10,7 +10,7 @@ import statistics
 from pathlib import Path
 
 from . import paths
-from .stages import quality
+from .stages import matrix_feed_key, quality
 
 os.environ.setdefault("MPLCONFIGDIR", str(paths.BUILD / "matplotlib-cache"))
 import matplotlib  # noqa: E402
@@ -51,8 +51,9 @@ def metric(r: dict):
         integer = bool(a["integer_ops"])
         key = f + "_" + c["dtype"]
         if f == "matrix" and c.get("feed"):
-            from .stages import matrix_feed_key
             key = matrix_feed_key(c, a)
+            if key.endswith("_dram"):  # streaming-bound: a bandwidth roof (see stages.rate)
+                return key, a["logical_global_bytes"], "GB/s", 1e9
         return key, a["float_ops"] + a["integer_ops"], "TOP/s" if integer else "TFLOP/s", 1e12
     if f == "texture":
         from .stages import texture_key
@@ -201,12 +202,13 @@ def analyze(folder: Path) -> dict:
                                  gpu_duty_fractions=[x["gpu_duty_fraction"] for x in vs], sources=[x["source"] for x in vs])
                          for k, vs in sustained.items()}
     roofs, basis = choose_roofs(peak, sustained_summary)
+    feed = matrix_feed_by_reuse(valid)
     plans = sorted({r.get("plan") for r in all_rows if r.get("plan")})
     summary = dict(device=caps["gpu"], serial=caps["serial"], plans=plans, roof_basis=basis, sentinel=sentinel, stale_rows_excluded=len(stale),
                    clock_state=caps.get("clock_state"), short_run=peak, sustained=sustained_summary,
                    ridges=dict(short_run=hierarchical_ridges(peak), roofs=hierarchical_ridges(roofs)),
                    physical_dram_bandwidth=None, physical_cache_bandwidth=None,
-                   git_commit=manifest.get("git_commit"), runner_sha256=paths.manifest_runner(manifest))
+                   matrix_feed_by_reuse=feed, git_commit=manifest.get("git_commit"), runner_sha256=paths.manifest_runner(manifest))
     report = folder / "report"
     report.mkdir(exist_ok=True)
     (report / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
@@ -230,6 +232,28 @@ def analyze(folder: Path) -> dict:
     return summary
 
 
+def matrix_feed_by_reuse(valid: list) -> list[dict]:
+    """Fed cooperative matrix per (dtype, source, CHAINS): the best validated median, with
+    ops per loaded A/B byte, so a kernel's reuse can be looked up directly. DRAM-fed rates
+    grow with CHAINS until the matrix unit limits them; their roof is a bandwidth."""
+    best = {}
+    for r in valid:
+        c, a = r["config"], r["accounting"]
+        if c["family"] != "matrix" or not c.get("feed") or r["source"].startswith(("first-look/", "probe/", "sustain-")):
+            continue
+        level = matrix_feed_key(c, a).rsplit("_", 1)[1]
+        ops = a["float_ops"] + a["integer_ops"]
+        item = dict(dtype=c["dtype"], level=level, chains=c["chains"], rate=ops / r["median_seconds"] / 1e12,
+                    unit="TOP/s" if a["integer_ops"] else "TFLOP/s",
+                    load_gbps=a["matrix_load_bytes"] / r["median_seconds"] / 1e9,
+                    ops_per_load_byte=ops / a["matrix_load_bytes"], gates=quality(r), source=r["source"])
+        k = (c["dtype"], level, c["chains"])
+        if k not in best or item["rate"] > best[k]["rate"]:
+            best[k] = item
+    order = {"shared": 0, "cache": 1, "mid": 2, "dram": 3}
+    return [best[k] for k in sorted(best, key=lambda k: (k[0], order.get(k[1], 9), k[2]))]
+
+
 # --- REPORT.md ---------------------------------------------------------------------------
 def _clock_line(caps: dict) -> str:
     cs = caps.get("clock_state") or {}
@@ -244,7 +268,8 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
     props = caps.get("device_properties", {})
     lines = [f"# {caps['gpu']} roofline report", "",
              f"Device: {props.get('ro.product.manufacturer', '')} {props.get('ro.product.model', '')} "
-             f"(SoC {props.get('ro.soc.model', '?')}), Android {props.get('ro.build.version.release', '?')}, "
+             f"(SoC {props.get('ro.soc.model', '?')}), {'' if caps.get('backend') == 'local' else 'Android '}"
+             f"{props.get('ro.build.version.release', '?')}, "
              f"driver {caps['driver_version']}, subgroup {caps['subgroup']}.",
              f"Plan(s): {', '.join(summary['plans']) or '?'}. {_clock_line(caps)}",
              f"Code: {summary['git_commit']}, runner {summary['runner_sha256'][:16]}. "
@@ -276,6 +301,15 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
                          f"| {v['repeats']} | {sweep} |")
         elif not is_control(k):
             lines.append(f"| {k} | unconfirmed | — | — | {v['value']:.3f} |")
+    if summary.get("matrix_feed_by_reuse"):
+        lines += ["", "## Cooperative matrix fed from memory, by reuse", "",
+                  "Best validated median per source and CHAINS (multiply-adds per loaded A/B tile pair). "
+                  "`load GB/s` counts the A/B tile bytes loaded. DRAM-fed rates grow with reuse until the matrix unit "
+                  "limits them, so the `matrix_*_feed_dram` roof above is a bandwidth; look a kernel's ops per loaded "
+                  "byte up here instead. `gates` lists quality gates the row failed (such rows never define a roof).", "",
+                  "| dtype | source | CHAINS | ops / loaded byte | rate | load GB/s | gates |", "|---|---|---:|---:|---:|---:|---|"]
+        lines += [f"| {x['dtype']} | {x['level']} | {x['chains']} | {x['ops_per_load_byte']:.1f} | {x['rate']:.3f} {x['unit']} "
+                  f"| {x['load_gbps']:.1f} | {', '.join(x['gates']) or '—'} |" for x in summary["matrix_feed_by_reuse"]]
     sen = summary["sentinel"]
     lines += ["", "## Device-state sentinel", "",
               f"`{sen['config']}` measured before and after every stage and every 20 configurations. Values below 85 % "
