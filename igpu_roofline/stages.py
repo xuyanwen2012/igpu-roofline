@@ -173,16 +173,14 @@ def compute(s, plan):
     for m in s.manifest:
         if m["family"] not in ("alu", "dot", "matrix") or not s.eligible(m) or m.get("feed"):
             continue
-        if plan["level"] == "fast" and not (
-                (m["family"] == "alu" and m["width"] == 4 and m["chains"] in (8, 16))
-                or (m["family"] == "dot" and m["chains"] in (4, 8))
-                or (m["family"] == "matrix" and m["chains"] in (4, 8))):
-            continue  # the chain counts that reached the roof on every device so far
+        if plan["level"] == "fast" and m["family"] == "matrix" and m["chains"] not in (4, 8):
+            continue  # FMA/dot keep every width and chain count: the best differs per GPU
+                      # (780M FP32: scalar x 8 chains; int8 dot: 2 chains)
         if m["family"] == "matrix":
             points = matrix_grid(m, s.caps, quick)
         else:
             # 512 x 256 threads did not saturate Mali-G1 MC12 FP32; go to 8192 workgroups.
-            points = [(wg, g) for wg in ([256] if quick else [64, 128, 256])
+            points = [(wg, g) for wg in ((128, 256) if plan["level"] == "fast" else [256] if quick else [64, 128, 256])
                       for g in ((2048, 8192) if plan["level"] == "fast" else (2048,) if quick
                                 else (64, 512, 2048, 8192))]
         for wg, g in points:
@@ -243,14 +241,16 @@ def shared(s, plan):
     for m in s.manifest:
         if m["family"] != "shared":
             continue
-        if quick and not (m.get("kind") == "bw" and m["width"] == 4 and m["accumulators"] == 8):
+        if fast and not (m.get("kind") == "bw" and m["width"] in (2, 4) and m["accumulators"] in (8, 32)):
+            continue  # 780M: the fp32 read roof came from width 2 at 128 threads
+        if quick and not fast and not (m.get("kind") == "bw" and m["width"] == 4 and m["accumulators"] == 8):
             continue
         scalar = 2 if m["dtype"] == "fp16" else 4
         # Workgroup size and allocation size matter as much as stride (together up to 5x
         # on some GPUs: a small allocation keeps more workgroups resident), so the quick
         # plan sweeps both coarsely.
         points = {(64, max_shared, st) for st in strides}
-        points |= {(wg, size, 1) for wg in ((64, 256) if fast else (64, 128, 256)) for size in (4096, max_shared)}
+        points |= {(wg, size, 1) for wg in (64, 128, 256) for size in (4096, max_shared)}
         if not quick:
             points |= {(wg, 4096, 1) for wg in (32, 64, 128, 256)}
             points |= {(64, size, 1) for size in (1024, 2048, 4096, 8192, 16384, max_shared)}
@@ -551,8 +551,10 @@ def confirm(s, plan):
     work = [(k, r) for k, v in sorted(candidates(s, cfg["top"]).items()) for r in v]
     for i in range(cfg["reps"]):
         for n, (key, r) in enumerate(work if i % 2 == 0 else work[::-1]):
-            c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True,
-                     loops=1 if r["config"]["family"] == "memory" else 128)
+            # Keep the swept starting loop count: streaming families (memory, texture)
+            # start at 1 pass; forcing 128 made 256 MiB texture passes last ~1 s per
+            # dispatch, so warm-up could never see five steady dispatches.
+            c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True)
             s.run(c, "confirm")
 
 
@@ -674,7 +676,8 @@ def run_plan(s, plan_name: str):
             name = step.__name__
             mark(name)
             print(f"=== {s.device.serial} {name}", flush=True)
-            measuring = step in SHORT_STAGES or step is confirm
+            skipped = plan["level"] == "fast" and step in (first_look, ert, memory_type)
+            measuring = (step in SHORT_STAGES or step is confirm) and not skipped
             if measuring and guard is None:
                 guard = s.guard = Guard(s, plan)
             if measuring:
