@@ -307,6 +307,18 @@ def test_matrix_feed_accounting_and_keys():
     assert matrix_feed_key(dict(base, feed="shared"), sh) == "matrix_fp16_fp32_feed_shared"
 
 
+def test_dram_fed_matrix_roof_is_a_bandwidth():
+    from igpu_roofline.stages import rate
+    base = dict(family="matrix", dtype="int8", m=16, matrix_n=16, k=16, chains=8, groups=100, wg=64, subgroup=64)
+    gm = dict(config=dict(base, feed="global"), accounting=accounting(dict(base, feed="global", n=1 << 20), 10),
+              median_seconds=0.5)
+    key, work, unit, _ = metric(gm)
+    assert (key, unit) == ("matrix_int8_feed_dram", "GB/s")
+    assert work == gm["accounting"]["logical_global_bytes"] and rate(gm) == work / 0.5
+    sh = dict(gm, config=dict(base, feed="shared"), accounting=accounting(dict(base, feed="shared", tiles=4, n=4), 10))
+    assert metric(sh)[2] == "TOP/s" and rate(sh) == sh["accounting"]["integer_ops"] / 0.5
+
+
 def test_texture_accounting_and_keys():
     from igpu_roofline.stages import texture_key
     c = dict(family="texture", format="rgba16f", mode="tex3d", wg=256, groups=4096, n=1 << 25)
