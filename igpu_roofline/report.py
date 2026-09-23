@@ -49,7 +49,11 @@ def metric(r: dict):
         return None
     if f in ("alu", "matrix", "dot"):
         integer = bool(a["integer_ops"])
-        return f + "_" + c["dtype"], a["float_ops"] + a["integer_ops"], "TOP/s" if integer else "TFLOP/s", 1e12
+        key = f + "_" + c["dtype"]
+        if f == "matrix" and c.get("feed"):
+            from .stages import matrix_feed_key
+            key = matrix_feed_key(c, a)
+        return key, a["float_ops"] + a["integer_ops"], "TOP/s" if integer else "TFLOP/s", 1e12
     if c.get("role") == "cache":
         return "cache_read_effective", a["logical_global_bytes"], "GB/s", 1e9
     if f == "copy":

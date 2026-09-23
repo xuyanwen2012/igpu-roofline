@@ -173,6 +173,17 @@ differential is one warm pass. One pass per dispatch measured cold lines.
 FP32 (outside the timed loop), so results remain exact integers and are validated
 exactly.
 
+**Fed cooperative matrix (`matrix_feed` stage).** The `matrix_*` roofs keep A and B in
+registers, so they measure the matrix unit alone. Real WMMA kernels load a tile pair
+every step, so the `_lds` / `_gmem` variants run `coopMatLoad` for A and B inside the
+loop: from workgroup memory (4 staged tile pairs), or from the storage buffer with
+~1 MiB of tiles (cache-resident) or >= 256 MiB (DRAM, each tile read once). Each loaded
+pair feeds CHAINS multiply-adds, so CHAINS is the reuse per load; comparing the
+`matrix_<dtype>_feed_{shared,cache,dram}` roofs with the register-resident roof shows
+how much reuse a kernel needs before the loads stop limiting it. Ops count every
+subgroup of a workgroup; `matrix_load_bytes` records the A/B bytes loaded. The SPIR-V
+ledger asserts two `OpCooperativeMatrixLoadKHR` outside and two inside the loop.
+
 **Shared-memory write test.** Every store goes to a distinct address,
 `(l*STRIDE + t*step + k*w) % COUNT` with a runtime `step` (push constant), and stores a
 runtime-uniform value. The first design stored `ACC x loops` times to one slot per lane;

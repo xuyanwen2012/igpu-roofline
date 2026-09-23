@@ -46,7 +46,7 @@ int main(int argc,char** argv){
  if(family=="memory"&&op==6&&(wg>256||(wg&(wg-1))))throw std::runtime_error("dot reduction needs power-of-two workgroup <= 256");
  size_t sizes[4]={std::max<size_t>(n*width*4ull,threads*width*4),std::max<size_t>(n*width*4ull,threads*width*4),16,std::max<size_t>(n*width*4ull,threads*width*chains*4)};
  if(family=="shared")sizes[0]=std::max<size_t>(sizes[0],count*width*4ull);
- if(family=="matrix"){sizes[0]=M*K*(integer?1:2);sizes[1]=K*N*(integer?1:2);sizes[3]=groups*chains*M*N*(half?2:4);}
+ if(family=="matrix"){const size_t tiles=cfg.contains("feed")?std::max<uint32_t>(1,n):1;sizes[0]=tiles*M*K*(integer?1:2);sizes[1]=tiles*K*N*(integer?1:2);sizes[3]=groups*chains*M*N*(half?2:4);}
  if(family=="latency"){sizes[0]=size_t(n)*4;sizes[1]=16;sizes[3]=16;}
  if(family=="ert"){sizes[0]=size_t(n)*16;sizes[1]=16;sizes[3]=size_t(n)*16;}
  // Host-visible mirrors: initialization source, validation inputs and readback target.

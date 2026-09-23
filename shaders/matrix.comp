@@ -12,17 +12,40 @@ layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offse
 layout(binding=0) readonly buffer A { AT a[]; };
 layout(binding=1) readonly buffer B { AT b[]; };
 layout(binding=3) writeonly buffer D { CT d[]; };
+// FEED selects where A/B come from inside the loop:
+//  0: register-resident (loaded once before the loop): matrix-unit throughput only.
+//  1: coopMatLoad from workgroup memory every iteration (TILES tile pairs staged once).
+//  2: coopMatLoad from the storage buffer every iteration; p.n tile pairs, tile
+//     (workgroup*loops + i) % p.n, so p.n selects cache-resident vs DRAM streaming.
+// Each loaded pair feeds CHAINS multiply-adds, so CHAINS is the reuse per load.
+#ifndef FEED
+#define FEED 0
+#endif
+#if FEED==1
+shared AT sa[TILES*M*K];
+shared AT sb[TILES*K*N];
+#endif
 void main(){
  coopmat<AT,gl_ScopeSubgroup,M,K,gl_MatrixUseA> ma;
  coopmat<AT,gl_ScopeSubgroup,K,N,gl_MatrixUseB> mb;
  coopmat<CT,gl_ScopeSubgroup,M,N,gl_MatrixUseAccumulator> acc[CHAINS];
  coopMatLoad(ma,a,0,K,gl_CooperativeMatrixLayoutRowMajor);
  coopMatLoad(mb,b,0,N,gl_CooperativeMatrixLayoutRowMajor);
+#if FEED==1
+ for(uint j=gl_LocalInvocationIndex;j<TILES*M*K;j+=gl_WorkGroupSize.x)sa[j]=a[j];
+ for(uint j=gl_LocalInvocationIndex;j<TILES*K*N;j+=gl_WorkGroupSize.x)sb[j]=b[j];
+ memoryBarrierShared();barrier();
+#endif
  [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopmat<CT,gl_ScopeSubgroup,M,N,gl_MatrixUseAccumulator>(CT(c));
  for(uint i=0;i<p.loops;i++){
-#ifdef RELOAD
- coopMatLoad(ma,a,0,K,gl_CooperativeMatrixLayoutRowMajor);
- coopMatLoad(mb,b,0,N,gl_CooperativeMatrixLayoutRowMajor);
+#if FEED==1
+ uint tile=(gl_WorkGroupID.x+i)%TILES;
+ coopMatLoad(ma,sa,tile*(M*K),K,gl_CooperativeMatrixLayoutRowMajor);
+ coopMatLoad(mb,sb,tile*(K*N),N,gl_CooperativeMatrixLayoutRowMajor);
+#elif FEED==2
+ uint tile=(gl_WorkGroupID.x*p.loops+i)%p.n;
+ coopMatLoad(ma,a,tile*(M*K),K,gl_CooperativeMatrixLayoutRowMajor);
+ coopMatLoad(mb,b,tile*(K*N),N,gl_CooperativeMatrixLayoutRowMajor);
 #endif
  [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopMatMulAdd(ma,mb,acc[c]);
  }
