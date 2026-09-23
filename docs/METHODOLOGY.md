@@ -180,7 +180,11 @@ loop: from workgroup memory (4 staged tile pairs), or from the storage buffer wi
 ~1 MiB of tiles (cache-resident) or >= 256 MiB (DRAM, each tile read once). Each loaded
 pair feeds CHAINS multiply-adds, so CHAINS is the reuse per load; comparing the
 `matrix_<dtype>_feed_{shared,cache,dram}` roofs with the register-resident roof shows
-how much reuse a kernel needs before the loads stop limiting it. Ops count every
+how much reuse a kernel needs before the loads stop limiting it. DRAM-fed rates grow
+with CHAINS until the matrix unit limits them (780M int8: 1.2 / 2.4 / 4.6 / 8.5 TOP/s
+at CHAINS 1 / 2 / 4 / 8, all at ~75–79 GB/s), so `matrix_<dtype>_feed_dram` is a
+bandwidth roof (GB/s); REPORT.md lists every source × CHAINS with ops per loaded byte
+so a kernel's reuse can be looked up directly. Ops count every
 subgroup of a workgroup; `matrix_load_bytes` records the A/B bytes loaded. The SPIR-V
 ledger asserts two `OpCooperativeMatrixLoadKHR` outside and two inside the loop.
 

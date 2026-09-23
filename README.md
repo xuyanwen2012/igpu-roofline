@@ -5,8 +5,8 @@ can actually achieve — compute throughput, bandwidth at every memory level, la
 using textbook methods, verifies the code the GPU really runs, and turns the results
 into a roofline and a shader-tuning guide for that device.
 
-Currently runs on **Android** (arm64, Vulkan 1.3) through `adb`. A host backend for
-Linux integrated GPUs (e.g. Radeon 780M, Intel Xe) is planned.
+Runs on **Android** (arm64, Vulkan 1.3) through `adb`, and on the host's own Linux
+integrated GPU (`run --local`, e.g. Radeon 780M).
 
 ## What it measures
 
@@ -37,7 +37,7 @@ See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
 uv sync                                    # create .venv and install (uv.lock is committed)
 uv run igpu-roofline build                 # shaders (+ ledger checks) and the Android runner
 uv run igpu-roofline run                   # list connected devices
-uv run igpu-roofline run --device <serial> # quick plan (~10 min), then writes the report
+uv run igpu-roofline run --device <serial> # quick plan (~15 min), then writes the report
 ```
 
 Plans:
