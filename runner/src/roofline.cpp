@@ -55,14 +55,20 @@ int main(int argc,char** argv){
  if(family=="texture"){
   if(n&(n-1))throw std::runtime_error("texture n must be a power of two");
   uint32_t ln=0;while((1u<<ln)<n)ln++;
-  if(texDim==3){log2W=std::min(ln,8u);log2H=std::min(ln-log2W,8u);}else{log2W=std::min(ln,12u);log2H=ln-log2W;}
+  // Extents are powers of two sized to the device's image limits: 2D as wide as allowed,
+  // 3D with x capped at 256 (ExecuTorch-like) and the rest spread over y and z.
+  const auto& L=c.props.limits;auto lg=[](uint32_t v){uint32_t r=0;while((2u<<r)<=v)r++;return r;};
+  const uint32_t L2=lg(L.maxImageDimension2D),L3=lg(L.maxImageDimension3D);
+  if(texDim==3){log2W=std::min({ln,8u,L3});log2H=std::min(ln-log2W,L3);}else{log2W=std::min(ln,L2);log2H=ln-log2W;}
   TW=1u<<log2W;TH=1u<<log2H;TD=texDim==3?(1u<<(ln-log2W-log2H)):1u;
-  const auto& L=c.props.limits;
-  if(texDim==2&&(TW>L.maxImageDimension2D||TH>L.maxImageDimension2D))throw std::runtime_error("texture exceeds maxImageDimension2D");
-  if(texDim==3&&(TW>L.maxImageDimension3D||TH>L.maxImageDimension3D||TD>L.maxImageDimension3D))throw std::runtime_error("texture exceeds maxImageDimension3D");
+  if(texDim==2&&log2H>L2)throw std::runtime_error("texture exceeds maxImageDimension2D");
+  if(texDim==3&&(ln-log2W-log2H)>L3)throw std::runtime_error("texture exceeds maxImageDimension3D");
   sizes[0]=size_t(n)*texelBytes;sizes[1]=16;sizes[3]=threads*16;}
  // Host-visible mirrors: initialization source, validation inputs and readback target.
- Buf b[4];for(int i=0;i<4;i++){if(sizes[i]>c.props.limits.maxStorageBufferRange)throw std::runtime_error("maxStorageBufferRange");b[i]=makeBuf(c,sizes[i]);memset(b[i].p,0,sizes[i]);}
+ // Image modes read binding 2 only: binding 0 is then just the upload staging source,
+ // not a storage-buffer descriptor, so maxStorageBufferRange does not apply to it.
+ const bool isTex=family=="texture"&&texDim!=0;
+ Buf b[4];for(int i=0;i<4;i++){if(sizes[i]>c.props.limits.maxStorageBufferRange&&!(isTex&&i==0))throw std::runtime_error("maxStorageBufferRange");b[i]=makeBuf(c,sizes[i]);memset(b[i].p,0,sizes[i]);}
  for(int z=0;z<2;z++)for(size_t i=0;i<sizes[z]/4;i++)((float*)b[z].p)[i]=float((i*13+z*7)%127)*0.0625f;
  if(family=="alu")for(size_t i=0;i<threads*width;i++){((float*)b[0].p)[i]=i%2?0.25f:0.5f;((float*)b[1].p)[i]=float(i%7+1)*0.03125f;}
  if(family=="shared")for(size_t i=0;i<sizes[0]/4;i++)((float*)b[0].p)[i]=float(i%17);
@@ -82,6 +88,7 @@ int main(int argc,char** argv){
  // Operand buffers the shaders actually access.
  DevBuf dv[4];VkBuffer use[4];json alloc=json::array();
  for(int i=0;i<4;i++){
+  if(isTex&&i==0){dv[i]=makeDeviceBuf(c,16);use[i]=dv[i].b;alloc.push_back({{"binding",i},{"bytes",16},{"note","placeholder; image modes read binding 2"}});continue;}
   if(deviceLocal){dv[i]=makeDeviceBuf(c,sizes[i]);use[i]=dv[i].b;copyNow(c,b[i].b,dv[i].b,sizes[i]);alloc.push_back({{"binding",i},{"bytes",sizes[i]},{"memory_type",dv[i].type},{"flags",dv[i].flags},{"fallback_host_visible",dv[i].fallback}});}
   else {use[i]=b[i].b;alloc.push_back({{"binding",i},{"bytes",sizes[i]},{"memory_type","host_coherent_mirror"}});}
  }
@@ -90,7 +97,7 @@ int main(int argc,char** argv){
  // Texture family: the same texel data uploaded to an optimal-tiling image (read through
  // texelFetch), bound at binding 2 as a combined image sampler; binding 0 keeps the
  // storage-buffer copy for the buffer mode.
- const bool isTex=family=="texture";Tex tex{};
+ Tex tex{};
  if(isTex)tex=makeTexture(c,b[0].b,texDim==3?3:2,texelBytes==8?VK_FORMAT_R16G16B16A16_SFLOAT:VK_FORMAT_R32G32B32A32_SFLOAT,TW,TH,TD);
  VkDescriptorSetLayoutBinding binds[4];for(uint32_t i=0;i<4;i++)binds[i]={i,(isTex&&i==2)?VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,1,VK_SHADER_STAGE_COMPUTE_BIT,nullptr};
  VkDescriptorSetLayoutCreateInfo dl{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};dl.bindingCount=4;dl.pBindings=binds;VkDescriptorSetLayout dsl;CHECK(vkCreateDescriptorSetLayout(c.dev,&dl,nullptr,&dsl));
@@ -105,7 +112,7 @@ int main(int argc,char** argv){
  VkComputePipelineCreateInfo pci{VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};pci.layout=pl;pci.stage={VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,(family=="matrix"&&g_sgctl)?&rss:nullptr,0,VK_SHADER_STAGE_COMPUTE_BIT,sm,"main",&spec};
  CHECK(vkCreateComputePipelines(c.dev,VK_NULL_HANDLE,1,&pci,nullptr,&pipe));}
  VkDescriptorPoolSize ps[2]={{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,4},{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,1}};VkDescriptorPoolCreateInfo dpc{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};dpc.maxSets=1;dpc.poolSizeCount=2;dpc.pPoolSizes=ps;VkDescriptorPool dp;CHECK(vkCreateDescriptorPool(c.dev,&dpc,nullptr,&dp));VkDescriptorSetAllocateInfo da{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};da.descriptorPool=dp;da.descriptorSetCount=1;da.pSetLayouts=&dsl;VkDescriptorSet ds;CHECK(vkAllocateDescriptorSets(c.dev,&da,&ds));
- VkDescriptorBufferInfo db[4];VkDescriptorImageInfo di{tex.sampler,tex.view,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};VkWriteDescriptorSet wr[4];for(int i=0;i<4;i++){db[i]={use[i],0,sizes[i]};wr[i]={VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,nullptr,ds,(uint32_t)i,0,1,VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,nullptr,&db[i],nullptr};if(isTex&&i==2){wr[i].descriptorType=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;wr[i].pImageInfo=&di;wr[i].pBufferInfo=nullptr;}}vkUpdateDescriptorSets(c.dev,4,wr,0,nullptr);
+ VkDescriptorBufferInfo db[4];VkDescriptorImageInfo di{tex.sampler,tex.view,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};VkWriteDescriptorSet wr[4];for(int i=0;i<4;i++){db[i]={use[i],0,(isTex&&i==0)?16:sizes[i]};wr[i]={VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,nullptr,ds,(uint32_t)i,0,1,VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,nullptr,&db[i],nullptr};if(isTex&&i==2){wr[i].descriptorType=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;wr[i].pImageInfo=&di;wr[i].pBufferInfo=nullptr;}}vkUpdateDescriptorSets(c.dev,4,wr,0,nullptr);
  VkQueryPoolCreateInfo qc{VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO};qc.queryType=VK_QUERY_TYPE_TIMESTAMP;qc.queryCount=2;VkQueryPool qp;CHECK(vkCreateQueryPool(c.dev,&qc,nullptr,&qp));
  VkCommandBufferAllocateInfo ca{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};ca.commandPool=c.pool;ca.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;ca.commandBufferCount=1;VkCommandBuffer cb;CHECK(vkAllocateCommandBuffers(c.dev,&ca,&cb));
  VkFenceCreateInfo fc{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};VkFence fence;CHECK(vkCreateFence(c.dev,&fc,nullptr,&fence));

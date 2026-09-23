@@ -225,8 +225,8 @@ def texture(s, plan):
         texel = 8 if m["format"] == "rgba16f" else 16
         for ws in (MiB, 256 * MiB):
             n = ws // texel
-            if n * texel > s.caps["max_storage_buffer_range"]:
-                continue
+            if m["tex_dim"] == 0 and n * texel > s.caps["max_storage_buffer_range"]:
+                continue  # only the storage-buffer mode is bound by maxStorageBufferRange
             for wg in wgs:
                 c = s.base(m, plan["warmup_seconds"])
                 c.update(wg=wg, groups=4096, n=n, loops=1)

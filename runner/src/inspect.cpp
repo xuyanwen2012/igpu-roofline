@@ -47,7 +47,7 @@ int main(int argc,char** argv){
  if(family=="matrix")for(int z=0;z<2;z++){if(integer)memset(b[z].p,1,sizes[z]);else for(size_t i=0;i<sizes[z]/2;i++)((uint16_t*)b[z].p)[i]=f2h(0.0625f);}
  memset(b[3].p,0xff,sizes[3]);
  // Texture shaders declare binding 2 as a combined image sampler; the layout must match.
- VkDescriptorSetLayoutBinding binds[4];for(uint32_t i=0;i<4;i++)binds[i]={i,(family=="texture"&&i==2)?VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,1,VK_SHADER_STAGE_COMPUTE_BIT,nullptr};
+ VkDescriptorSetLayoutBinding binds[4];for(uint32_t i=0;i<4;i++)binds[i]={i,(family=="texture"&&cfg.value("tex_dim",0u)!=0&&i==2)?VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,1,VK_SHADER_STAGE_COMPUTE_BIT,nullptr};
  VkDescriptorSetLayoutCreateInfo dl{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};dl.bindingCount=4;dl.pBindings=binds;VkDescriptorSetLayout dsl;CHECK(vkCreateDescriptorSetLayout(c.dev,&dl,nullptr,&dsl));
  VkPushConstantRange pr{VK_SHADER_STAGE_COMPUTE_BIT,0,16};VkPipelineLayoutCreateInfo plc{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};plc.setLayoutCount=1;plc.pSetLayouts=&dsl;plc.pushConstantRangeCount=1;plc.pPushConstantRanges=&pr;VkPipelineLayout pl;CHECK(vkCreatePipelineLayout(c.dev,&plc,nullptr,&pl));
  VkPipeline pipe=VK_NULL_HANDLE;VkShaderModule sm=VK_NULL_HANDLE;
