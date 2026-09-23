@@ -239,7 +239,8 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
              f"(SoC {props.get('ro.soc.model', '?')}), Android {props.get('ro.build.version.release', '?')}, "
              f"driver {caps['driver_version']}, subgroup {caps['subgroup']}.",
              f"Plan(s): {', '.join(summary['plans']) or '?'}. {_clock_line(caps)}",
-             f"Code: {summary['git_commit']}, runner {summary['runner_sha256'][:16]}.", "",
+             f"Code: {summary['git_commit']}, runner {summary['runner_sha256'][:16]}. "
+             f"Rows from other runner or shader builds excluded: {summary.get('stale_rows_excluded', 0)}.", "",
              "Short-run columns are the best validated configuration: median and best (minimum time, the STREAM/"
              "BabelStream convention) of the samples, and the differential rate (paired L vs L/2 runs, removing fixed "
              "per-dispatch cost). Sustained is the median of the last 60 s of each 300 s run. Controls never define a "

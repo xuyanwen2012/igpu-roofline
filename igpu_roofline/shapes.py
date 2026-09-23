@@ -24,11 +24,15 @@ def table(caps: dict) -> str:
 
 
 def probe(device, runner) -> dict:
-    """Copy the runner to the device and return its capability JSON (no measurement)."""
+    """Copy the runner to the device and return its capability JSON (no measurement).
+
+    Uses its own file name so it never replaces the `roofline` binary of a campaign
+    that may be running or paused on the same device."""
+    exe = f"{device.remote}/roofline_shapes"
     device.shell(f"mkdir -p {device.remote}")
-    device.push(runner, f"{device.remote}/roofline")
-    device.shell(f"chmod 755 {device.remote}/roofline")
-    r = device.shell(f"{device.remote}/roofline capabilities")
+    device.push(runner, exe)
+    device.shell(f"chmod 755 {exe}")
+    r = device.shell(f"{exe} capabilities")
     if r.returncode:
         raise SystemExit(f"capabilities failed: {r.stderr.strip()[-400:]}")
     return json.loads(next(line for line in r.stdout.splitlines() if line.startswith("{")))
