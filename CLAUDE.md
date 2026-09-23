@@ -108,9 +108,11 @@ Full cooperative-matrix (WMMA) shape lists per device: [docs/COOPMAT-SHAPES.md](
 - **TODO(owner)**: which host drives it and where results must be stored.
 
 ### Radeon 780M (rocky-ryzen)
-- Work in `~/igpu-roofline-780m` (branch/commit as needed). **Do not touch
-  `~/igpu-roofline` or `~/igpu-roofline-results`**: another agent's checkout with
-  uncommitted changes.
+- Work in `~/igpu-roofline-main` (tracks `main`). **Do not touch `~/igpu-roofline` or
+  `~/igpu-roofline-results`**: another agent's checkout with uncommitted changes.
+- Results go under `~/igpu-roofline-campaigns/780m/<date>-<plan>[-note]/` (one
+  `--results` root per campaign); `~/igpu-roofline-campaigns/README.md` indexes them and
+  says which are superseded. Add a row there for every new campaign.
 - No glslc/spirv tools and no Vulkan dev headers: build with
   `build --host --no-shaders --vulkan-include ~/vulkan-headers/include` after syncing
   shaders from a build host. The runner skips llvmpipe automatically.
@@ -118,9 +120,8 @@ Full cooperative-matrix (WMMA) shape lists per device: [docs/COOPMAT-SHAPES.md](
   --plan standard > <log> 2>&1 < /dev/null &` (ssh otherwise stays attached).
 - Keep the host idle during runs: the iGPU shares DDR5-5600 (89.6 GB/s peak, MCLK 2800)
   with the CPU, and the sentinel only watches GPU compute.
-- Reference results: `~/igpu-roofline-results-780m-v2` (standard, all roofs confirmed;
-  shared-memory write being re-measured with the redesigned test; the old write rows
-  are in `superseded/shared-write-v1/`).
+- Reference results: `~/igpu-roofline-campaigns/780m/2026-09-22-standard-v2` (standard)
+  and `.../2026-09-23-fast-v2` (fast).
 
 ## Running and monitoring
 
