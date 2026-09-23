@@ -49,6 +49,18 @@ int main(int argc,char** argv){
  if(family=="matrix"){const size_t tiles=cfg.contains("feed")?std::max<uint32_t>(1,n):1;sizes[0]=tiles*M*K*(integer?1:2);sizes[1]=tiles*K*N*(integer?1:2);sizes[3]=groups*chains*M*N*(half?2:4);}
  if(family=="latency"){sizes[0]=size_t(n)*4;sizes[1]=16;sizes[3]=16;}
  if(family=="ert"){sizes[0]=size_t(n)*16;sizes[1]=16;sizes[3]=size_t(n)*16;}
+ // Texture family: n texels (power of two) of RGBA16F / RGBA32F laid out as W x H (x D).
+ const std::string texFmt=cfg.value("format",std::string("rgba32f"));const uint32_t texDim=cfg.value("tex_dim",0u);
+ const size_t texelBytes=texFmt=="rgba16f"?8:16;uint32_t log2W=0,log2H=0,TW=1,TH=1,TD=1;
+ if(family=="texture"){
+  if(n&(n-1))throw std::runtime_error("texture n must be a power of two");
+  uint32_t ln=0;while((1u<<ln)<n)ln++;
+  if(texDim==3){log2W=std::min(ln,8u);log2H=std::min(ln-log2W,8u);}else{log2W=std::min(ln,12u);log2H=ln-log2W;}
+  TW=1u<<log2W;TH=1u<<log2H;TD=texDim==3?(1u<<(ln-log2W-log2H)):1u;
+  const auto& L=c.props.limits;
+  if(texDim==2&&(TW>L.maxImageDimension2D||TH>L.maxImageDimension2D))throw std::runtime_error("texture exceeds maxImageDimension2D");
+  if(texDim==3&&(TW>L.maxImageDimension3D||TH>L.maxImageDimension3D||TD>L.maxImageDimension3D))throw std::runtime_error("texture exceeds maxImageDimension3D");
+  sizes[0]=size_t(n)*texelBytes;sizes[1]=16;sizes[3]=threads*16;}
  // Host-visible mirrors: initialization source, validation inputs and readback target.
  Buf b[4];for(int i=0;i<4;i++){if(sizes[i]>c.props.limits.maxStorageBufferRange)throw std::runtime_error("maxStorageBufferRange");b[i]=makeBuf(c,sizes[i]);memset(b[i].p,0,sizes[i]);}
  for(int z=0;z<2;z++)for(size_t i=0;i<sizes[z]/4;i++)((float*)b[z].p)[i]=float((i*13+z*7)%127)*0.0625f;
@@ -65,6 +77,7 @@ int main(int argc,char** argv){
    std::vector<uint32_t> succ(nodes);for(size_t i=0;i<nodes;i++)succ[i]=order[i];for(size_t i=0;i<nodes;i++)((uint32_t*)b[0].p)[i*step]=uint32_t(succ[i]*step);}
   else for(size_t i=0;i<nodes;i++)((uint32_t*)b[0].p)[i*step]=uint32_t(((i+1)%nodes)*step);
  }
+ if(family=="texture")for(size_t i=0;i<size_t(n)*4;i++){float v=float((i/4*13+(i%4)*7)%127)*0.0625f;if(texelBytes==8)((uint16_t*)b[0].p)[i]=f2h(v);else((float*)b[0].p)[i]=v;}
  memset(b[3].p,0xff,sizes[3]);
  // Operand buffers the shaders actually access.
  DevBuf dv[4];VkBuffer use[4];json alloc=json::array();
@@ -74,7 +87,12 @@ int main(int argc,char** argv){
  }
  puts(json{{"event","allocation"},{"memory_mode",deviceLocal?"device_local":"host_coherent"},{"buffers",alloc}}.dump().c_str());
  auto readback=[&](){if(deviceLocal)copyNow(c,dv[3].b,b[3].b,sizes[3]);};
- VkDescriptorSetLayoutBinding binds[4];for(uint32_t i=0;i<4;i++)binds[i]={i,VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,1,VK_SHADER_STAGE_COMPUTE_BIT,nullptr};
+ // Texture family: the same texel data uploaded to an optimal-tiling image (read through
+ // texelFetch), bound at binding 2 as a combined image sampler; binding 0 keeps the
+ // storage-buffer copy for the buffer mode.
+ const bool isTex=family=="texture";Tex tex{};
+ if(isTex)tex=makeTexture(c,b[0].b,texDim==3?3:2,texelBytes==8?VK_FORMAT_R16G16B16A16_SFLOAT:VK_FORMAT_R32G32B32A32_SFLOAT,TW,TH,TD);
+ VkDescriptorSetLayoutBinding binds[4];for(uint32_t i=0;i<4;i++)binds[i]={i,(isTex&&i==2)?VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER:VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,1,VK_SHADER_STAGE_COMPUTE_BIT,nullptr};
  VkDescriptorSetLayoutCreateInfo dl{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};dl.bindingCount=4;dl.pBindings=binds;VkDescriptorSetLayout dsl;CHECK(vkCreateDescriptorSetLayout(c.dev,&dl,nullptr,&dsl));
  VkPushConstantRange pr{VK_SHADER_STAGE_COMPUTE_BIT,0,16};VkPipelineLayoutCreateInfo plc{VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};plc.setLayoutCount=1;plc.pSetLayouts=&dsl;plc.pushConstantRangeCount=1;plc.pPushConstantRanges=&pr;VkPipelineLayout pl;CHECK(vkCreatePipelineLayout(c.dev,&plc,nullptr,&pl));
  VkPipeline pipe=VK_NULL_HANDLE;VkShaderModule sm=VK_NULL_HANDLE;
@@ -86,15 +104,15 @@ int main(int argc,char** argv){
  VkPipelineShaderStageRequiredSubgroupSizeCreateInfo rss{VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_REQUIRED_SUBGROUP_SIZE_CREATE_INFO};rss.requiredSubgroupSize=g_subgroup;
  VkComputePipelineCreateInfo pci{VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};pci.layout=pl;pci.stage={VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,(family=="matrix"&&g_sgctl)?&rss:nullptr,0,VK_SHADER_STAGE_COMPUTE_BIT,sm,"main",&spec};
  CHECK(vkCreateComputePipelines(c.dev,VK_NULL_HANDLE,1,&pci,nullptr,&pipe));}
- VkDescriptorPoolSize ps{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,4};VkDescriptorPoolCreateInfo dpc{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};dpc.maxSets=1;dpc.poolSizeCount=1;dpc.pPoolSizes=&ps;VkDescriptorPool dp;CHECK(vkCreateDescriptorPool(c.dev,&dpc,nullptr,&dp));VkDescriptorSetAllocateInfo da{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};da.descriptorPool=dp;da.descriptorSetCount=1;da.pSetLayouts=&dsl;VkDescriptorSet ds;CHECK(vkAllocateDescriptorSets(c.dev,&da,&ds));
- VkDescriptorBufferInfo db[4];VkWriteDescriptorSet wr[4];for(int i=0;i<4;i++){db[i]={use[i],0,sizes[i]};wr[i]={VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,nullptr,ds,(uint32_t)i,0,1,VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,nullptr,&db[i],nullptr};}vkUpdateDescriptorSets(c.dev,4,wr,0,nullptr);
+ VkDescriptorPoolSize ps[2]={{VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,4},{VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,1}};VkDescriptorPoolCreateInfo dpc{VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO};dpc.maxSets=1;dpc.poolSizeCount=2;dpc.pPoolSizes=ps;VkDescriptorPool dp;CHECK(vkCreateDescriptorPool(c.dev,&dpc,nullptr,&dp));VkDescriptorSetAllocateInfo da{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};da.descriptorPool=dp;da.descriptorSetCount=1;da.pSetLayouts=&dsl;VkDescriptorSet ds;CHECK(vkAllocateDescriptorSets(c.dev,&da,&ds));
+ VkDescriptorBufferInfo db[4];VkDescriptorImageInfo di{tex.sampler,tex.view,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};VkWriteDescriptorSet wr[4];for(int i=0;i<4;i++){db[i]={use[i],0,sizes[i]};wr[i]={VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,nullptr,ds,(uint32_t)i,0,1,VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,nullptr,&db[i],nullptr};if(isTex&&i==2){wr[i].descriptorType=VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;wr[i].pImageInfo=&di;wr[i].pBufferInfo=nullptr;}}vkUpdateDescriptorSets(c.dev,4,wr,0,nullptr);
  VkQueryPoolCreateInfo qc{VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO};qc.queryType=VK_QUERY_TYPE_TIMESTAMP;qc.queryCount=2;VkQueryPool qp;CHECK(vkCreateQueryPool(c.dev,&qc,nullptr,&qp));
  VkCommandBufferAllocateInfo ca{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};ca.commandPool=c.pool;ca.level=VK_COMMAND_BUFFER_LEVEL_PRIMARY;ca.commandBufferCount=1;VkCommandBuffer cb;CHECK(vkAllocateCommandBuffers(c.dev,&ca,&cb));
  VkFenceCreateInfo fc{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO};VkFence fence;CHECK(vkCreateFence(c.dev,&fc,nullptr,&fence));
  // Dispatches per timed submission; calibration raises it when a loop count is capped
  // (bounded FP16 accumulation) so every sample still reaches the target duration.
  uint32_t batch=cfg.value("batch_dispatches",1u);
- const uint32_t pc2=(family=="memory"&&op==0)?cfg.value("replicas",1u):family=="ert"?bits(cfg.value("alpha",0.5f)):17u,pc3=family=="ert"?bits(cfg.value("beta",0.25f)):0u;
+ const uint32_t pc2=(family=="memory"&&op==0)?cfg.value("replicas",1u):family=="ert"?bits(cfg.value("alpha",0.5f)):isTex?log2W:17u,pc3=family=="ert"?bits(cfg.value("beta",0.25f)):isTex?log2H:0u;
  auto execute=[&](uint32_t its){
  CHECK(vkResetCommandBuffer(cb,0));VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};CHECK(vkBeginCommandBuffer(cb,&bi));vkCmdResetQueryPool(cb,qp,0,2);
  VkMemoryBarrier mb{VK_STRUCTURE_TYPE_MEMORY_BARRIER};mb.srcAccessMask=VK_ACCESS_HOST_WRITE_BIT|VK_ACCESS_SHADER_WRITE_BIT|VK_ACCESS_TRANSFER_WRITE_BIT;mb.dstAccessMask=VK_ACCESS_SHADER_READ_BIT|VK_ACCESS_SHADER_WRITE_BIT|VK_ACCESS_TRANSFER_READ_BIT|VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -119,6 +137,9 @@ int main(int argc,char** argv){
   if(op==0&&family=="memory"){size_t base=threads/cfg.value("replicas",1u);for(size_t id=0;id<threads;id+=std::max<size_t>(1,threads/1024)){if(id%base>=n)continue;for(uint32_t v=0;v<width;v++){double ref=0;for(size_t i=id%base;i<n;i+=base)ref+=A[i*width+v];check(id*width+v,ref*its);}}}
   else if(op==6&&family=="memory"){for(size_t g=0;g<groups;g+=std::max<size_t>(1,groups/32))for(uint32_t v=0;v<width;v++){double ref=0;for(size_t tid=g*wg;tid<(g+1)*wg;tid++)for(size_t i=tid;i<n;i+=threads)ref+=double(A[i*width+v])*B[i*width+v];check(g*width+v,ref*its);}}
   else for(size_t i=0;i<size_t(n)*width;i+=std::max<size_t>(1,n*width/4096)){double a=A[i],bb=B[i];check(i,family=="copy"?a:op==1?((i/width+17)&127):op==2?a:op==3?a*2:op==4?a+bb:a*2+bb);}
+ }else if(family=="texture"){
+  // Each invocation sums texels i = id, id+threads, ... (< n) over its loops, per channel.
+  for(size_t id=0;id<threads;id+=std::max<size_t>(1,threads/512))for(uint32_t ch=0;ch<4;ch++){double ref=0;for(size_t i=id;i<n;i+=threads)ref+=double((i*13+ch*7)%127)*0.0625;check(id*4+ch,ref*its);}
  }else if(family=="matrix"){
   for(size_t group=0;group<groups;group+=std::max<size_t>(1,groups/16))for(uint32_t ch=0;ch<chains;ch++)for(size_t i=0;i<M*N;i++)check((group*chains+ch)*M*N+i,(integer?double(ch):double(ch)/16)+its*K*(integer?1.0:1.0/256));
  }else if(family=="alu"){

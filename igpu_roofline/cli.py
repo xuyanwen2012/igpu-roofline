@@ -103,8 +103,8 @@ def main(argv=None):
     r.add_argument("--device", help="adb serial")
     r.add_argument("--local", action="store_true", help="measure this host's own GPU (Linux iGPU) instead of an adb device")
     r.add_argument("--local-name", help="results folder name for --local (default: <hostname>-<gpu>)")
-    r.add_argument("--plan", choices=["quick", "standard", "gold"], default="quick",
-                   help="quick ~10 min; standard ~3 h (1 sustained batch); gold ~7 h (3 sustained batches)")
+    r.add_argument("--plan", choices=["quick", "fast", "standard", "gold"], default="quick",
+                   help="quick: smoke test (~15-30 min); fast: shader-tuning roofs incl. WMMA feed and texture (~35-45 min, estimate); standard ~4 h; gold ~7 h")
     r.add_argument("--overrides", help="optional device override YAML (see docs/HOW-TO-RUN.md)")
     r.add_argument("--no-report", action="store_true", help="skip report generation at the end")
     r.set_defaults(func=cmd_run)

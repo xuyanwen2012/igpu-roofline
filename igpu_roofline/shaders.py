@@ -75,6 +75,13 @@ def catalogue() -> list[tuple[str, str, dict, dict]]:
             dict(family="dot", width=1, chains=chains, dtype="int8", dots_per_step=8))
 
     add("pchase", "pchase", {}, dict(family="latency", width=1, dtype="uint32"))
+    # Texture vs storage buffer reads of the same texels (ExecuTorch reads texture3d /
+    # texture2d through texelFetch). tex_dim 0 = storage buffer.
+    for fmt, texel in (("rgba16f", "f16vec4"), ("rgba32f", "vec4")):
+        for mode, dim in (("buffer", 0), ("tex2d", 2), ("tex3d", 3)):
+            add(f"texture_{fmt}_{mode}", "texture", dict(TEX=dim, TEXEL=texel),
+                dict(family="texture", width=4, dtype="fp16" if fmt == "rgba16f" else "fp32",
+                     format=fmt, tex_dim=dim, mode=mode))
     ert_flops = (1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024)
     for flops in ert_flops:
         add(f"ert_f{flops}", "ert", dict(FLOPS=flops),

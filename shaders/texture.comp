@@ -1,0 +1,38 @@
+#version 450
+// Texture vs storage-buffer read bandwidth (ExecuTorch Vulkan kernels read inputs as
+// texture3d/texture2d through texelFetch). One kernel, three sources selected by TEX:
+//   0: storage buffer of TEXEL (vec4 or f16vec4), linear index
+//   2: sampler2D, texel (i & (W-1), i >> log2W)
+//   3: sampler3D, texel (i & (W-1), (i >> log2W) & (H-1), i >> (log2W+log2H))
+// Same data, same visiting order (grid-stride, consecutive invocations read
+// consecutive texels along x), so only the fetch path differs. p.seed = log2(W),
+// p.offset = log2(H); W and H are powers of two chosen by the runner.
+#extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
+#extension GL_EXT_shader_16bit_storage : require
+layout(local_size_x_id=0) in;
+layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
+#if TEX==0
+layout(binding=0) readonly buffer A { TEXEL t[]; };
+#elif TEX==2
+layout(binding=2) uniform highp sampler2D tex;
+#else
+layout(binding=2) uniform highp sampler3D tex;
+#endif
+layout(binding=3) writeonly buffer D { vec4 d[]; };
+void main(){
+ uint id=gl_GlobalInvocationID.x, nt=gl_NumWorkGroups.x*gl_WorkGroupSize.x;
+ uint wmask=(1u<<p.seed)-1u, hmask=(1u<<p.offset)-1u;
+ vec4 sum=vec4(0.0);
+ for(uint l=0;l<p.loops;l++){
+  for(uint i=id;i<p.n;i+=nt){
+#if TEX==0
+   sum+=vec4(t[i]);
+#elif TEX==2
+   sum+=texelFetch(tex,ivec2(i&wmask,i>>p.seed),0);
+#else
+   sum+=texelFetch(tex,ivec3(i&wmask,(i>>p.seed)&hmask,i>>(p.seed+p.offset)),0);
+#endif
+  }
+ }
+ d[id]=sum;
+}
