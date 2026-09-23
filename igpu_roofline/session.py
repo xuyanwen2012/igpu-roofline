@@ -161,7 +161,9 @@ class Session:
                    fault_delta=None if fault_before is None or fault_after is None else fault_after - fault_before,
                    wall_seconds=time.time() - start,
                    allocation=next((e for e in events if e.get("event") == "allocation"), None),
-                   warmup=next((e for e in events if e.get("event") == "warmup"), None),
+                   # The pre-sampling warm-up (last one) decides steadiness; all are kept.
+                   warmup=next((e for e in reversed(events) if e.get("event") == "warmup"), None),
+                   warmups=[e for e in events if e.get("event") == "warmup"],
                    gpu_freq=[t.get("gpu_freq") for t in telemetry],
                    events=[e for e in events if e.get("event") not in ("sample", "sample_half")])
         # Exact results are required except for float reductions whose summation order

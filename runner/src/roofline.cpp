@@ -162,20 +162,29 @@ int main(int argc,char** argv){
  // samples ramping 15 -> 4.4 ms). Warm up for warmup_seconds AND until the last five
  // dispatch times agree within 3 % (cap 4 x warmup_seconds), then re-calibrate at the
  // ramped clock so samples still reach the target duration.
- calibrate();
- {const double warm=cfg.value("warmup_seconds",0.0);auto w0=std::chrono::steady_clock::now();int wn=0;double firstw=0,lastw=0;bool steady=false;std::vector<double> recent;
+ // warm_up: dispatch at the calibrated size for warmup_seconds AND until the last five
+ // dispatch times agree within 3 % (cap 4 x warmup_seconds); logs a warmup event.
+ const double warm=cfg.value("warmup_seconds",0.0);
+ auto warm_up=[&](const char* phase){
+  if(warm<=0)return;
+  auto w0=std::chrono::steady_clock::now();int wn=0;double firstw=0,lastw=0;bool steady=false;std::vector<double> recent;
   auto el=[&](){return std::chrono::duration<double>(std::chrono::steady_clock::now()-w0).count();};
-  if(warm>0)do{lastw=execute(loops);if(!wn)firstw=lastw;wn++;recent.push_back(lastw);if(recent.size()>5)recent.erase(recent.begin());
+  do{lastw=execute(loops);if(!wn)firstw=lastw;wn++;recent.push_back(lastw);if(recent.size()>5)recent.erase(recent.begin());
    if(recent.size()==5){auto mm=std::minmax_element(recent.begin(),recent.end());steady=(*mm.second-*mm.first)<=0.03*(*mm.second);}
   }while(wn<2||el()<warm||(!steady&&el()<4*warm));
-  puts(json{{"event","warmup"},{"dispatches",wn},{"first_seconds",firstw},{"last_seconds",lastw},{"steady",steady},{"wall_seconds",el()},{"batch_dispatches",batch}}.dump().c_str());}
- calibrate();
+  puts(json{{"event","warmup"},{"phase",phase},{"dispatches",wn},{"first_seconds",firstw},{"last_seconds",lastw},{"steady",steady},{"wall_seconds",el()},{"batch_dispatches",batch}}.dump().c_str());
+ };
+ calibrate();warm_up("calibration");calibrate();
  execute(loops);auto val=validate(loops);if(!val["pass"].get<bool>()){puts(json{{"event","validation_failed"},{"config",cfg},{"loops",loops},{"validation",val}}.dump().c_str());return 3;}
  double duration=cfg.value("duration_seconds",0.0);
  // Differential (two-point) timing: interleave loops and loops/2 so the paired
  // difference removes fixed per-dispatch cost (launch, fills, write-back).
  const bool diff=duration<=0&&cfg.value("differential",true)&&family!="copy"&&loops>=2;const uint32_t half_loops=loops/2;
  if(diff){execute(half_loops);auto vh=validate(half_loops);if(!vh["pass"].get<bool>()){puts(json{{"event","validation_failed"},{"config",cfg},{"loops",half_loops},{"validation",vh}}.dump().c_str());return 3;}}
+ // Validation above runs on the CPU with the GPU idle (hundreds of ms for long
+ // loops), long enough for the governor to drop the clock again (780M: samples
+ // ramped 26 -> 7.5 ms after it). Warm up once more immediately before sampling.
+ warm_up("sampling");
  auto start=std::chrono::steady_clock::now();int samples=cfg.value("samples",21);int i=0;
  do{double sec=execute(loops);double elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();puts(json{{"event","sample"},{"sample",i},{"seconds",sec},{"elapsed_seconds",elapsed},{"loops",loops},{"batch_dispatches",batch},{"validation",val},{"timestamp_period_ns",c.props.limits.timestampPeriod},{"timestamp_valid_bits",c.timestampBits}}.dump().c_str());
  if(diff){double sh=execute(half_loops);puts(json{{"event","sample_half"},{"sample",i},{"seconds",sh},{"loops",half_loops}}.dump().c_str());}
