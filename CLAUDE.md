@@ -65,14 +65,18 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
 
 ## Devices
 
-Full cooperative-matrix (WMMA) shape lists per device: [docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md)
-(refresh with `igpu-roofline shapes --device <serial>` or `--local`).
+Fleet overview (hardware, driver, WMMA yes/no, where each device is connected):
+[docs/FLEET.md](docs/FLEET.md). Full cooperative-matrix (WMMA) shape lists per device:
+[docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md) (refresh with `igpu-roofline shapes
+--device <serial>` or `--local`).
 
 | device | GPU | access | root | clocks | ISA route | known issues |
 |---|---|---|---|---|---|---|
 | vivo V2502A `10AFAT2014002UM` | Mali-G1-Ultra MC12 (MT6993), r54p1 | adb on the owner's Mac | no | DVFS, not readable | `malioc` if installed (not yet) | latched ~40 % slow state (below) |
 | Samsung S26 Ultra `R3GL10GC1AP` | Adreno 840 | adb on the owner's Mac | no | DVFS, kgsl readable | none offline; driver stats only | stepwise throttling after 40–90 s |
 | Samsung M51 `000008354c579c33` | Xclipse 970 (S5E9975) | host `xgpusw-debug06` | **yes** | pinned: GPU 980 MHz (max OPP), MIF 5333, INT 934 | pipeline dump + ISA: **TODO(owner)** | driver/profiler state checks (below) |
+| Samsung Galaxy S24+ `R5CY21Y3VEV` | Xclipse 940 (Exynos 2400), Samsung 24.0.534 | adb on `rocky-ryzen` | no | DVFS, `/sys/kernel/gpu` readable | **TODO(owner)** | no WMMA (coopmat not exposed); no run yet |
+| Google Pixel 7a `3A021JEHN02756` | Mali-G710 (Tensor G2), r54p3 | adb on `rocky-ryzen` | no | DVFS | `malioc` (in `~/tools/` on rocky-ryzen) | no WMMA (coopmat not exposed); no run with current `main` |
 | host `rocky-ryzen` (Minisforum UM790 Pro) | Radeon 780M, RADV (Mesa 25.2.7) | `ssh doremy@rocky-ryzen`, `run --local` | no (no sudo) | DVFS, `pp_dpm_*` readable | driver-returned ISA (RADV `Assembly`) | shares DRAM with the CPU |
 
 ### Mali-G1 phone (vivo V2502A)
