@@ -39,6 +39,8 @@ def ledger(asm: str) -> dict:
             counts["coopmat_muladd"] += 1
         if "OpCooperativeMatrixLoadKHR" in s:
             counts["coopmat_load"] += 1
+        if re.search(r"= OpImageFetch ", s):
+            counts["image_fetch"] = counts.get("image_fetch", 0) + 1
         if s.startswith("OpControlBarrier"):
             counts["control_barrier"] += 1
         if re.search(r"\bVolatile\b", s):
@@ -72,6 +74,11 @@ def expected(meta: dict) -> dict:
         if meta["op"] == 0:
             return {"load_Workgroup": acc, "store_Workgroup": 1, "control_barrier": 1, "volatile": acc + 1}
         return {"load_Workgroup": 1, "store_Workgroup": acc, "control_barrier": 1, "volatile": acc + 1}
+    if family == "texture":
+        # One texel read per loop trip: an image fetch (textures) or a buffer load.
+        if meta["tex_dim"]:
+            return {"image_fetch": 1, "store_StorageBuffer": 1}
+        return {"load_StorageBuffer": 1, "store_StorageBuffer": 1}
     if family == "latency":
         return {"load_StorageBuffer": 16, "store_StorageBuffer": 1}
     if family == "ert":

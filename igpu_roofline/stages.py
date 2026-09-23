@@ -19,6 +19,12 @@ PLANS = {
     # Every family once at its most informative settings; roofs confirmed by 3 repeats
     # of the best candidate; no sustained runs.
     "quick": dict(level="quick", warmup_seconds=0.25, confirm=dict(top=1, reps=3), sustain=None),
+    # Only what shader tuning needs (~35-45 min on a phone): compute, WMMA register +
+    # fed roofs, DRAM/cache/shared/texture bandwidth, latency levels; top 2 x 3
+    # confirmation; 120 s sustained runs of three representative roofs.
+    "fast": dict(level="fast", warmup_seconds=0.5, confirm=dict(top=2, reps=3),
+                 sustain=dict(batches=1, duration=120, cooldown=60,
+                              keys=[["alu_fp16"], ["matrix_fp16_fp32", "matrix_fp16", "matrix_int8"], ["memory_fp32_0"]])),
     # All sweeps, top-3 candidates x 5 repeats per roof, one 300 s sustained run per roof.
     "standard": dict(level="full", warmup_seconds=1.0, confirm=dict(top=3, reps=5),
                      sustain=dict(batches=1, duration=300, cooldown=90)),
@@ -76,6 +82,8 @@ def validate(s, plan):
 
 def first_look(s, plan):
     """One representative configuration per family."""
+    if plan["level"] == "fast":
+        return  # smoke test only; the sweeps below cover it
     for m in s.manifest:
         f = m["family"]
         pick = ((f == "memory" and m["width"] == 4) or (f == "alu" and m["width"] == 4 and m["chains"] in (4, 8))
@@ -94,7 +102,7 @@ def first_look(s, plan):
 
 def cache(s, plan):
     """Read bandwidth vs working-set size (small sets use replicated workgroups)."""
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     for w in ((4,) if quick else (1, 2, 4)):
         m = s.variant(f"mem_read_v{w}")
         for exp in range(12, 30):
@@ -112,10 +120,12 @@ def cache(s, plan):
 
 def memory(s, plan):
     """BabelStream kernels over working sets up to 512 MiB (>=256 MiB defines the DRAM roof)."""
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     for m in s.manifest:
         if m["family"] != "memory" or m["width"] != 4 or (quick and m.get("volatile_global")):
             continue
+        if plan["level"] == "fast" and m["op"] not in (0, 1, 2, 5):
+            continue  # read, write, copy, triad
         for exp in ((28, 29) if quick else range(12, 30)):
             arrays = ARRAYS_PER_OP[m["op"]]
             n = (1 << exp) // (arrays * 16) // 64 * 64
@@ -156,19 +166,23 @@ def matrix_coverage(s) -> list[dict]:
 
 def compute(s, plan):
     """FMA / int8 dot / cooperative matrix over vector width, chains and launch size."""
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     missing = matrix_coverage(s)
     if missing:
         print(f"{s.device.serial} matrix shapes supported but not compiled: {len(missing)} (see matrix-coverage.json)", flush=True)
     for m in s.manifest:
         if m["family"] not in ("alu", "dot", "matrix") or not s.eligible(m) or m.get("feed"):
             continue
+        if plan["level"] == "fast" and m["family"] == "matrix" and m["chains"] not in (4, 8):
+            continue  # FMA/dot keep every width and chain count: the best differs per GPU
+                      # (780M FP32: scalar x 8 chains; int8 dot: 2 chains)
         if m["family"] == "matrix":
             points = matrix_grid(m, s.caps, quick)
         else:
             # 512 x 256 threads did not saturate Mali-G1 MC12 FP32; go to 8192 workgroups.
-            points = [(wg, g) for wg in ([256] if quick else [64, 128, 256])
-                      for g in ((2048,) if quick else (64, 512, 2048, 8192))]
+            points = [(wg, g) for wg in ((128, 256) if plan["level"] == "fast" else [256] if quick else [64, 128, 256])
+                      for g in ((2048, 8192) if plan["level"] == "fast" else (2048,) if quick
+                                else (64, 512, 2048, 8192))]
         for wg, g in points:
             c = s.base(m, plan["warmup_seconds"])
             c.update(wg=wg, groups=g)
@@ -180,7 +194,7 @@ def matrix_feed(s, plan):
     roof excludes loads): from workgroup memory, from a cache-resident buffer
     (~1 MiB of tiles) and from DRAM (>= 256 MiB of tiles, each tile read once).
     CHAINS = multiply-adds per loaded A/B pair, i.e. reuse per load."""
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     for m in s.manifest:
         if m["family"] != "matrix" or not m.get("feed") or not s.eligible(m):
             continue
@@ -193,22 +207,43 @@ def matrix_feed(s, plan):
             sources = [max(1, MiB // tile_bytes), min(biggest, -(-256 * MiB // tile_bytes))]
         for tiles in sources:
             for wg, g in matrix_grid(m, s.caps, quick):
-                if g < 4096:
+                if g < 4096 or (plan["level"] == "fast" and g < 16384):
                     continue  # small launches are covered by the compute sweep
                 c = s.base(m, plan["warmup_seconds"])
                 c.update(wg=wg, groups=g, n=tiles)
                 s.run(c, "sweep-matrix-feed")
 
 
+def texture(s, plan):
+    """Texture vs storage-buffer read bandwidth on the same texels: storage buffer,
+    2D and 3D sampled images (texelFetch), RGBA16F and RGBA32F, cache-resident
+    (1 MiB) and DRAM-sized (256 MiB) working sets."""
+    wgs = (256,) if plan["level"] in ("quick", "fast") else (64, 256)
+    for m in s.variants(family="texture"):
+        texel = 8 if m["format"] == "rgba16f" else 16
+        for ws in (MiB, 256 * MiB):
+            n = ws // texel
+            if m["tex_dim"] == 0 and n * texel > s.caps["max_storage_buffer_range"]:
+                continue  # only the storage-buffer mode is bound by maxStorageBufferRange
+            for wg in wgs:
+                c = s.base(m, plan["warmup_seconds"])
+                c.update(wg=wg, groups=4096, n=n, loops=1)
+                s.run(c, "sweep-texture")
+
+
 def shared(s, plan):
     """Workgroup memory: workgroup size, allocation size and stride (bank conflicts)."""
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     max_shared = s.caps["max_shared_bytes"]
-    strides = (1, 2, 4, 8, 16, 32, 33, 64, 65)
+    fast = plan["level"] == "fast"
+    # fast: conflict-free, worst power-of-two and padded stride only.
+    strides = (1, 32, 33) if fast else (1, 2, 4, 8, 16, 32, 33, 64, 65)
     for m in s.manifest:
         if m["family"] != "shared":
             continue
-        if quick and not (m.get("kind") == "bw" and m["width"] == 4 and m["accumulators"] == 8):
+        if fast and not (m.get("kind") == "bw" and m["width"] in (2, 4) and m["accumulators"] in (8, 32)):
+            continue  # 780M: the fp32 read roof came from width 2 at 128 threads
+        if quick and not fast and not (m.get("kind") == "bw" and m["width"] == 4 and m["accumulators"] == 8):
             continue
         scalar = 2 if m["dtype"] == "fp16" else 4
         # Workgroup size and allocation size matter as much as stride (together up to 5x
@@ -235,7 +270,7 @@ def latency(s, plan):
     loads): too few loads and fixed dispatch cost dominates; too many serial loads in
     one dispatch trip the driver's GPU watchdog (VK_ERROR_DEVICE_LOST).
     """
-    quick = plan["level"] == "quick"
+    quick = plan["level"] in ("quick", "fast")
     m = s.variants(family="latency")[0]
     limit = min(256 * MiB, s.caps["max_storage_buffer_range"])
 
@@ -269,8 +304,10 @@ def latency(s, plan):
 
 def ert(s, plan):
     """Empirical Roofline Toolkit sweep: arithmetic intensity 0.25..256 FLOP/byte."""
+    if plan["level"] == "fast":
+        return
     for m in s.variants(family="ert"):
-        for wg in ((256,) if plan["level"] == "quick" else (64, 256)):
+        for wg in ((256,) if plan["level"] in ("quick", "fast") else (64, 256)):
             c = s.base(m, plan["warmup_seconds"])
             c.update(wg=wg, groups=4096, n=8 * MiB, loops=1)
             s.run(c, "ert")
@@ -278,6 +315,8 @@ def ert(s, plan):
 
 def memory_type(s, plan):
     """A/B control: the same kernels with DEVICE_LOCAL vs host-visible coherent buffers."""
+    if plan["level"] == "fast":
+        return
     for rep in range(1 if plan["level"] == "quick" else 3):
         for name in ("mem_read_v4", "mem_write_v4", "mem_copy_v4", "mem_triad_v4"):
             m = s.variant(name)
@@ -444,6 +483,8 @@ def roof_key(stage: str, r: dict):
     key = f + "_" + c.get("dtype", "") + (f"_{c['op']}" if f in ("memory", "shared") else "")
     if f == "matrix" and c.get("feed"):
         return matrix_feed_key(c, a)
+    if f == "texture":
+        return texture_key(c, a)
     if f == "memory":
         if stage == "sweep-cache" or c.get("role") == "cache":
             return "cache_read_effective" if 32768 <= a.get("working_set_bytes", 0) <= 4 * MiB else None
@@ -461,12 +502,21 @@ def matrix_feed_key(c: dict, a: dict):
     return base + ("dram" if ws >= 256 * MiB else "cache" if ws <= 4 * MiB else "mid")
 
 
+def texture_key(c: dict, a: dict):
+    ws = a.get("working_set_bytes", 0)
+    level = "dram" if ws >= 256 * MiB else "cache" if ws <= 4 * MiB else None
+    return f"texture_{c['format']}_{c['mode']}_{level}" if level else None
+
+
 def rate(r: dict) -> float:
     c, a = r["config"], r["accounting"]
     f = c["family"]
     work = (a.get("integer_ops", 0) + a.get("float_ops", 0) if f in ("alu", "dot", "matrix")
             else a["logical_shared_bytes"] if f == "shared" else a["logical_global_bytes"])
     return work / r["median_seconds"]
+
+
+SOFT_GATES = {"noisy_median"}
 
 
 def candidates(s, top: int) -> dict:
@@ -484,7 +534,12 @@ def candidates(s, top: int) -> dict:
         if p.parent.name == "sweep-cache":
             r["config"] = dict(r["config"], role="cache")
         why = quality(r)
-        if why:
+        # A noisy median alone does not disqualify a candidate: confirmation re-measures
+        # it in fresh processes and every repeat must pass all gates. (780M fast run: the
+        # true shared fp32 read roof, 3.5 TB/s, was one noisy run and was dropped, so a
+        # 25 % lower config was confirmed.) Short, drifting, unsteady or fixed-cost
+        # dominated results are still excluded.
+        if why and not set(why) <= SOFT_GATES:
             gated.setdefault(key, []).append(dict(name=r["config"]["name"], rate=rate(r), why=why))
         else:
             best.setdefault(key, []).append(r)
@@ -504,8 +559,10 @@ def confirm(s, plan):
     work = [(k, r) for k, v in sorted(candidates(s, cfg["top"]).items()) for r in v]
     for i in range(cfg["reps"]):
         for n, (key, r) in enumerate(work if i % 2 == 0 else work[::-1]):
-            c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True,
-                     loops=1 if r["config"]["family"] == "memory" else 128)
+            # Keep the swept starting loop count: streaming families (memory, texture)
+            # start at 1 pass; forcing 128 made 256 MiB texture passes last ~1 s per
+            # dispatch, so warm-up could never see five steady dispatches.
+            c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True)
             s.run(c, "confirm")
 
 
@@ -542,6 +599,14 @@ def sustain(s, plan):
     (s.out / "sustained-selection.json").write_text(json.dumps(winners, indent=2))
     sustained_sha = paths.digest(paths.RUNNER_SUSTAINED)
     same = lambda d: {k: v for k, v in d.items() if k not in ("duration_seconds", "warmup_seconds")}
+    if cfg.get("keys"):
+        # Representative roofs only: the first available key of each group.
+        picked = {}
+        for group in cfg["keys"]:
+            key = next((k for k in group if k in winners), None)
+            if key:
+                picked[key] = winners[key]
+        winners = picked
     for batch in range(cfg["batches"]):
         probe(s, f"sustain_{batch}", plan)
         for key, r in sorted(winners.items()):
@@ -601,7 +666,7 @@ def offline_isa(s, plan):
 
 
 # --- plan driver ---------------------------------------------------------------------
-SHORT_STAGES = [validate, first_look, cache, memory, compute, matrix_feed, shared, latency, ert, memory_type]
+SHORT_STAGES = [validate, first_look, cache, memory, compute, matrix_feed, texture, shared, latency, ert, memory_type]
 
 
 def run_plan(s, plan_name: str):
@@ -619,7 +684,8 @@ def run_plan(s, plan_name: str):
             name = step.__name__
             mark(name)
             print(f"=== {s.device.serial} {name}", flush=True)
-            measuring = step in SHORT_STAGES or step is confirm
+            skipped = plan["level"] == "fast" and step in (first_look, ert, memory_type)
+            measuring = (step in SHORT_STAGES or step is confirm) and not skipped
             if measuring and guard is None:
                 guard = s.guard = Guard(s, plan)
             if measuring:
