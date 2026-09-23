@@ -29,12 +29,27 @@ static bool hasDeviceExt(VkPhysicalDevice pd,const char* name){
     uint32_t n=0; vkEnumerateDeviceExtensionProperties(pd,nullptr,&n,nullptr); std::vector<VkExtensionProperties> e(n);
     vkEnumerateDeviceExtensionProperties(pd,nullptr,&n,e.data()); for(auto& x:e) if(!strcmp(x.extensionName,name)) return true; return false;
 }
+// Pick the GPU to measure. Hosts often expose a CPU rasterizer (llvmpipe) next to the
+// GPU, so CPU devices are skipped; IGPU_ROOFLINE_GPU selects by name substring.
+static VkPhysicalDevice pickPhysicalDevice(VkInstance inst) {
+    uint32_t n = 0; CHECK(vkEnumeratePhysicalDevices(inst, &n, nullptr));
+    std::vector<VkPhysicalDevice> all(n); CHECK(vkEnumeratePhysicalDevices(inst, &n, all.data()));
+    const char* want = getenv("IGPU_ROOFLINE_GPU");
+    VkPhysicalDevice pick = VK_NULL_HANDLE;
+    for (auto pd : all) {
+        VkPhysicalDeviceProperties p; vkGetPhysicalDeviceProperties(pd, &p);
+        if (want && *want) { if (strstr(p.deviceName, want)) { pick = pd; break; } continue; }
+        if (p.deviceType != VK_PHYSICAL_DEVICE_TYPE_CPU) { pick = pd; break; }
+    }
+    if (!pick) throw std::runtime_error(want && *want ? "no Vulkan device matches IGPU_ROOFLINE_GPU" : "no non-CPU Vulkan device");
+    return pick;
+}
 static Ctx createCtx() {
     Ctx c;
     VkApplicationInfo ai{VK_STRUCTURE_TYPE_APPLICATION_INFO}; ai.apiVersion = VK_API_VERSION_1_3;
     VkInstanceCreateInfo ici{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO}; ici.pApplicationInfo = &ai;
     CHECK(vkCreateInstance(&ici, nullptr, &c.inst));
-    uint32_t n = 1; CHECK(vkEnumeratePhysicalDevices(c.inst, &n, &c.pd));
+    c.pd = pickPhysicalDevice(c.inst);
 
     VkPhysicalDeviceProperties props; vkGetPhysicalDeviceProperties(c.pd, &props); c.props=props;
     fprintf(stderr,"Device: %s (Vulkan %u.%u)\n", props.deviceName, VK_VERSION_MAJOR(props.apiVersion), VK_VERSION_MINOR(props.apiVersion));

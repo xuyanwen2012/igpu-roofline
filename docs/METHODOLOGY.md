@@ -130,15 +130,21 @@ compute AI, and compare its measured rate to `min(...)`.
 
 ## Roof selection and device state
 
-**Warm-up, then calibrate.** Each configuration first runs for `warmup_seconds` of wall
-clock (plan setting), *then* sizes its loop count so a sample lasts >= 5 ms
-(`target_seconds`). When a loop count is capped (bounded FP16 accumulation in matrix
+**Calibrate, warm up at full size, re-calibrate.** Each configuration first sizes its
+loop count so a dispatch lasts >= 5 ms (`target_seconds`), then warms up with that
+dispatch for `warmup_seconds` and until the last five dispatch times agree within 3 %
+(cap 4 x `warmup_seconds`), then re-calibrates. Load-based governors key on GPU busy %:
+on a Radeon 780M, 1 s of 0.08 ms dispatches left the clock low and samples ramped from
+15 to 4.4 ms. A result whose warm-up never became steady, or whose last-third median
+differs from its first-third median by > 5 % (`sample_drift`), cannot define a roof. When a loop count is capped (bounded FP16 accumulation in matrix
 and shared-memory tests), calibration raises the dispatches per timed submission
 instead; accounting multiplies by the batch the runner actually used. A sample shorter
 than 80 % of the target is flagged `below_target_duration`.
 
-**Quality gates.** A result can define a roof only if CV <= 5 %, it is not short, and its
-differential is valid with fixed cost <= 10 % of the sample. `roof-candidates.json`
+**Quality gates.** A result can define a roof only if the standard error of its median
+(~1.2533 x CV / sqrt(n)) is <= 3 %, it is not short, and its differential is valid with
+fixed cost <= 10 % of the sample. The gate is on the median, not on per-sample CV: phone
+DRAM and shared-memory samples scatter 6-14 % while the 21-sample median stays within ~3 %. `roof-candidates.json`
 lists faster results that were gated out and why.
 
 **Confirmation (winner's curse).** A sweep runs hundreds of configurations; its maximum
@@ -167,12 +173,36 @@ differential is one warm pass. One pass per dispatch measured cold lines.
 FP32 (outside the timed loop), so results remain exact integers and are validated
 exactly.
 
+**Shared-memory write test.** Every store goes to a distinct address,
+`(l*STRIDE + t*step + k*w) % COUNT` with a runtime `step` (push constant), and stores a
+runtime-uniform value. The first design stored `ACC x loops` times to one slot per lane;
+RADV/ACO folded the whole loop into a single `ds_store` despite SPIR-V `Volatile`
+(verified in the driver-returned ISA), which reported 12-20 TB/s on a Radeon 780M. The
+new form compiles to `ACC` stores per iteration there. Address arithmetic costs about
+two VALU instructions per store, so narrow (scalar) variants can be VALU-bound; the roof
+is the fastest width.
+
+**Timing cross-check.** On the 780M a 0.38 s read sample gave 85.0 GB/s by GPU
+timestamps and 84.7 GB/s by host wall clock (which includes submit/wait), so the
+reported `timestampPeriod` is right; `vkCmdCopyBuffer` gave 74.6 GB/s against 71.4 GB/s
+for the shader copy.
+
 **Device-state sentinel.** Without a readable GPU clock, a phone can change state
 invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
 2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
-measured before and after every stage (and every 25 runs during confirmation, and before
-every sustained batch). REPORT.md flags stages whose sentinel is below 90 % of the
-session best; re-measure those.
+measured before and after every stage, every 20 configurations inside a stage, and before
+every sustained batch. If it falls below 85 % of the median of the sentinel readings this
+runner has seen on this device, it is re-measured twice; if the median of the three is
+still below, the run stops (the fast state scatters ~+-6 %, the slow state is ~35 % lower): every result measured since the last good sentinel is moved
+to `superseded/degraded-<utc>/`, the workflow state becomes `paused_device_degraded`,
+and rerunning the same command after a reboot and cool-down resumes and re-measures
+them. REPORT.md still lists every sentinel reading.
+
+**Thermal pacing.** On that phone the slow state began while the GPU was at 61-66 C
+under heavy cooperative-matrix load and lasted until reboot. Before every short-run
+configuration the GPU temperature is read from the thermal HAL; above 50 C the run
+waits (up to 10 min) for 45 C. Waits are logged in `pacing.jsonl`. Sustained stages are
+not paced.
 
 ## Limits
 

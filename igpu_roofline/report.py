@@ -106,7 +106,7 @@ def hierarchical_ridges(roofs: dict) -> dict:
 def analyze(folder: Path) -> dict:
     caps = json.loads((folder / "capabilities.json").read_text())
     manifest = json.loads((folder / "artifact-manifest.json").read_text())
-    runners = {manifest["build/android/roofline"]} | {h["sha256"] for h in manifest.get("runner_history", [])}
+    runners = {paths.manifest_runner(manifest)} | {h["sha256"] for h in manifest.get("runner_history", [])}
     all_rows = load_rows(folder)
     valid = [r for r in all_rows if r["accepted"] and "accounting" in r
              and r["config"].get("reference_runner_sha256", r["config"].get("runner_sha256")) in runners
@@ -172,9 +172,9 @@ def analyze(folder: Path) -> dict:
     probes = sorted((r["config"].get("probe_utc", ""), r["config"].get("probe", ""),
                      r["accounting"]["float_ops"] / r["median_seconds"] / 1e12)
                     for r in all_rows if r["source"].startswith("probe/") and r.get("accepted") and r.get("accounting"))
-    top = max((x[2] for x in probes), default=0)
-    sentinel = dict(config="alu_fp32_v4_c16 wg256 groups512", unit="TFLOP/s", best=top, degraded_below=0.9 * top,
-                    timeline=[dict(utc=u, label=lab, value=v, degraded=v < 0.9 * top) for u, lab, v in probes])
+    ref = statistics.median(x[2] for x in probes) if probes else 0
+    sentinel = dict(config="alu_fp32_v4_c16 wg256 groups512", unit="TFLOP/s", median=ref, degraded_below=0.85 * ref,
+                    timeline=[dict(utc=u, label=lab, value=v, degraded=v < 0.85 * ref) for u, lab, v in probes])
     sustained_summary = {k: dict(value=statistics.median(x["value"] for x in vs), unit=vs[0]["unit"], batches=len(vs),
                                  all_steady=all(x["steady"] for x in vs), values=[x["value"] for x in vs],
                                  gpu_duty_fractions=[x["gpu_duty_fraction"] for x in vs], sources=[x["source"] for x in vs])
@@ -185,7 +185,7 @@ def analyze(folder: Path) -> dict:
                    clock_state=caps.get("clock_state"), short_run=peak, sustained=sustained_summary,
                    ridges=dict(short_run=hierarchical_ridges(peak), roofs=hierarchical_ridges(roofs)),
                    physical_dram_bandwidth=None, physical_cache_bandwidth=None,
-                   git_commit=manifest.get("git_commit"), runner_sha256=manifest["build/android/roofline"])
+                   git_commit=manifest.get("git_commit"), runner_sha256=paths.manifest_runner(manifest))
     report = folder / "report"
     report.mkdir(exist_ok=True)
     (report / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
@@ -243,7 +243,7 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
     lines += ["", "## Roof confirmation", "",
               "Each roof's top candidates were re-measured in fresh processes, round-robin with alternating order. "
               "The roof is the median of the best candidate's repeats; the sweep maximum (a single run) is shown for "
-              "comparison. Roofs without a quality-passing candidate (CV <= 5 %, not short, fixed cost <= 10 %) are "
+              "comparison. Roofs without a quality-passing candidate (standard error of the median <= 3 %, not short, fixed cost <= 10 %) are "
               "marked unconfirmed.", "",
               "| roof | confirmed median | repeat range | repeats | sweep max (unconfirmed) |", "|---|---:|---:|---:|---:|"]
     for k in sorted(peak):
@@ -256,8 +256,8 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
             lines.append(f"| {k} | unconfirmed | — | — | {v['value']:.3f} |")
     sen = summary["sentinel"]
     lines += ["", "## Device-state sentinel", "",
-              f"`{sen['config']}` measured before and after every stage. Values below 90 % of the session best "
-              f"({sen['best']:.3f} TFLOP/s) mark a stage that ran on a throttled or otherwise degraded device; "
+              f"`{sen['config']}` measured before and after every stage and every 20 configurations. Values below 85 % "
+              f"of the median reading ({sen['median']:.3f} TFLOP/s) mark a stage that ran on a throttled or otherwise degraded device; "
               "re-measure those stages.", "", "| UTC | label | TFLOP/s | state |", "|---|---|---:|---|"]
     lines += [f"| {x['utc'][:19]} | {x['label']} | {x['value']:.3f} | {'**degraded**' if x['degraded'] else 'ok'} |"
               for x in sen["timeline"]]

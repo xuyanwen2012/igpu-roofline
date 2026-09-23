@@ -31,6 +31,7 @@ class Session:
         self.manifest = json.loads(paths.SHADER_MANIFEST.read_text())
         self.runner_sha = paths.digest(paths.RUNNER)
         self.caps = None
+        self.guard = None  # stages.Guard: thermal pacing and sentinel checks around run()
         cap_file = self.out / "capabilities.json"
         if cap_file.exists():
             self.caps = json.loads(cap_file.read_text())
@@ -51,13 +52,14 @@ class Session:
                     for p in sorted(paths.REPO.glob("runner/src/*")) + sorted(paths.SHADER_SRC.glob("*.comp"))
                     + [paths.RUNNER, paths.SHADER_MANIFEST]}
         manifest["git_commit"] = paths.git_commit()
+        manifest["runner_sha256"] = self.runner_sha
         # Earlier runners that produced results here stay valid; each row names its runner.
         old = self.out / "artifact-manifest.json"
         history = []
         if old.exists():
             prev = json.loads(old.read_text())
             history = prev.get("runner_history", [])
-            prev_sha = prev.get("build/android/roofline")
+            prev_sha = paths.manifest_runner(prev)
             if prev_sha and prev_sha != self.runner_sha and prev_sha not in [h["sha256"] for h in history]:
                 history.append(dict(sha256=prev_sha, git_commit=prev.get("git_commit"), replaced_utc=utc_now()))
         manifest["runner_history"] = history
@@ -124,6 +126,8 @@ class Session:
         if raw.exists():
             raise RuntimeError(f"Unfinished raw file {raw} is kept for inspection; move it aside to re-measure")
 
+        if self.guard:
+            self.guard.before(tag)
         d = self.device
         (folder / f"{key}.config.json").write_text(json.dumps(c, indent=2))
         d.push(folder / f"{key}.config.json", f"{d.remote}/config.json")
@@ -157,7 +161,9 @@ class Session:
                    fault_delta=None if fault_before is None or fault_after is None else fault_after - fault_before,
                    wall_seconds=time.time() - start,
                    allocation=next((e for e in events if e.get("event") == "allocation"), None),
-                   warmup=next((e for e in events if e.get("event") == "warmup"), None),
+                   # The pre-sampling warm-up (last one) decides steadiness; all are kept.
+                   warmup=next((e for e in reversed(events) if e.get("event") == "warmup"), None),
+                   warmups=[e for e in events if e.get("event") == "warmup"],
                    gpu_freq=[t.get("gpu_freq") for t in telemetry],
                    events=[e for e in events if e.get("event") not in ("sample", "sample_half")])
         # Exact results are required except for float reductions whose summation order
@@ -176,6 +182,12 @@ class Session:
             row["batch_dispatches"] = batch
             row["accounting"] = accounting(dict(c, batch_dispatches=batch), samples[0]["loops"])
             row["below_target_duration"] = row["median_seconds"] < 0.8 * c.get("target_seconds", 0.005)
+            # Drift within the sample series (a clock still ramping or throttling):
+            # median of the last third relative to the first third.
+            times = [s["seconds"] for s in samples]
+            if len(times) >= 6 and not c.get("duration_seconds"):
+                third = len(times) // 3
+                row["sample_drift"] = statistics.median(times[:third]) / statistics.median(times[-third:]) - 1
             halves = {e["sample"]: e for e in events if e.get("event") == "sample_half"}
             if halves:
                 row["differential"] = differential(samples, halves)
@@ -195,4 +207,6 @@ class Session:
             raise RuntimeError(f"GPU fault counter increased during {key}; stop and investigate")
         status = "PASS" if row["accepted"] else "REJECT"
         print(f"{d.serial} {tag} {c['name']} {status} {row.get('median_seconds', 0) * 1e3:.4f} ms", flush=True)
+        if self.guard:
+            self.guard.after(tag)
         return row

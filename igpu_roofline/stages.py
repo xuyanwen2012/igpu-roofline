@@ -27,9 +27,17 @@ PLANS = {
                  sustain=dict(batches=3, duration=300, cooldown=90)),
 }
 
-# A result may define a roof only if it is quiet, long enough and not dominated by
-# fixed dispatch cost (see quality()).
-QUALITY = dict(max_cv=0.05, max_fixed_fraction=0.10)
+# A result may define a roof only if its median is precise, its samples are long enough
+# and it is not dominated by fixed dispatch cost (see quality()). The gate is on the
+# standard error of the median (~1.2533 * CV / sqrt(n)), not on per-sample CV: DRAM and
+# shared-memory samples on phones scatter 6-14 % while a 21-sample median stays ~3 %.
+QUALITY = dict(max_median_se=0.03, max_fixed_fraction=0.10, max_drift=0.05)
+
+
+def median_se(r: dict) -> float:
+    """Relative standard error of the sample median (normal approximation)."""
+    n = r.get("n") or 0
+    return 1.2533 * r.get("cv", 1) / n ** 0.5 if n > 1 else 1.0
 
 
 def is_control(c: dict) -> bool:
@@ -262,7 +270,7 @@ def probe(s, label: str, plan) -> dict:
     Without a readable GPU clock, a device can change state invisibly: on Mali-G1 the
     same binary and configuration fell from 3.48 to 2.2 TFLOP/s hours later at 35 C
     with the screen on. Measured before/after every stage; the report flags stages whose
-    sentinel is < 90 % of the session's best.
+    sentinel is < 85 % of the median reading (Guard stops the run on a confirmed drop).
     """
     c = s.base(s.variant("alu_fp32_v4_c16"), plan["warmup_seconds"])
     c.update(wg=256, groups=512, probe=label, probe_utc=utc_now())
@@ -273,19 +281,132 @@ def probe(s, label: str, plan) -> dict:
     return row
 
 
+class DeviceDegraded(RuntimeError):
+    """The sentinel fell below the session reference: stop, reboot/cool, resume."""
+
+
+# Thermal pacing for short-run stages: a Mali-G1 phone latched into a ~40 % slower
+# state (until reboot) after its GPU reached 61-66 C under heavy cooperative-matrix
+# load. Waiting for the GPU to cool before each configuration keeps short-run roofs
+# in one device state. Sustained stages are not paced (heating is what they measure).
+PACE = dict(start_above_c=50.0, resume_below_c=45.0, max_wait_s=600)
+# The sentinel scatters ~+-6 % between processes in the fast state; the slow state is
+# ~35 % lower. So the reference is the MEDIAN of earlier readings (not the max, which is
+# an upper outlier), the threshold 85 %, and a trip is re-measured twice before acting.
+SENTINEL = dict(every=20, degraded_below=0.85, confirm_readings=3)
+
+
+class Guard:
+    """Wraps Session.run: paces on GPU temperature, measures the sentinel every
+    SENTINEL['every'] configurations and at stage boundaries, and on a drop moves the
+    results measured since the last good sentinel to superseded/ and stops the plan."""
+
+    UNGUARDED = ("probe", "validate")
+
+    def __init__(self, s, plan):
+        self.s, self.plan, self.count, self.busy = s, plan, 0, False
+        self.last_good_utc = utc_now()
+        runner = s.runner_sha
+        vals = []
+        for p in s.out.glob("probe/*.json"):
+            if p.name.endswith((".config.json", ".telemetry.json")):
+                continue
+            r = json.loads(p.read_text())
+            if r.get("accepted") and r.get("config", {}).get("runner_sha256") == runner and r.get("accounting"):
+                vals.append(r["accounting"]["float_ops"] / r["median_seconds"] / 1e12)
+        self.readings = vals  # every accepted sentinel of this runner on this device, any process
+
+    @property
+    def reference(self):
+        return statistics.median(self.readings) if self.readings else None
+
+    def _guarded(self, tag: str) -> bool:
+        return not (self.busy or tag in self.UNGUARDED or tag.startswith("sustain"))
+
+    def before(self, tag: str):
+        if not self._guarded(tag):
+            return
+        d, waited, t0 = self.s.device, 0, time.time()
+        pace = getattr(d, "pace", PACE)  # devices may set their own thresholds
+        temp = d.gpu_temp_c()
+        if temp is not None and temp > pace["start_above_c"]:
+            while temp is not None and temp > pace["resume_below_c"] and time.time() - t0 < pace["max_wait_s"]:
+                time.sleep(10)
+                temp = d.gpu_temp_c()
+            waited = time.time() - t0
+            with (self.s.out / "pacing.jsonl").open("a") as f:
+                f.write(json.dumps(dict(utc=utc_now(), tag=tag, waited_s=round(waited, 1), gpu_c=temp)) + "\n")
+
+    def after(self, tag: str):
+        if not self._guarded(tag):
+            return
+        self.count += 1
+        if self.count % SENTINEL["every"] == 0:
+            self.check(f"{tag}_{self.count}")
+
+    def _read(self, label: str):
+        self.busy = True
+        try:
+            row = probe(self.s, label, self.plan)
+        finally:
+            self.busy = False
+        return row["accounting"]["float_ops"] / row["median_seconds"] / 1e12 if row.get("accepted") else None
+
+    def check(self, label: str) -> float | None:
+        started = utc_now()
+        value = self._read(label)
+        if value is None:
+            return None
+        ref = self.reference
+        if ref is not None and value < SENTINEL["degraded_below"] * ref:
+            # One low reading is not a state change: re-measure and decide on the median.
+            more = [self._read(f"{label}_recheck{i}") for i in range(1, SENTINEL["confirm_readings"])]
+            value = statistics.median([value] + [v for v in more if v is not None])
+        if ref is not None and value < SENTINEL["degraded_below"] * ref:
+            moved = self.quarantine(self.last_good_utc)
+            raise DeviceDegraded(f"sentinel {value:.3f} < {SENTINEL['degraded_below']:.0%} of the median {ref:.3f} "
+                                 f"TFLOP/s at {label}; {moved} result(s) since {self.last_good_utc} moved to superseded/. "
+                                 "Reboot the device, let it cool, and rerun the same command to resume.")
+        self.readings.append(value)
+        self.last_good_utc = started
+        return value
+
+    def quarantine(self, since: str) -> int:
+        """Move every non-probe result whose run started after `since` to superseded/."""
+        dest = self.s.out / "superseded" / ("degraded-" + utc_now().replace(":", "-"))
+        moved = 0
+        for tele in self.s.out.glob("*/*.telemetry.json"):
+            stage = tele.parent.name
+            if stage in ("probe", "superseded") or stage.startswith("sustain"):
+                continue
+            if json.loads(tele.read_text())[0]["utc"] <= since:
+                continue
+            key = tele.name[: -len(".telemetry.json")]
+            (dest / stage).mkdir(parents=True, exist_ok=True)
+            for f in tele.parent.glob(key + ".*"):
+                f.rename(dest / stage / f.name)
+            moved += 1
+        return moved
+
+
 # --- roof selection: quality gates, then confirmation -----------------------------------
 def quality(r: dict) -> list[str]:
     """Reasons a result may not define a roof (empty list = eligible)."""
     why = []
     if not r.get("accepted"):
         why.append("rejected")
-    if r.get("cv", 1) > QUALITY["max_cv"]:
-        why.append("cv")
+    if median_se(r) > QUALITY["max_median_se"]:
+        why.append("noisy_median")
     if r.get("below_target_duration"):
         why.append("short")
     d = r.get("differential")
     if d and (not d.get("valid") or d.get("fixed_fraction", 0) > QUALITY["max_fixed_fraction"]):
         why.append("fixed_cost")
+    w = r.get("warmup") or {}
+    if w.get("steady") is False:
+        why.append("warmup_unsteady")
+    if abs(r.get("sample_drift", 0)) > QUALITY["max_drift"]:
+        why.append("drifting")
     return why
 
 
@@ -346,8 +467,6 @@ def confirm(s, plan):
     work = [(k, r) for k, v in sorted(candidates(s, cfg["top"]).items()) for r in v]
     for i in range(cfg["reps"]):
         for n, (key, r) in enumerate(work if i % 2 == 0 else work[::-1]):
-            if n % 25 == 0:
-                probe(s, f"confirm_{i}_{n}", plan)
             c = dict(r["config"], replicate=i, confirm_key=key, calibrate=True,
                      loops=1 if r["config"]["family"] == "memory" else 128)
             s.run(c, "confirm")
@@ -457,16 +576,25 @@ def run_plan(s, plan_name: str):
             datetime.timezone.utc).isoformat(), **extra), indent=2))
 
     started = time.time()
-    for step in [deploy, capabilities, pipeline_stats, offline_isa] + SHORT_STAGES + [confirm]:
-        name = step.__name__
-        mark(name)
-        print(f"=== {s.device.serial} {name}", flush=True)
-        measuring = step in SHORT_STAGES or step is confirm
-        if measuring:
-            probe(s, f"{name}_start", plan)
-        step(s, plan)
-        if measuring:
-            probe(s, f"{name}_end", plan)
+    guard = None
+    try:
+        for step in [deploy, capabilities, pipeline_stats, offline_isa] + SHORT_STAGES + [confirm]:
+            name = step.__name__
+            mark(name)
+            print(f"=== {s.device.serial} {name}", flush=True)
+            measuring = step in SHORT_STAGES or step is confirm
+            if measuring and guard is None:
+                guard = s.guard = Guard(s, plan)
+            if measuring:
+                guard.check(f"{name}_start")
+            step(s, plan)
+            if measuring:
+                guard.check(f"{name}_end")
+    except DeviceDegraded as e:
+        mark("paused_device_degraded", reason=str(e))
+        raise SystemExit(f"{s.device.serial}: {e}")
+    finally:
+        s.guard = None
     if plan["sustain"]:
         mark("sustain")
         print(f"=== {s.device.serial} sustain", flush=True)
