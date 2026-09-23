@@ -259,3 +259,10 @@ def test_guard_needs_confirmed_drop_against_median(monkeypatch):
     assert g.check("a") == 3.20            # 3.20 >= 0.85 * median(3.3, 3.4, 3.58)
     with pytest.raises(st.DeviceDegraded):
         g.check("b")                       # 2.2, rechecked 2.25 / 2.21 -> degraded
+
+
+def test_manifest_runner_for_android_host_and_new_manifests():
+    from igpu_roofline.paths import manifest_runner
+    assert manifest_runner({"build/android/roofline": "a"}) == "a"
+    assert manifest_runner({"build/host/roofline": "h"}) == "h"
+    assert manifest_runner({"runner_sha256": "r", "build/host/roofline": "h"}) == "r"

@@ -52,13 +52,14 @@ class Session:
                     for p in sorted(paths.REPO.glob("runner/src/*")) + sorted(paths.SHADER_SRC.glob("*.comp"))
                     + [paths.RUNNER, paths.SHADER_MANIFEST]}
         manifest["git_commit"] = paths.git_commit()
+        manifest["runner_sha256"] = self.runner_sha
         # Earlier runners that produced results here stay valid; each row names its runner.
         old = self.out / "artifact-manifest.json"
         history = []
         if old.exists():
             prev = json.loads(old.read_text())
             history = prev.get("runner_history", [])
-            prev_sha = prev.get("build/android/roofline")
+            prev_sha = paths.manifest_runner(prev)
             if prev_sha and prev_sha != self.runner_sha and prev_sha not in [h["sha256"] for h in history]:
                 history.append(dict(sha256=prev_sha, git_commit=prev.get("git_commit"), replaced_utc=utc_now()))
         manifest["runner_history"] = history

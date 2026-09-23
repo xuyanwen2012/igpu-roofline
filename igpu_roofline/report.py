@@ -106,7 +106,7 @@ def hierarchical_ridges(roofs: dict) -> dict:
 def analyze(folder: Path) -> dict:
     caps = json.loads((folder / "capabilities.json").read_text())
     manifest = json.loads((folder / "artifact-manifest.json").read_text())
-    runners = {manifest["build/android/roofline"]} | {h["sha256"] for h in manifest.get("runner_history", [])}
+    runners = {paths.manifest_runner(manifest)} | {h["sha256"] for h in manifest.get("runner_history", [])}
     all_rows = load_rows(folder)
     valid = [r for r in all_rows if r["accepted"] and "accounting" in r
              and r["config"].get("reference_runner_sha256", r["config"].get("runner_sha256")) in runners
@@ -185,7 +185,7 @@ def analyze(folder: Path) -> dict:
                    clock_state=caps.get("clock_state"), short_run=peak, sustained=sustained_summary,
                    ridges=dict(short_run=hierarchical_ridges(peak), roofs=hierarchical_ridges(roofs)),
                    physical_dram_bandwidth=None, physical_cache_bandwidth=None,
-                   git_commit=manifest.get("git_commit"), runner_sha256=manifest["build/android/roofline"])
+                   git_commit=manifest.get("git_commit"), runner_sha256=paths.manifest_runner(manifest))
     report = folder / "report"
     report.mkdir(exist_ok=True)
     (report / "summary.json").write_text(json.dumps(summary, indent=2, default=str))

@@ -20,6 +20,13 @@ REMOTE_DIR = "/data/local/tmp/igpu-roofline"
 HOST_BUILD = BUILD / "host"
 
 
+def manifest_runner(manifest: dict) -> str | None:
+    """Runner SHA-256 of an artifact manifest, for Android or host builds (older
+    manifests only have the Android path key)."""
+    return (manifest.get("runner_sha256") or manifest.get("build/android/roofline")
+            or manifest.get("build/host/roofline"))
+
+
 def use_target(target: str) -> None:
     """Point RUNNER/RUNNER_SUSTAINED/INSPECT at the Android or host (Linux iGPU) build."""
     global RUNNER, RUNNER_SUSTAINED, INSPECT
