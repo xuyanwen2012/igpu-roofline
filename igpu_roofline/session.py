@@ -64,6 +64,10 @@ class Session:
                 history.append(dict(sha256=prev_sha, git_commit=prev.get("git_commit"), replaced_utc=utc_now()))
         manifest["runner_history"] = history
         old.write_text(json.dumps(manifest, indent=2))
+        # SPIR-V SHA of every variant as deployed: rows measured with another build of a
+        # shader are stale and never define a roof (see Session.current()).
+        (self.out / "shader-shas.json").write_text(json.dumps(
+            {m["name"]: m["spirv_sha256"] for m in self.manifest}, indent=2, sort_keys=True))
 
         # Keep the exact binary and sources that produced these results.
         archive = self.out / "artifacts" / self.runner_sha[:16]
@@ -88,6 +92,20 @@ class Session:
         (self.out / "capabilities.json").write_text(json.dumps(caps, indent=2))
         self.caps = caps
         return caps
+
+    def current(self, r: dict) -> bool:
+        """Row measured with the current runner and the current build of its shader."""
+        c = r.get("config", {})
+        if c.get("runner_sha256") != self.runner_sha:
+            return False
+        want = self._shader_shas.get(c.get("name"))
+        return want is None or c.get("spirv_sha256") in (None, want)
+
+    @property
+    def _shader_shas(self) -> dict:
+        if getattr(self, "_shas", None) is None:
+            self._shas = {m["name"]: m["spirv_sha256"] for m in self.manifest}
+        return self._shas
 
     # --- configuration helpers --------------------------------------------------------
     def variant(self, name: str) -> dict:

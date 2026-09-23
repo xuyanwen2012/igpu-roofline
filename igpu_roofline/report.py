@@ -106,10 +106,23 @@ def hierarchical_ridges(roofs: dict) -> dict:
 def analyze(folder: Path) -> dict:
     caps = json.loads((folder / "capabilities.json").read_text())
     manifest = json.loads((folder / "artifact-manifest.json").read_text())
-    runners = {paths.manifest_runner(manifest)} | {h["sha256"] for h in manifest.get("runner_history", [])}
+    # Only rows of the current runner and the current build of each shader define roofs;
+    # runner_history is provenance, not a licence to mix builds (an older, faster
+    # confirmation could otherwise win under the current runner's name).
+    runner = paths.manifest_runner(manifest)
+    shas_file = folder / "shader-shas.json"
+    shader_shas = json.loads(shas_file.read_text()) if shas_file.exists() else {}
     all_rows = load_rows(folder)
-    valid = [r for r in all_rows if r["accepted"] and "accounting" in r
-             and r["config"].get("reference_runner_sha256", r["config"].get("runner_sha256")) in runners
+
+    def current(r):
+        c = r["config"]
+        if c.get("reference_runner_sha256", c.get("runner_sha256")) != runner:
+            return False
+        want = shader_shas.get(c.get("name"))
+        return want is None or c.get("spirv_sha256") in (None, want)
+
+    stale = [r["source"] for r in all_rows if r["accepted"] and not current(r)]
+    valid = [r for r in all_rows if r["accepted"] and "accounting" in r and current(r)
              and not r["source"].startswith(("validate/", "sustain-preflight-"))]
 
     peak, sustained, confirmed = {}, {}, {}
@@ -181,7 +194,7 @@ def analyze(folder: Path) -> dict:
                          for k, vs in sustained.items()}
     roofs, basis = choose_roofs(peak, sustained_summary)
     plans = sorted({r.get("plan") for r in all_rows if r.get("plan")})
-    summary = dict(device=caps["gpu"], serial=caps["serial"], plans=plans, roof_basis=basis, sentinel=sentinel,
+    summary = dict(device=caps["gpu"], serial=caps["serial"], plans=plans, roof_basis=basis, sentinel=sentinel, stale_rows_excluded=len(stale),
                    clock_state=caps.get("clock_state"), short_run=peak, sustained=sustained_summary,
                    ridges=dict(short_run=hierarchical_ridges(peak), roofs=hierarchical_ridges(roofs)),
                    physical_dram_bandwidth=None, physical_cache_bandwidth=None,
@@ -226,7 +239,8 @@ def write_report_md(report: Path, caps: dict, summary: dict, peak: dict, sustain
              f"(SoC {props.get('ro.soc.model', '?')}), Android {props.get('ro.build.version.release', '?')}, "
              f"driver {caps['driver_version']}, subgroup {caps['subgroup']}.",
              f"Plan(s): {', '.join(summary['plans']) or '?'}. {_clock_line(caps)}",
-             f"Code: {summary['git_commit']}, runner {summary['runner_sha256'][:16]}.", "",
+             f"Code: {summary['git_commit']}, runner {summary['runner_sha256'][:16]}. "
+             f"Rows from other runner or shader builds excluded: {summary.get('stale_rows_excluded', 0)}.", "",
              "Short-run columns are the best validated configuration: median and best (minimum time, the STREAM/"
              "BabelStream convention) of the samples, and the differential rate (paired L vs L/2 runs, removing fixed "
              "per-dispatch cost). Sustained is the median of the last 60 s of each 300 s run. Controls never define a "
