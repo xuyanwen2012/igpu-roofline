@@ -184,6 +184,15 @@ how much reuse a kernel needs before the loads stop limiting it. Ops count every
 subgroup of a workgroup; `matrix_load_bytes` records the A/B bytes loaded. The SPIR-V
 ledger asserts two `OpCooperativeMatrixLoadKHR` outside and two inside the loop.
 
+**Texture vs storage buffer (`texture` stage).** ExecuTorch Vulkan kernels read inputs
+as `texture3d` / `texture2d` through `texelFetch`. `texture.comp` reads the same texels
+in the same order from a storage buffer, a `sampler2D` or a `sampler3D` (RGBA16F and
+RGBA32F; 1 MiB cache-resident and 256 MiB DRAM working sets); only the fetch path
+differs. Image modes upload through a staging buffer and are not bound by
+`maxStorageBufferRange`; extents follow `maxImageDimension2D/3D`. On the Radeon 780M
+(RADV) DRAM-sized reads ran ~85 GB/s from a buffer but ~44 GB/s (2D) and ~40 GB/s (3D)
+from images; cache-resident reads were close (310–440 GB/s).
+
 **Shared-memory write test.** Every store goes to a distinct address,
 `(l*STRIDE + t*step + k*w) % COUNT` with a runtime `step` (push constant), and stores a
 runtime-uniform value. The first design stored `ACC x loops` times to one slot per lane;

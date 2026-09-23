@@ -516,6 +516,9 @@ def rate(r: dict) -> float:
     return work / r["median_seconds"]
 
 
+SOFT_GATES = {"noisy_median"}
+
+
 def candidates(s, top: int) -> dict:
     """Best `top` quality-gated sweep results per roof (first-look is a smoke test only)."""
     best, gated = {}, {}
@@ -531,7 +534,12 @@ def candidates(s, top: int) -> dict:
         if p.parent.name == "sweep-cache":
             r["config"] = dict(r["config"], role="cache")
         why = quality(r)
-        if why:
+        # A noisy median alone does not disqualify a candidate: confirmation re-measures
+        # it in fresh processes and every repeat must pass all gates. (780M fast run: the
+        # true shared fp32 read roof, 3.5 TB/s, was one noisy run and was dropped, so a
+        # 25 % lower config was confirmed.) Short, drifting, unsteady or fixed-cost
+        # dominated results are still excluded.
+        if why and not set(why) <= SOFT_GATES:
             gated.setdefault(key, []).append(dict(name=r["config"]["name"], rate=rate(r), why=why))
         else:
             best.setdefault(key, []).append(r)
