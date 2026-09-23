@@ -46,13 +46,17 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
 3. Root? Only then may clocks be pinned (see the device's section). Non-root devices
    run DVFS-governed; the sentinel and thermal pacing handle that.
 4. Plan:
-   - `quick` (~15–30 min on a phone): smoke test and first confirmed roofs (top 1 × 3
-     repeats). Always run this first on a device that has not run the current `main`.
+   - `quick` (~15–30 min on a phone): smoke test (top 1 × 3 repeats). Its narrow grid
+     can read FMA/shared roofs low; use it to check that a device works, not for numbers.
    - `standard` (~4 h): all sweeps, top 3 × 5 confirmation, one 300 s sustained run
      per roof. Use for numbers that will drive shader decisions.
    - `gold`: standard with 3 sustained batches (repeatability).
-   - The owner finds 4–5 h too slow for phones; a faster plan is planned. Until it
-     exists, ask before starting `standard` on a phone.
+   - `fast` (~30 min on the 780M; phones longer): the roofs shader tuning needs —
+     FMA/dot at every width and chain count, WMMA register + fed roofs, DRAM, cache,
+     shared, texture vs buffer, latency levels; top 2 × 3 confirmation; 120 s
+     sustained runs of three representative roofs. **Default for phones.** On the
+     780M every fast roof matched `standard` within ±4 %. Ask before `standard` on a
+     phone (4–5 h).
 5. Results root: pass `--results <dir>`; one directory per campaign and per runner
    build. Only rows of the current runner and of the current build of each shader
    (`shader-shas.json`, written at deploy) define roofs; older rows stay on disk as
