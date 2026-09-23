@@ -168,14 +168,16 @@ from igpu_roofline.stages import QUALITY, matrix_grid, quality  # noqa: E402
 
 
 def _row(**kw):
-    r = dict(accepted=True, cv=0.01, below_target_duration=False, differential=dict(valid=True, fixed_fraction=0.02))
+    r = dict(accepted=True, cv=0.01, n=21, below_target_duration=False, differential=dict(valid=True, fixed_fraction=0.02))
     r.update(kw)
     return r
 
 
 def test_quality_gates():
     assert quality(_row()) == []
-    assert "cv" in quality(_row(cv=QUALITY["max_cv"] * 10))
+    assert quality(_row(cv=0.10)) == []                    # 10 % scatter, 21 samples: median SE ~2.7 %
+    assert "noisy_median" in quality(_row(cv=0.53))        # the old int8 roof
+    assert "noisy_median" in quality(_row(cv=0.10, n=5))
     assert "short" in quality(_row(below_target_duration=True))
     assert "fixed_cost" in quality(_row(differential=dict(valid=True, fixed_fraction=0.67)))
     assert "fixed_cost" in quality(_row(differential=dict(valid=False, fixed_fraction=0.0)))
@@ -203,3 +205,70 @@ def test_ert_ledger_chunking_and_ilp():
 def test_plans_confirm_roofs():
     assert PLANS["quick"]["confirm"] == dict(top=1, reps=3)
     assert all(PLANS[p]["confirm"] == dict(top=3, reps=5) for p in ("standard", "gold"))
+
+
+# --- device-state guard -------------------------------------------------------------------
+import json as _json  # noqa: E402
+import types  # noqa: E402
+
+from igpu_roofline.device import AdbDevice  # noqa: E402
+from igpu_roofline.stages import Guard  # noqa: E402
+
+THERMAL = """Cached temperatures:
+\tTemperature{mValue=99.0, mType=1, mName=GPU, mStatus=0}
+Current temperatures from HAL:
+\tTemperature{mValue=37.5, mType=0, mName=CPU, mStatus=0}
+\tTemperature{mValue=61.1, mType=1, mName=GPU, mStatus=0}
+Current cooling devices from HAL:
+"""
+
+
+def test_gpu_temperature_reads_current_hal_section():
+    dev = AdbDevice.__new__(AdbDevice)
+    dev.shell = lambda *a, **k: types.SimpleNamespace(stdout=THERMAL)
+    assert dev.gpu_temp_c() == 61.1
+
+
+def test_quarantine_moves_only_results_after_last_good_sentinel(tmp_path):
+    def result(stage, key, utc):
+        d = tmp_path / stage
+        d.mkdir(exist_ok=True)
+        (d / f"{key}.telemetry.json").write_text(_json.dumps([dict(utc=utc)]))
+        (d / f"{key}.json").write_text("{}")
+        (d / f"{key}.jsonl").write_text("")
+    result("sweep-compute", "early", "2026-01-01T00:00:00+00:00")
+    result("sweep-compute", "late", "2026-01-01T00:10:00+00:00")
+    result("probe", "sentinel", "2026-01-01T00:11:00+00:00")
+    g = Guard.__new__(Guard)
+    g.s = types.SimpleNamespace(out=tmp_path)
+    assert g.quarantine("2026-01-01T00:05:00+00:00") == 1
+    assert (tmp_path / "sweep-compute" / "early.json").exists()
+    assert not (tmp_path / "sweep-compute" / "late.json").exists()
+    assert (tmp_path / "probe" / "sentinel.json").exists()
+    assert len(list((tmp_path / "superseded").glob("degraded-*/sweep-compute/late.*"))) == 3
+
+
+def test_guard_needs_confirmed_drop_against_median(monkeypatch):
+    import igpu_roofline.stages as st
+    g = Guard.__new__(Guard)
+    g.s, g.plan, g.busy, g.readings, g.last_good_utc = None, None, False, [3.3, 3.4, 3.58], "t0"
+    g.quarantine = lambda since: 0
+    seq = iter([3.20, 2.2, 2.25, 2.21])  # one low outlier (passes), then a real drop
+    monkeypatch.setattr(st, "probe", lambda s, label, plan: dict(
+        accepted=True, accounting=dict(float_ops=next(seq) * 1e12), median_seconds=1.0))
+    assert g.check("a") == 3.20            # 3.20 >= 0.85 * median(3.3, 3.4, 3.58)
+    with pytest.raises(st.DeviceDegraded):
+        g.check("b")                       # 2.2, rechecked 2.25 / 2.21 -> degraded
+
+
+def test_manifest_runner_for_android_host_and_new_manifests():
+    from igpu_roofline.paths import manifest_runner
+    assert manifest_runner({"build/android/roofline": "a"}) == "a"
+    assert manifest_runner({"build/host/roofline": "h"}) == "h"
+    assert manifest_runner({"runner_sha256": "r", "build/host/roofline": "h"}) == "r"
+
+
+def test_drifting_or_unsteady_rows_are_gated():
+    assert "drifting" in quality(_row(sample_drift=2.4))       # 780M shared read: 15 -> 4.4 ms
+    assert "warmup_unsteady" in quality(_row(warmup=dict(steady=False)))
+    assert quality(_row(sample_drift=0.02, warmup=dict(steady=True))) == []

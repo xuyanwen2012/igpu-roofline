@@ -2,8 +2,13 @@
 // v2 workgroup-memory bandwidth, textbook bank-conflict form:
 //  OP 0 read : one fill + one barrier, then ACC independent accumulators so the
 //              loop is throughput-bound, not bound by a single add dependency.
-//  OP 2 write: pure stores (volatile-annotated at SPIR-V level so they are not
-//              dead-store eliminated), one barrier, one cross-lane readback.
+//  OP 2 write: pure stores to DISTINCT addresses: store k of iteration t goes to
+//              (l*STRIDE + t*step + k*w) % COUNT with a runtime step (push constant),
+//              so no two stores in the loop provably alias and none can be removed.
+//              Storing to one slot per lane (the first design) let RADV/ACO fold the
+//              whole loop into a single ds_store even with SPIR-V Volatile. The stored
+//              value is a runtime uniform, so the final contents do not depend on which
+//              lane wrote an address last; one barrier, one readback.
 // The fill uses a rotated producer ((i+1)%COUNT) so no lane reads its own store.
 #extension GL_EXT_shader_explicit_arithmetic_types_float16 : require
 #extension GL_EXT_control_flow_attributes : require
@@ -45,12 +50,15 @@ void main(){
 #endif
  [[unroll]]for(uint k=0;k<ACC;k++)sum+=acc[k];
 #else
- uint slot=(l*STRIDE)%COUNT;
+ // Runtime uniform value; equals the runner's reference ((loops*ACC-1) & 15).
+ T v=T(float((p.loops*ACC-1u)&15u));
+ uint base=l*STRIDE;
  for(uint t=0;t<p.loops;t++){
-  [[unroll]]for(uint k=0;k<ACC;k++)data[slot]=T(float((t*ACC+k)&15u));
+  uint o=base+t*p.seed;
+  [[unroll]]for(uint k=0;k<ACC;k++)data[(o+k*w)%COUNT]=v;
  }
  memoryBarrierShared();barrier();
- T sum=data[(((l+1)%w)*STRIDE)%COUNT];
+ T sum=data[(base+(p.loops-1u)*p.seed+(ACC-1u)*w)%COUNT];
 #endif
 #if WIDTH==1
  d[gl_GlobalInvocationID.x]=float(sum);
