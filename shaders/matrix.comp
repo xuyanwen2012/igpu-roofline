@@ -7,6 +7,7 @@
 #extension GL_EXT_shader_16bit_storage : require
 #extension GL_EXT_shader_8bit_storage : require
 #extension GL_EXT_control_flow_attributes : require
+#extension GL_KHR_shader_subgroup_basic : require
 layout(local_size_x_id=0) in;
 layout(push_constant) uniform Params { uint n; uint loops; uint seed; uint offset; } p;
 layout(binding=0) readonly buffer A { AT a[]; };
@@ -16,7 +17,9 @@ layout(binding=3) writeonly buffer D { CT d[]; };
 //  0: register-resident (loaded once before the loop): matrix-unit throughput only.
 //  1: coopMatLoad from workgroup memory every iteration (TILES tile pairs staged once).
 //  2: coopMatLoad from the storage buffer every iteration; p.n tile pairs, tile
-//     (workgroup*loops + i) % p.n, so p.n selects cache-resident vs DRAM streaming.
+//     (subgroup_global*loops + i) % p.n, so p.n selects cache-resident vs DRAM
+//     streaming. Every subgroup reads its own tiles: with a shared index the other
+//     subgroups of a workgroup would hit in cache and inflate the DRAM-fed rate.
 // Each loaded pair feeds CHAINS multiply-adds, so CHAINS is the reuse per load.
 #ifndef FEED
 #define FEED 0
@@ -39,11 +42,11 @@ void main(){
  [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopmat<CT,gl_ScopeSubgroup,M,N,gl_MatrixUseAccumulator>(CT(c));
  for(uint i=0;i<p.loops;i++){
 #if FEED==1
- uint tile=(gl_WorkGroupID.x+i)%TILES;
+ uint tile=(gl_WorkGroupID.x+gl_SubgroupID+i)%TILES;
  coopMatLoad(ma,sa,tile*(M*K),K,gl_CooperativeMatrixLayoutRowMajor);
  coopMatLoad(mb,sb,tile*(K*N),N,gl_CooperativeMatrixLayoutRowMajor);
 #elif FEED==2
- uint tile=(gl_WorkGroupID.x*p.loops+i)%p.n;
+ uint tile=((gl_WorkGroupID.x*gl_NumSubgroups+gl_SubgroupID)*p.loops+i)%p.n;
  coopMatLoad(ma,a,tile*(M*K),K,gl_CooperativeMatrixLayoutRowMajor);
  coopMatLoad(mb,b,tile*(K*N),N,gl_CooperativeMatrixLayoutRowMajor);
 #endif
