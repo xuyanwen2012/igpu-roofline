@@ -288,3 +288,19 @@ def test_shapes_table_names_types_and_scope():
     md = table({"matrix_shapes": [dict(m=16, n=16, k=16, a=3, b=7, c=5, result=5, scope=3, saturating=1)]})
     assert "| 16×16×16 | s8 | u8 | s32 | s32 | subgroup | yes |" in md
     assert "none" in table({"matrix_shapes": []})
+
+
+def test_matrix_feed_accounting_and_keys():
+    from igpu_roofline.stages import matrix_feed_key
+    base = dict(family="matrix", dtype="fp16_fp32", m=16, matrix_n=16, k=16, chains=4, groups=100, wg=128, subgroup=64)
+    plain = accounting(base, 10)
+    assert plain["float_ops"] == 2 * 16 * 16 * 16 * 4 * 100 * 2 * 10          # 2 subgroups per workgroup
+    tile = (16 * 16 + 16 * 16) * 2
+    sh = accounting(dict(base, feed="shared", tiles=4, n=4), 10)
+    assert sh["matrix_load_bytes"] == 100 * 2 * 10 * tile
+    assert sh["logical_shared_bytes"] == sh["matrix_load_bytes"] + 100 * 4 * tile
+    gm = accounting(dict(base, feed="global", n=1 << 20), 10)
+    assert gm["working_set_bytes"] == (1 << 20) * tile
+    assert matrix_feed_key(dict(base, feed="global"), gm) == "matrix_fp16_fp32_feed_dram"
+    assert matrix_feed_key(dict(base, feed="global"), dict(working_set_bytes=1 << 20)) == "matrix_fp16_fp32_feed_cache"
+    assert matrix_feed_key(dict(base, feed="shared"), sh) == "matrix_fp16_fp32_feed_shared"

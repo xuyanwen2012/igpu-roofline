@@ -130,7 +130,9 @@ class Session:
         if warmup_seconds:
             c["warmup_seconds"] = warmup_seconds
         if m["family"] == "matrix":
-            c["wg"] = (self.caps or {})["subgroup"]
+            c["wg"] = c["subgroup"] = (self.caps or {})["subgroup"]
+            if m.get("feed") == "shared":
+                c["n"] = m["tiles"]  # buffer holds exactly the staged tile pairs
         return c
 
     # --- one measurement ----------------------------------------------------------------
