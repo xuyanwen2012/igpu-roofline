@@ -104,6 +104,11 @@ def accounting(c: dict, loops: int) -> dict:
             a["logical_global_bytes"] += loads
             a["matrix_load_bytes"] = loads
             a["working_set_bytes"] = n * tile_bytes
+    elif family == "texture":
+        texel = 8 if c["format"] == "rgba16f" else 16
+        a["logical_global_bytes"] = n * texel * loops + threads * 16
+        a["working_set_bytes"] = n * texel
+        a["float_ops"] = n * 4 * loops
     elif family == "latency":
         a["dependent_loads"] = 16 * loops
         a["working_set_bytes"] = n * 4
