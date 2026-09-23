@@ -156,7 +156,8 @@ def test_partial_sustained_keeps_short_roofs():
 
 
 def test_plans():
-    assert set(PLANS) == {"quick", "standard", "gold"}
+    assert set(PLANS) == {"quick", "fast", "standard", "gold"}
+    assert PLANS["fast"]["sustain"]["duration"] == 120 and PLANS["fast"]["confirm"] == dict(top=2, reps=3)
     assert PLANS["quick"]["sustain"] is None
     assert PLANS["gold"]["sustain"]["batches"] == 3
     assert all(p["warmup_seconds"] > 0 for p in PLANS.values())
@@ -304,3 +305,13 @@ def test_matrix_feed_accounting_and_keys():
     assert matrix_feed_key(dict(base, feed="global"), gm) == "matrix_fp16_fp32_feed_dram"
     assert matrix_feed_key(dict(base, feed="global"), dict(working_set_bytes=1 << 20)) == "matrix_fp16_fp32_feed_cache"
     assert matrix_feed_key(dict(base, feed="shared"), sh) == "matrix_fp16_fp32_feed_shared"
+
+
+def test_texture_accounting_and_keys():
+    from igpu_roofline.stages import texture_key
+    c = dict(family="texture", format="rgba16f", mode="tex3d", wg=256, groups=4096, n=1 << 25)
+    a = accounting(c, 2)
+    assert a["logical_global_bytes"] == (1 << 25) * 8 * 2 + 256 * 4096 * 16
+    assert texture_key(c, a) == "texture_rgba16f_tex3d_dram"
+    assert texture_key(c, dict(working_set_bytes=1 << 20)) == "texture_rgba16f_tex3d_cache"
+    assert expected(dict(family="texture", tex_dim=3)) == {"image_fetch": 1, "store_StorageBuffer": 1}

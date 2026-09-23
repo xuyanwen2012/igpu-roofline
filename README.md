@@ -45,6 +45,7 @@ Plans:
 | plan | contents | time |
 |---|---|---|
 | `quick` (default) | every family at its most informative settings, 0.25 s warm-up per config; best candidate per roof confirmed 3× | ~15 min (estimate, not yet re-timed) |
+| `fast` | shader-tuning roofs: FMA/dot (all widths and chains), WMMA register + fed (shared/cache/DRAM), DRAM, cache, shared, texture vs buffer, latency; top 2 × 3 confirmation; 120 s sustained runs of 3 roofs | ~30 min on a Radeon 780M |
 | `standard` | all sweeps, 1 s warm-up per config, top 3 candidates per roof confirmed 5×, one 300 s sustained run per roof | ~3.5 h (estimate) |
 | `gold` | as standard with three sustained batches (repeatability) | ~7 h |
 

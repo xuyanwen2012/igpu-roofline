@@ -54,6 +54,10 @@ def metric(r: dict):
             from .stages import matrix_feed_key
             key = matrix_feed_key(c, a)
         return key, a["float_ops"] + a["integer_ops"], "TOP/s" if integer else "TFLOP/s", 1e12
+    if f == "texture":
+        from .stages import texture_key
+        key = texture_key(c, a)
+        return (key, a["logical_global_bytes"], "GB/s", 1e9) if key else None
     if c.get("role") == "cache":
         return "cache_read_effective", a["logical_global_bytes"], "GB/s", 1e9
     if f == "copy":

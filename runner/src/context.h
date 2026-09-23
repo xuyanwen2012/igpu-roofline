@@ -156,6 +156,48 @@ static DevBuf makeDeviceBuf(Ctx& c, size_t size) {
 }
 static void freeDeviceBuf(Ctx& c, DevBuf& b) { vkDestroyBuffer(c.dev, b.b, nullptr); vkFreeMemory(c.dev, b.m, nullptr); }
 
+
+// Sampled image for the texture family: device-local, optimal tiling, uploaded from a
+// staging buffer and left in SHADER_READ_ONLY_OPTIMAL; nearest sampler (texelFetch
+// ignores filtering but a combined image sampler needs one).
+struct Tex { VkImage img{}; VkDeviceMemory mem{}; VkImageView view{}; VkSampler sampler{}; };
+static Tex makeTexture(Ctx& c, VkBuffer staging, int dim, VkFormat fmt, uint32_t w, uint32_t h, uint32_t d) {
+    Tex t;
+    VkImageCreateInfo ici{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO}; ici.imageType = dim == 3 ? VK_IMAGE_TYPE_3D : VK_IMAGE_TYPE_2D;
+    ici.format = fmt; ici.extent = {w, h, dim == 3 ? d : 1u}; ici.mipLevels = 1; ici.arrayLayers = 1; ici.samples = VK_SAMPLE_COUNT_1_BIT;
+    ici.tiling = VK_IMAGE_TILING_OPTIMAL; ici.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT; ici.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    CHECK(vkCreateImage(c.dev, &ici, nullptr, &t.img));
+    VkMemoryRequirements mr; vkGetImageMemoryRequirements(c.dev, t.img, &mr);
+    VkPhysicalDeviceMemoryProperties mp; vkGetPhysicalDeviceMemoryProperties(c.pd, &mp);
+    uint32_t pick = UINT32_MAX;
+    for (uint32_t i = 0; i < mp.memoryTypeCount && pick == UINT32_MAX; i++)
+        if ((mr.memoryTypeBits & (1u << i)) && (mp.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)) pick = i;
+    if (pick == UINT32_MAX) { fprintf(stderr, "No device-local memory type for image\n"); exit(2); }
+    VkMemoryAllocateInfo mai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO}; mai.allocationSize = mr.size; mai.memoryTypeIndex = pick;
+    CHECK(vkAllocateMemory(c.dev, &mai, nullptr, &t.mem)); CHECK(vkBindImageMemory(c.dev, t.img, t.mem, 0));
+    fprintf(stderr, "IMAGE %dD %ux%ux%u format=%d bytes=%llu type=%u\n", dim, w, h, d, (int)fmt, (unsigned long long)mr.size, pick);
+    VkCommandBufferAllocateInfo ca{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO}; ca.commandPool = c.pool; ca.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY; ca.commandBufferCount = 1;
+    VkCommandBuffer cb; CHECK(vkAllocateCommandBuffers(c.dev, &ca, &cb));
+    VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO}; bi.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT; CHECK(vkBeginCommandBuffer(cb, &bi));
+    VkImageMemoryBarrier ib{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER}; ib.srcQueueFamilyIndex = ib.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    ib.image = t.img; ib.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    ib.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED; ib.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL; ib.srcAccessMask = 0; ib.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT | VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &ib);
+    VkBufferImageCopy region{}; region.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1}; region.imageExtent = ici.extent;
+    vkCmdCopyBufferToImage(cb, staging, t.img, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    ib.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL; ib.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; ib.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT; ib.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 0, nullptr, 1, &ib);
+    CHECK(vkEndCommandBuffer(cb));
+    VkFenceCreateInfo fc{VK_STRUCTURE_TYPE_FENCE_CREATE_INFO}; VkFence f; CHECK(vkCreateFence(c.dev, &fc, nullptr, &f));
+    VkSubmitInfo si{VK_STRUCTURE_TYPE_SUBMIT_INFO}; si.commandBufferCount = 1; si.pCommandBuffers = &cb;
+    CHECK(vkQueueSubmit(c.q, 1, &si, f)); CHECK(vkWaitForFences(c.dev, 1, &f, VK_TRUE, 60000000000ull));
+    vkDestroyFence(c.dev, f, nullptr); vkFreeCommandBuffers(c.dev, c.pool, 1, &cb);
+    VkImageViewCreateInfo vci{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO}; vci.image = t.img; vci.viewType = dim == 3 ? VK_IMAGE_VIEW_TYPE_3D : VK_IMAGE_VIEW_TYPE_2D;
+    vci.format = fmt; vci.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1}; CHECK(vkCreateImageView(c.dev, &vci, nullptr, &t.view));
+    VkSamplerCreateInfo sci{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO}; sci.magFilter = sci.minFilter = VK_FILTER_NEAREST; sci.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+    sci.addressModeU = sci.addressModeV = sci.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; CHECK(vkCreateSampler(c.dev, &sci, nullptr, &t.sampler));
+    return t;
+}
 // One-shot buffer copy with full barriers, used only outside timed regions.
 static void copyNow(Ctx& c, VkBuffer src, VkBuffer dst, size_t size) {
     VkCommandBufferAllocateInfo ca{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO}; ca.commandPool = c.pool; ca.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY; ca.commandBufferCount = 1;
