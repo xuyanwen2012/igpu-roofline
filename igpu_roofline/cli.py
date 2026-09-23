@@ -57,6 +57,27 @@ def cmd_run(args):
         print(f"Report: {session.out / 'report' / 'REPORT.md'}")
 
 
+def cmd_shapes(args):
+    from .device import AdbDevice, LocalDevice
+    from .shapes import probe, table
+    if args.local:
+        paths.use_target("host")
+        device = LocalDevice(None)
+    elif args.device:
+        from .device import list_adb_devices
+        if args.device not in [d["serial"] for d in list_adb_devices()]:
+            sys.exit(f"{args.device} is not connected (adb devices).")
+        device = AdbDevice(args.device)
+    else:
+        sys.exit("give --device <serial> or --local")
+    if not paths.RUNNER.exists():
+        sys.exit("Runner not built: run `igpu-roofline build` (or `build --host`) first.")
+    caps = probe(device, paths.RUNNER)
+    print(f"{caps['gpu']} (driver {caps['driver_version']}, subgroup {caps['subgroup']}, "
+          f"shared {caps['max_shared_bytes']} B)\n")
+    print(table(caps))
+
+
 def cmd_report(args):
     from .report import analyze, analyze_all
     root = paths.results_root(args.results)
@@ -87,6 +108,11 @@ def main(argv=None):
     r.add_argument("--overrides", help="optional device override YAML (see docs/HOW-TO-RUN.md)")
     r.add_argument("--no-report", action="store_true", help="skip report generation at the end")
     r.set_defaults(func=cmd_run)
+
+    sh = sub.add_parser("shapes", help="list the device's cooperative-matrix (WMMA) shapes as a Markdown table")
+    sh.add_argument("--device", help="adb serial")
+    sh.add_argument("--local", action="store_true", help="this host's own GPU")
+    sh.set_defaults(func=cmd_shapes)
 
     p = sub.add_parser("report", help="(re)generate reports from existing results")
     p.add_argument("--device", help="only this serial")
