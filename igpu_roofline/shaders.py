@@ -16,6 +16,11 @@ from .volatile_workgroup import annotate
 GLSLC_TARGET = "vulkan1.3"
 
 
+# Tile pairs staged in workgroup memory by the shared-feed matrix variants: 4 pairs of
+# the largest shape (64x64x16 fp16, 4 KiB per pair) fit every device seen (Mali: 32 KiB).
+MATRIX_FEED_TILES = 4
+
+
 def _vec(dtype: str, width: int) -> tuple[str, str]:
     scalar = "float" if dtype == "fp32" else "float16_t"
     if width == 1:
@@ -97,6 +102,15 @@ def catalogue() -> list[tuple[str, str, dict, dict]]:
             add(f"matrix_{dtype}_{m}x{n}x{k}_c{chains}", "matrix",
                 dict(M=m, N=n, K=k, AT=a_type, CT=c_type, CHAINS=chains),
                 dict(family="matrix", dtype=dtype, m=m, matrix_n=n, k=k, chains=chains, width=1))
+            # Feed variants: A/B loaded every iteration from workgroup memory or the
+            # storage buffer; CHAINS multiply-adds per loaded pair (reuse per load).
+            add(f"matrix_{dtype}_{m}x{n}x{k}_c{chains}_lds", "matrix",
+                dict(M=m, N=n, K=k, AT=a_type, CT=c_type, CHAINS=chains, FEED=1, TILES=MATRIX_FEED_TILES),
+                dict(family="matrix", dtype=dtype, m=m, matrix_n=n, k=k, chains=chains, width=1,
+                     feed="shared", tiles=MATRIX_FEED_TILES))
+            add(f"matrix_{dtype}_{m}x{n}x{k}_c{chains}_gmem", "matrix",
+                dict(M=m, N=n, K=k, AT=a_type, CT=c_type, CHAINS=chains, FEED=2),
+                dict(family="matrix", dtype=dtype, m=m, matrix_n=n, k=k, chains=chains, width=1, feed="global"))
     return jobs
 
 

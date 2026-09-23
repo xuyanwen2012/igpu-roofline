@@ -80,7 +80,8 @@ def first_look(s, plan):
         f = m["family"]
         pick = ((f == "memory" and m["width"] == 4) or (f == "alu" and m["width"] == 4 and m["chains"] in (4, 8))
                 or (f == "shared" and m["width"] == 4 and m.get("accumulators", 8) == 8)
-                or (f == "dot" and m["chains"] == 4) or (f == "matrix" and m["chains"] in (1, 4) and s.eligible(m)))
+                or (f == "dot" and m["chains"] == 4)
+                or (f == "matrix" and not m.get("feed") and m["chains"] in (1, 4) and s.eligible(m)))
         if not pick:
             continue
         c = s.base(m, plan["warmup_seconds"])
@@ -160,7 +161,7 @@ def compute(s, plan):
     if missing:
         print(f"{s.device.serial} matrix shapes supported but not compiled: {len(missing)} (see matrix-coverage.json)", flush=True)
     for m in s.manifest:
-        if m["family"] not in ("alu", "dot", "matrix") or not s.eligible(m):
+        if m["family"] not in ("alu", "dot", "matrix") or not s.eligible(m) or m.get("feed"):
             continue
         if m["family"] == "matrix":
             points = matrix_grid(m, s.caps, quick)
@@ -172,6 +173,31 @@ def compute(s, plan):
             c = s.base(m, plan["warmup_seconds"])
             c.update(wg=wg, groups=g)
             s.run(c, "sweep-compute")
+
+
+def matrix_feed(s, plan):
+    """Cooperative matrix fed by coopMatLoad every iteration (the register-resident
+    roof excludes loads): from workgroup memory, from a cache-resident buffer
+    (~1 MiB of tiles) and from DRAM (>= 256 MiB of tiles, each tile read once).
+    CHAINS = multiply-adds per loaded A/B pair, i.e. reuse per load."""
+    quick = plan["level"] == "quick"
+    for m in s.manifest:
+        if m["family"] != "matrix" or not m.get("feed") or not s.eligible(m):
+            continue
+        ab = 1 if m["dtype"] == "int8" else 2
+        tile_bytes = (m["m"] * m["k"] + m["k"] * m["matrix_n"]) * ab
+        if m["feed"] == "shared":
+            sources = [m["tiles"]]
+        else:
+            biggest = s.caps["max_storage_buffer_range"] // (max(m["m"] * m["k"], m["k"] * m["matrix_n"]) * ab)
+            sources = [max(1, MiB // tile_bytes), min(biggest, -(-256 * MiB // tile_bytes))]
+        for tiles in sources:
+            for wg, g in matrix_grid(m, s.caps, quick):
+                if g < 4096:
+                    continue  # small launches are covered by the compute sweep
+                c = s.base(m, plan["warmup_seconds"])
+                c.update(wg=wg, groups=g, n=tiles)
+                s.run(c, "sweep-matrix-feed")
 
 
 def shared(s, plan):
@@ -416,12 +442,23 @@ def roof_key(stage: str, r: dict):
         return None
     f = c["family"]
     key = f + "_" + c.get("dtype", "") + (f"_{c['op']}" if f in ("memory", "shared") else "")
+    if f == "matrix" and c.get("feed"):
+        return matrix_feed_key(c, a)
     if f == "memory":
         if stage == "sweep-cache" or c.get("role") == "cache":
             return "cache_read_effective" if 32768 <= a.get("working_set_bytes", 0) <= 4 * MiB else None
         if a.get("working_set_bytes", 0) < 256 * MiB:
             return None
     return key
+
+
+def matrix_feed_key(c: dict, a: dict):
+    """Roof key of a fed cooperative-matrix result: shared, cache-resident or DRAM."""
+    base = f"matrix_{c['dtype']}_feed_"
+    if c["feed"] == "shared":
+        return base + "shared"
+    ws = a.get("working_set_bytes", 0)
+    return base + ("dram" if ws >= 256 * MiB else "cache" if ws <= 4 * MiB else "mid")
 
 
 def rate(r: dict) -> float:
@@ -564,7 +601,7 @@ def offline_isa(s, plan):
 
 
 # --- plan driver ---------------------------------------------------------------------
-SHORT_STAGES = [validate, first_look, cache, memory, compute, shared, latency, ert, memory_type]
+SHORT_STAGES = [validate, first_look, cache, memory, compute, matrix_feed, shared, latency, ert, memory_type]
 
 
 def run_plan(s, plan_name: str):
