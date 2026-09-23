@@ -272,3 +272,19 @@ def test_drifting_or_unsteady_rows_are_gated():
     assert "drifting" in quality(_row(sample_drift=2.4))       # 780M shared read: 15 -> 4.4 ms
     assert "warmup_unsteady" in quality(_row(warmup=dict(steady=False)))
     assert quality(_row(sample_drift=0.02, warmup=dict(steady=True))) == []
+
+
+def test_only_current_runner_and_shader_rows_count():
+    from igpu_roofline.session import Session
+    s = Session.__new__(Session)
+    s.runner_sha, s.manifest = "R2", [{"name": "matrix_x", "spirv_sha256": "S2"}]
+    assert s.current({"config": {"name": "matrix_x", "runner_sha256": "R2", "spirv_sha256": "S2"}})
+    assert not s.current({"config": {"name": "matrix_x", "runner_sha256": "R1", "spirv_sha256": "S2"}})  # old runner
+    assert not s.current({"config": {"name": "matrix_x", "runner_sha256": "R2", "spirv_sha256": "S1"}})  # old shader
+
+
+def test_shapes_table_names_types_and_scope():
+    from igpu_roofline.shapes import table
+    md = table({"matrix_shapes": [dict(m=16, n=16, k=16, a=3, b=7, c=5, result=5, scope=3, saturating=1)]})
+    assert "| 16×16×16 | s8 | u8 | s32 | s32 | subgroup | yes |" in md
+    assert "none" in table({"matrix_shapes": []})

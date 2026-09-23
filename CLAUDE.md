@@ -53,10 +53,16 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
    - `gold`: standard with 3 sustained batches (repeatability).
    - The owner finds 4–5 h too slow for phones; a faster plan is planned. Until it
      exists, ask before starting `standard` on a phone.
-5. Results root: pass `--results <dir>`; one directory per campaign. Do not mix
-   results of different runner builds in one device folder unless resuming.
+5. Results root: pass `--results <dir>`; one directory per campaign and per runner
+   build. Only rows of the current runner and of the current build of each shader
+   (`shader-shas.json`, written at deploy) define roofs; older rows stay on disk as
+   provenance but are excluded (REPORT counts them as `stale_rows_excluded`). A rebuilt
+   runner therefore means re-measuring everything: start a fresh results directory.
 
 ## Devices
+
+Full cooperative-matrix (WMMA) shape lists per device: [docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md)
+(refresh with `igpu-roofline shapes --device <serial>` or `--local`).
 
 | device | GPU | access | root | clocks | ISA route | known issues |
 |---|---|---|---|---|---|---|
@@ -121,9 +127,11 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
   without its `.json` blocks resume; move it to `superseded/interrupted/<stage>/`.
 - Resume = rerun the same command. Finished configurations are skipped; only rows of
   the current runner/shader SHAs count.
-- If a code change is needed mid-campaign, finish or stop the run first; a changed
-  runner SHA invalidates earlier rows for candidate selection (keep runner changes to a
-  minimum; a shader-only change re-measures only that shader's configurations).
+- If a code change is needed mid-campaign, finish or stop the run first. A changed
+  runner invalidates every earlier row (use a fresh results directory). A shader-only
+  change invalidates only that shader's rows: resuming re-measures them and the stale
+  rows are ignored; still move them to `superseded/<reason>/` so the folder stays
+  readable.
 
 ## When is a result usable
 

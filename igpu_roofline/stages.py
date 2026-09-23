@@ -439,7 +439,7 @@ def candidates(s, top: int) -> dict:
         if p.name.endswith((".config.json", ".telemetry.json")):
             continue
         r = json.loads(p.read_text())
-        if not r.get("accepted") or r.get("config", {}).get("runner_sha256") != s.runner_sha:
+        if not r.get("accepted") or not s.current(r):
             continue
         key = roof_key(p.parent.name, r)
         if not key:
@@ -481,7 +481,7 @@ def select_roofs(s) -> dict:
             continue
         r = json.loads(p.read_text())
         c = r["config"]
-        if c.get("runner_sha256") != s.runner_sha:
+        if not s.current(r):
             continue
         ident = json.dumps({k: v for k, v in c.items() if k != "replicate"}, sort_keys=True)
         groups.setdefault((c["confirm_key"], ident), []).append(r)
