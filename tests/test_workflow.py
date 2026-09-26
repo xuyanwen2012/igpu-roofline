@@ -84,11 +84,16 @@ def session(tmp_path, monkeypatch):
     return FakeSession(tmp_path)
 
 
-def test_full_plan_preserves_configuration_counts(session):
-    expected = {"quick": 234, "fast": 301, "standard": 1832}
+def test_full_plan_excludes_aliasing_shared_layouts(session):
+    expected = {"quick": 212, "fast": 262, "standard": 1679}
     for plan, count in expected.items():
         selected = configurations(session, stages.PLANS[plan])
         assert sum(len(rows) for _, rows in selected) == count
+        for _, rows in selected:
+            for _, c in rows:
+                if c["family"] == "shared" and c.get("kind") == "bw":
+                    assert c["shared_count"] >= c["wg"] * c["accumulators"]
+                    assert c["op"] != 2 or c["stride"] == 1
     assert session.calls == []
     assert list(session.out.iterdir()) == []
 

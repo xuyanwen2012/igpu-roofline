@@ -23,7 +23,8 @@ void main(){
  uint id=gl_GlobalInvocationID.x, nt=gl_NumWorkGroups.x*gl_WorkGroupSize.x;
  uint wmask=(1u<<p.seed)-1u, hmask=(1u<<p.offset)-1u;
  vec4 sum=vec4(0.0);
- for(uint l=0;l<p.loops;l++){
+ // One pass per dispatch. The runner batches independent dispatches, preventing
+ // a compiler from reusing invariant loads across the timed repetition loop.
   for(uint i=id;i<p.n;i+=nt){
 #if TEX==0
    sum+=vec4(t[i]);
@@ -33,6 +34,5 @@ void main(){
    sum+=texelFetch(tex,ivec3(i&wmask,(i>>p.seed)&hmask,i>>(p.seed+p.offset)),0);
 #endif
   }
- }
  d[id]=sum;
 }

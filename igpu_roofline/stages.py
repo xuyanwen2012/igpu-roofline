@@ -379,6 +379,10 @@ def shared(s, plan):
             if m["op"] and wg * stride > count:
                 continue
             c = s.base(m, plan["warmup_seconds"])
+            if m.get("kind") == "bw" and (
+                count < wg * m["accumulators"] or (m["op"] == 2 and stride != 1)
+            ):
+                continue
             c.update(wg=wg, groups=256, shared_count=count, stride=stride)
             s.run(c, "sweep-shared")
 
@@ -475,11 +479,17 @@ def probe(s, label: str, plan) -> dict:
     """
     c = s.base(s.variant("alu_fp32_v4_c16"), plan["warmup_seconds"])
     c.update(wg=256, groups=512, probe=label, probe_utc=utc_now())
+    if getattr(s, "probe_workload", None):
+        c.update(s.probe_workload, calibrate=False)
     row = s.run(c, "probe")
     if row.get("accepted"):
         rate = row["accounting"]["float_ops"] / row["median_seconds"] / 1e12
         print(f"{s.device.serial} probe {label} {rate:.3f} TFLOP/s", flush=True)
     return row
+
+
+class ProbeInvalid(RuntimeError):
+    """No reliable device-state measurement; do not infer hardware degradation."""
 
 
 class DeviceDegraded(RuntimeError):
@@ -508,23 +518,10 @@ class Guard:
         self.s, self.plan, self.count, self.busy = s, plan, 0, False
         self.last_good_utc = utc_now()
         self._reusable = None
-        runner = s.runner_sha
-        vals = []
-        for p in s.out.glob("probe/*.json"):
-            if p.name.endswith((".config.json", ".telemetry.json")):
-                continue
-            r = json.loads(p.read_text())
-            if (
-                r.get("accepted")
-                and not admission.validation_reasons(r)
-                and s.current(r)
-                and r.get("config", {}).get("runner_sha256") == runner
-                and r.get("accounting")
-            ):
-                vals.append(r["accounting"]["float_ops"] / r["median_seconds"] / 1e12)
-        self.readings = (
-            vals  # every accepted sentinel of this runner on this device, any process
-        )
+        # A fresh process establishes its own baseline at one calibrated workload.
+        # Old probes may have different loop counts and cannot be mixed into it.
+        self.readings = []
+        s.probe_workload = None
 
     @property
     def reference(self):
@@ -583,10 +580,30 @@ class Guard:
             raise
         finally:
             self.busy = False
-        return (
-            row["accounting"]["float_ops"] / row["median_seconds"] / 1e12
-            if row.get("accepted")
-            else None
+        why = admission.reasons(row, self.s.runner_sha, self.s._shader_shas)
+        if why:
+            self._log_check(
+                label, reused=False, source=self._last_probe, value=None, reasons=why
+            )
+            return None
+        if not self.s.probe_workload and row.get("effective_loops"):
+            self.s.probe_workload = {
+                "loops": row["effective_loops"],
+                "batch_dispatches": row.get("batch_dispatches", 1),
+            }
+        return row["accounting"]["float_ops"] / row["median_seconds"] / 1e12
+
+    def _valid_read(self, label):
+        for attempt in range(SENTINEL["confirm_readings"]):
+            value = self._read(
+                label if not attempt else f"{label}_quality_retry{attempt}"
+            )
+            if value is not None:
+                return value
+        moved = self.quarantine(self.last_good_utc)
+        raise ProbeInvalid(
+            f"No quality-passing sentinel at {label}; {moved} results isolated. "
+            "Device health is unknown, not confirmed degraded."
         )
 
     def _identity(self):
@@ -599,7 +616,7 @@ class Guard:
             tuple(sorted(self.s._shader_shas.items())),
         )
 
-    def _log_check(self, label, *, reused, source, value):
+    def _log_check(self, label, *, reused, source, value, reasons=()):
         if self.s is None:
             return
         with (self.s.out / "sentinel-checks.jsonl").open("a") as f:
@@ -611,6 +628,7 @@ class Guard:
                         "reused": reused,
                         "source": source,
                         "value": value,
+                        "exclusion_reasons": list(reasons),
                     }
                 )
                 + "\n"
@@ -632,7 +650,7 @@ class Guard:
             )
             return reusable["value"]
         started = utc_now()
-        value = self._read(label)
+        value = self._valid_read(label)
         source = self._last_probe
         reusable_healthy = True
         self._log_check(label, reused=False, source=source, value=value)
@@ -642,7 +660,7 @@ class Guard:
         if ref is not None and value < SENTINEL["degraded_below"] * ref:
             # One low reading is not a state change: re-measure and decide on the median.
             more = [
-                self._read(f"{label}_recheck{i}")
+                self._valid_read(f"{label}_recheck{i}")
                 for i in range(1, SENTINEL["confirm_readings"])
             ]
             reusable_healthy = all(v is not None for v in more)
@@ -1098,6 +1116,9 @@ def run_plan(
             confirm(s, plan)
             guard.check("confirm_end")
         export_best(s, select_roofs(s, required=False))
+    except ProbeInvalid as e:
+        mark("paused_probe_invalid", reason=str(e))
+        raise SystemExit(f"{s.device.serial}: {e}") from e
     except DeviceDegraded as e:
         mark("paused_device_degraded", reason=str(e))
         raise SystemExit(f"{s.device.serial}: {e}") from e

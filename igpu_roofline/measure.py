@@ -115,6 +115,9 @@ def accounting(c: dict, loops: int) -> dict:
             a["shared_initialization_bytes"] + a["shared_final_read_bytes"]
         )
         a["float_ops"] = threads * width * loops * per if op == 0 else 0
+        a["memory_barriers_per_workgroup"] = (
+            loops if c.get("read_memory_barrier") else 0
+        )
         a["barriers_per_workgroup"] = 1 if bw else 1 + (2 * loops if op else 0)
     elif family == "matrix":
         # Every subgroup of a workgroup runs its own chains (wg may hold several subgroups).
@@ -155,7 +158,7 @@ def accounting(c: dict, loops: int) -> dict:
             a["working_set_bytes"] = n * tile_bytes
     elif family == "texture":
         texel = 8 if c["format"] == "rgba16f" else 16
-        a["logical_global_bytes"] = n * texel * loops + threads * 16
+        a["logical_global_bytes"] = (n * texel + threads * 16) * loops
         a["working_set_bytes"] = n * texel
         a["float_ops"] = n * 4 * loops
     elif family == "latency":
@@ -175,6 +178,7 @@ def accounting(c: dict, loops: int) -> dict:
         "integer_ops",
         "logical_global_bytes",
         "logical_shared_bytes",
+        "memory_barriers_per_workgroup",
         "shared_initialization_bytes",
         "shared_final_read_bytes",
         "barriers_per_workgroup",

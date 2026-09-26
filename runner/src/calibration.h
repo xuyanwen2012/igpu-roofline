@@ -12,6 +12,7 @@ static void calibrateTiming(uint32_t &loops, uint32_t &batch, uint32_t limit, do
   const uint32_t minimum = differential ? 2 : 1;
   loops = std::clamp(loops, minimum, limit);
   batch = std::clamp(batch, 1u, 256u);
+  uint32_t qualityFloor = minimum;
   auto median = [&](uint32_t l) {
     double times[3] = {measure(l, batch), measure(l, batch), measure(l, batch)};
     std::sort(times, times + 3);
@@ -28,6 +29,7 @@ static void calibrateTiming(uint32_t &loops, uint32_t &batch, uint32_t limit, do
     std::string reason;
     double factor = std::clamp(target * 1.2 / seconds, 0.125, 8.0);
     if (fixed > 0.10) {
+      qualityFloor = std::min(limit, std::max(qualityFloor, loops + 1));
       // Batching cannot remove per-dispatch overhead: grow the loop body first.
       factor = std::clamp(fixed / 0.08, 1.125, 8.0);
       nextLoops = std::min(limit, uint32_t(std::ceil(loops * factor)));
@@ -41,10 +43,18 @@ static void calibrateTiming(uint32_t &loops, uint32_t &batch, uint32_t limit, do
           --nextBatch;
         reason = "reduce_batch";
       } else {
-        nextLoops = std::max(minimum, uint32_t(std::ceil(loops * factor)));
-        if (nextLoops == loops && loops > minimum)
+        // Estimate the loop count needed to retain <=8% fixed cost. Never shrink
+        // back into a workload already rejected for overhead in this calibration.
+        if (fixed > 0 && fixed < 1)
+          qualityFloor = std::min(
+              limit, std::max(qualityFloor,
+                              uint32_t(std::ceil(loops * fixed * (1.0 / .08 - 1) / (1 - fixed)))));
+        nextLoops = std::max(qualityFloor, uint32_t(std::ceil(loops * factor)));
+        nextLoops = std::min(loops, nextLoops);
+        if (nextLoops == loops && loops > qualityFloor)
           --nextLoops;
-        reason = "reduce_loops";
+        reason =
+            nextLoops == loops && qualityFloor > minimum ? "quality_floor_reached" : "reduce_loops";
       }
     } else {
       nextLoops = std::min(limit, std::max(loops + 1, uint32_t(std::ceil(loops * factor))));
@@ -55,7 +65,8 @@ static void calibrateTiming(uint32_t &loops, uint32_t &batch, uint32_t limit, do
         reason = "increase_loops";
     }
     bool stop = nextLoops == loops && nextBatch == batch;
-    if (stop && reason != "target_reached" && reason != "fixed_cost_limit")
+    if (stop && reason != "target_reached" && reason != "fixed_cost_limit" &&
+        reason != "quality_floor_reached")
       reason = "workload_limit";
     if (!stop && round == 9) {
       stop = true;

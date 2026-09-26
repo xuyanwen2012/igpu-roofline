@@ -183,6 +183,10 @@ def replay_configurations(session, plan, data, families=(), variants=()):
                 "Replay workgroup is incompatible with the current subgroup size"
             )
         if c["family"] == "shared":
+            if c.get("kind") == "bw":
+                c["shared_count"] = max(c["shared_count"], c["wg"] * c["accumulators"])
+                if c["op"] == 2 and c["stride"] != 1:
+                    raise ValueError("Shared write replay requires stride=1")
             scalar = 2 if c["dtype"] == "fp16" else 4
             if (
                 c["shared_count"] * c["width"] * scalar
