@@ -6,6 +6,7 @@ import statistics
 from . import paths
 
 QUALITY = {"max_median_se": 0.03, "max_fixed_fraction": 0.10, "max_drift": 0.05}
+MAX_REPEAT_SPREAD = 0.05
 
 
 def median_se(row):
@@ -93,7 +94,7 @@ def reasons(row, runner, shaders, sustained_runner=None):
     return list(dict.fromkeys(why))
 
 
-def confirmed_groups(rows, eligible, rate):
+def confirmed_groups(rows, eligible, rate, diagnostics=None):
     """Keep all repeat attempts in the denominator; require the planned repeat count."""
     groups = {}
     for r in rows:
@@ -105,7 +106,7 @@ def confirmed_groups(rows, eligible, rate):
             {k: v for k, v in c.items() if k != "replicate"}, sort_keys=True
         )
         groups.setdefault((key, ident), {})[c.get("replicate")] = r
-    winners = {}
+    winners: dict[str, dict] = {}
     for (key, _), repeats in groups.items():
         rs = list(repeats.values())
         required = max(
@@ -115,9 +116,30 @@ def confirmed_groups(rows, eligible, rate):
             for r in rs
         )
         ok = [r for r in rs if eligible(r)]
-        if len(rs) < required or len(ok) < max(2, len(rs) - 1):
+        values = [rate(r) for r in ok]
+        med = statistics.median(values) if values else 0
+        spread = (max(values) - min(values)) / med if med > 0 else None
+        reasons = []
+        if len(rs) < required:
+            reasons.append("insufficient_repeats")
+        if len(ok) < max(2, len(rs) - 1):
+            reasons.append("insufficient_quality_repeats")
+        if spread is None or spread > MAX_REPEAT_SPREAD:
+            reasons.append("repeat_unstable")
+        if diagnostics is not None:
+            diagnostics.append(
+                {
+                    "roof": key,
+                    "config": rs[0]["config"],
+                    "attempts": len(rs),
+                    "eligible_repeats": len(ok),
+                    "repeat_values": values,
+                    "repeat_spread": spread,
+                    "reasons": reasons,
+                }
+            )
+        if reasons:
             continue
-        med = statistics.median(rate(r) for r in ok)
         representative = min(ok, key=lambda r: abs(rate(r) - med))
         if key not in winners or med > winners[key]["median"]:
             winners[key] = {"row": representative, "median": med, "rows": ok}

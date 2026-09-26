@@ -228,6 +228,8 @@ class Session:
             runner_sha256=self.runner_sha,
             schema_version=2,
         )
+        if m["family"] == "shared" and m.get("kind") == "bw":
+            c["shared_count"] = max(c["shared_count"], c["wg"] * m["accumulators"])
         if warmup_seconds:
             c["warmup_seconds"] = warmup_seconds
         if m["family"] == "matrix":

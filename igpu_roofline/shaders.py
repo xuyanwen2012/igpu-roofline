@@ -97,6 +97,7 @@ def catalogue() -> list[tuple[str, str, dict, dict]]:
                         "accumulators": 8,
                         "cross_lane_producer": True,
                         "volatile_workgroup": True,
+                        "read_memory_barrier": op == 0,
                     },
                 )
             # Accumulator sweep for the read test (is shared memory saturated?).
@@ -114,6 +115,7 @@ def catalogue() -> list[tuple[str, str, dict, dict]]:
                         "accumulators": acc,
                         "cross_lane_producer": True,
                         "volatile_workgroup": True,
+                        "read_memory_barrier": True,
                     },
                 )
             # Controls: single accumulator read, and read/write with two barriers per step.

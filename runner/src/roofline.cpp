@@ -104,6 +104,8 @@ int main(int argc, char **argv) {
     uint32_t M = cfg.value("m", 1), N = cfg.value("matrix_n", 1), K = cfg.value("k", 1),
              dots = cfg.value("dots_per_step", 1u), acc = cfg.value("accumulators", 1u),
              flops = cfg.value("flops_per_element", 1u);
+    if (family == "shared" && kind == "bw" && (count < wg * acc || (op == 2 && stride != 1)))
+      throw std::runtime_error("shared bandwidth requires COUNT >= WG*ACC and write stride=1");
     const bool deviceLocal =
         cfg.value("memory_mode", std::string("device_local")) == "device_local";
     const size_t threads = size_t(wg) * groups;
@@ -419,9 +421,9 @@ int main(int argc, char **argv) {
       } else {
         vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_COMPUTE, pipe);
         vkCmdBindDescriptorSets(cb, VK_PIPELINE_BIND_POINT_COMPUTE, pl, 0, 1, &ds, 0, nullptr);
-        uint32_t pc[] = {n, its, pc2, pc3};
+        uint32_t pc[] = {n, family == "texture" ? 1u : its, pc2, pc3};
         vkCmdPushConstants(cb, pl, VK_SHADER_STAGE_COMPUTE_BIT, 0, 16, pc);
-        for (uint32_t bi = 0; bi < batch; bi++) {
+        for (uint32_t bi = 0; bi < batch * (family == "texture" ? its : 1u); bi++) {
           if (bi) {
             VkMemoryBarrier between{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
             between.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
@@ -518,7 +520,7 @@ int main(int argc, char **argv) {
             double ref = 0;
             for (size_t i = id; i < n; i += threads)
               ref += double((i * 13 + ch * 7) % 127) * 0.0625;
-            check(id * 4 + ch, ref * its);
+            check(id * 4 + ch, ref);
           }
       } else if (family == "matrix") {
         for (size_t group = 0; group < groups; group += std::max<size_t>(1, groups / 16))

@@ -423,15 +423,12 @@ def test_guard_needs_confirmed_drop_against_median(monkeypatch):
     )
     monkeypatch.setattr(g, "quarantine", lambda since: 0)
     seq = iter([3.20, 2.2, 2.25, 2.21])  # one low outlier (passes), then a real drop
-    monkeypatch.setattr(
-        st,
-        "probe",
-        lambda s, label, plan: {
-            "accepted": True,
-            "accounting": {"float_ops": next(seq) * 1e12},
-            "median_seconds": 1.0,
-        },
-    )
+
+    def reading(label):
+        g._last_probe = None
+        return next(seq)
+
+    monkeypatch.setattr(g, "_read", reading)
     assert g.check("a") == 3.20  # 3.20 >= 0.85 * median(3.3, 3.4, 3.58)
     with pytest.raises(st.DeviceDegraded):
         g.check("b")  # 2.2, rechecked 2.25 / 2.21 -> degraded
@@ -573,7 +570,7 @@ def test_texture_accounting_and_keys():
         "n": 1 << 25,
     }
     a = accounting(c, 2)
-    assert a["logical_global_bytes"] == (1 << 25) * 8 * 2 + 256 * 4096 * 16
+    assert a["logical_global_bytes"] == ((1 << 25) * 8 + 256 * 4096 * 16) * 2
     assert texture_key(c, a) == "texture_rgba16f_tex3d_dram"
     assert (
         texture_key(c, {"working_set_bytes": 1 << 20}) == "texture_rgba16f_tex3d_cache"

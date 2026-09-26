@@ -166,10 +166,12 @@ def analyze(folder: Path) -> dict:
         and "accounting" in r
         and not r["source"].startswith(("validate/", "sustain-preflight-"))
     ]
+    confirmation_diagnostics = []
     confirmations = admission.confirmed_groups(
         [r for r in all_rows if r["source"].startswith("confirm/") and current(r)],
         lambda r: not r["exclusion_reasons"],
         rate,
+        confirmation_diagnostics,
     )
     confirmed_sources = {v["row"]["source"]: v for v in confirmations.values()}
     # Unstable batches remain in their cohort so they cannot disappear from all_steady.
@@ -267,7 +269,7 @@ def analyze(folder: Path) -> dict:
         if r["source"].startswith("probe/")
         and r.get("accepted")
         and current(r)
-        and not admission.validation_reasons(r)
+        and not r["exclusion_reasons"]
         and r.get("accounting")
     )
     ref = statistics.median(x[2] for x in probes) if probes else 0
@@ -309,6 +311,8 @@ def analyze(folder: Path) -> dict:
     feed = matrix_feed_by_reuse(valid)
     plans = sorted({str(r["plan"]) for r in all_rows if r.get("plan")})
     summary = {
+        "confirmation_diagnostics": confirmation_diagnostics,
+        "repeat_spread_limit": admission.MAX_REPEAT_SPREAD,
         "device": caps["gpu"],
         "serial": caps["serial"],
         "plans": plans,
@@ -322,6 +326,11 @@ def analyze(folder: Path) -> dict:
         },
         "validation_scope": "pre_and_post",
         "missing_reasons": (["No current confirmed roofs"] if not confirmations else [])
+        + [
+            f"{d['roof']}: {', '.join(d['reasons'])}"
+            for d in confirmation_diagnostics
+            if d["reasons"]
+        ]
         + (
             [
                 "Sustained roofs require three distinct stable batches per current confirmed configuration and duration"

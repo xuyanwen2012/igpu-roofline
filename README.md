@@ -120,3 +120,42 @@ configurations can be replayed. Device ownership uses host/user-wide Vulkan UUID
 locks (ADB serial locks), independent of result and staging directories. See
 [methodology](docs/METHODOLOGY.md) and [running](docs/HOW-TO-RUN.md) for coverage,
 calibration and sustained-roof eligibility.
+
+### Targeted anomaly retests and repeat admission
+
+Sentinels now use the same build, validation and timing-quality gates as result
+selection. The first quality-passing probe fixes loop and batch counts for the
+session. Invalid probes are retried at most three times, then stop with
+`paused_probe_invalid` and quarantine the affected interval; they do not establish
+hardware degradation or advance the healthy boundary. A fresh process establishes
+a fresh baseline. Calibration prioritizes fixed cost over the nominal 5 ms target
+and retains a quality floor instead of oscillating between short and long loops.
+
+Confirmation additionally requires `(max - min) / median <= 5%` across all
+quality-passing repeats of that candidate. Existing repeat counts and per-run gates
+are unchanged. Failed groups remain in `confirmation_diagnostics` with their full
+repeat values and reasons; they cannot define roofs, sustained references or replay
+exports. A short-run `confirmed` label from an older report must be reassessed under
+this policy before reuse. Historical raw data is retained.
+
+Shared-bandwidth layouts require `COUNT >= WG * ACC`; write tests require stride 1
+and use disjoint per-lane slots with step-dependent values; rotation stays within each
+thread's slots to avoid cross-subgroup iteration races, followed by synchronized
+neighbour readback. Invalid
+aliasing layouts are omitted; read stride controls retain bank-conflict coverage.
+Replay imports expand formerly undersized allocations subject to the device limit.
+These corrected layouts are not identical-workload comparisons with old results.
+Read iterations also contain a workgroup memory barrier to prevent invariant-load
+reuse; reported read throughput includes that barrier cost. Final machine-code
+verification remains necessary where the driver exposes it.
+
+Texture bandwidth uses one traversal per dispatch, with repetitions implemented as
+independent dispatches separated by memory barriers. Calibration and differential
+timing vary the dispatch count, not an invariant shader loop. Accounting includes
+output writes on every dispatch, and post-validation checks the final traversal.
+The reported bandwidth is still logical traffic: a DRAM-sized working-set label is
+not evidence of physical DRAM traffic, nor is it a hardware-counter measurement.
+
+After runner changes, use a fresh results directory and replay only affected
+configurations. Do not combine old and new builds into one confirmed group or
+promote a partial retest to a full-device result set.

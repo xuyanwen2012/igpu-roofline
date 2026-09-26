@@ -241,7 +241,9 @@ def guard(tmp_path, monkeypatch):
 
     def probe(*args):
         counter.append(args[1])
-        return dict(trusted(), raw=f"probe/{len(counter)}.jsonl")
+        row: dict = dict(trusted(), raw=f"probe/{len(counter)}.jsonl")
+        row["config"]["runner_sha256"] = s.runner_sha
+        return row
 
     monkeypatch.setattr(stages, "probe", probe)
     return g, counter
@@ -508,3 +510,51 @@ def test_insights_direct_entry_uses_shared_admission(tmp_path, monkeypatch):
     monkeypatch.setattr(insights, "write_isa_check", lambda *a: None)
     insights.write_all(tmp_path, tmp_path, [good, old, noisy], {}, {})
     assert seen == [[good], [good]]
+
+
+def test_unstable_confirmation_is_not_a_roof():
+    rows = [
+        dict(
+            trusted(),
+            median_seconds=t,
+            config=dict(trusted()["config"], confirm_key="alu_fp32", replicate=i),
+        )
+        for i, t in enumerate([0.006, 0.006, 0.009])
+    ]
+    diagnostics = []
+    assert not admission.confirmed_groups(
+        rows, lambda r: True, stages.rate, diagnostics
+    )
+    assert diagnostics[0]["reasons"] == ["repeat_unstable"]
+    assert len(diagnostics[0]["repeat_values"]) == 3
+
+
+def test_invalid_probe_does_not_imply_degradation(tmp_path, monkeypatch):
+    g, _ = guard(tmp_path, monkeypatch)
+    g.check("initial")
+    boundary = g.last_good_utc
+    row = trusted()
+    row["differential"] = {"valid": True, "fixed_fraction": 0.43}
+    monkeypatch.setattr(stages, "probe", lambda *a: row)
+    moved = []
+    monkeypatch.setattr(g, "quarantine", lambda since: moved.append(since) or 0)
+    with pytest.raises(stages.ProbeInvalid):
+        g.check("after")
+    assert moved == [boundary] and len(g.readings) == 1
+    assert g.last_good_utc == boundary and g._reusable is None
+
+
+def test_probe_freezes_only_quality_passing_workload(tmp_path, monkeypatch):
+    g, _ = guard(tmp_path, monkeypatch)
+    bad = dict(
+        trusted(),
+        effective_loops=10,
+        batch_dispatches=1,
+        differential={"valid": True, "fixed_fraction": 0.43},
+    )
+    good = dict(trusted(), effective_loops=57, batch_dispatches=2)
+    seq = iter([bad, good])
+    monkeypatch.setattr(stages, "probe", lambda *a: next(seq))
+    g.check("initial")
+    assert g.s.probe_workload == {"loops": 57, "batch_dispatches": 2}
+    assert len(g.readings) == 1

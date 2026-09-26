@@ -35,6 +35,7 @@ int main() {
   assert(run(2, 1, 64, .01, 0) == "workload_limit");                // lower loop limit
   assert(run(4, 1, 64, .000001, .01) == "fixed_cost_limit");        // fixed cost dominates
   assert(run(2, 1, 16384, .000001, .003) == "fixed_cost_limit");
+  assert(run(128, 1, 16384, .00057, .0037) == "quality_floor_reached"); // Pixel regression
   uint32_t loops = 128, batch = 1;
   int rounds = 0;
   std::string stop;
