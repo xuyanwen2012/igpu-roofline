@@ -8,10 +8,16 @@ Every shader variant must match its design exactly (see `expected`); the build
 fails otherwise. This catches a compiler, or an edit, silently changing what a
 microbenchmark measures.
 """
+
 import re
 
-POINTER_PRODUCERS = ("OpVariable", "OpAccessChain", "OpInBoundsAccessChain",
-                     "OpPtrAccessChain", "OpCopyObject")
+POINTER_PRODUCERS = (
+    "OpVariable",
+    "OpAccessChain",
+    "OpInBoundsAccessChain",
+    "OpPtrAccessChain",
+    "OpCopyObject",
+)
 
 
 def ledger(asm: str) -> dict:
@@ -21,7 +27,14 @@ def ledger(asm: str) -> dict:
         if m[2] in POINTER_PRODUCERS:
             id_type[m[1]] = m[3]
 
-    counts = {"fma": 0, "dot": 0, "coopmat_muladd": 0, "coopmat_load": 0, "control_barrier": 0, "volatile": 0}
+    counts = {
+        "fma": 0,
+        "dot": 0,
+        "coopmat_muladd": 0,
+        "coopmat_load": 0,
+        "control_barrier": 0,
+        "volatile": 0,
+    }
     for line in asm.splitlines():
         s = line.strip()
         load = re.match(r"%\w+ = OpLoad %\w+ (%\w+)", s)
@@ -57,7 +70,10 @@ def expected(meta: dict) -> dict:
         return {"dot": meta["chains"] * meta.get("dots_per_step", 1)}
     if family == "matrix":
         # A and B once before the loop; fed variants load them again inside the loop.
-        e = {"coopmat_muladd": meta["chains"], "coopmat_load": 4 if meta.get("feed") else 2}
+        e = {
+            "coopmat_muladd": meta["chains"],
+            "coopmat_load": 4 if meta.get("feed") else 2,
+        }
         if meta.get("feed") == "shared":
             e["control_barrier"] = 1  # after staging the tiles
         return e
@@ -72,8 +88,18 @@ def expected(meta: dict) -> dict:
     if family == "shared" and meta.get("kind") == "bw":
         acc = meta["accumulators"]
         if meta["op"] == 0:
-            return {"load_Workgroup": acc, "store_Workgroup": 1, "control_barrier": 1, "volatile": acc + 1}
-        return {"load_Workgroup": 1, "store_Workgroup": acc, "control_barrier": 1, "volatile": acc + 1}
+            return {
+                "load_Workgroup": acc,
+                "store_Workgroup": 1,
+                "control_barrier": 1,
+                "volatile": acc + 1,
+            }
+        return {
+            "load_Workgroup": 1,
+            "store_Workgroup": acc,
+            "control_barrier": 1,
+            "volatile": acc + 1,
+        }
     if family == "texture":
         # One texel read per loop trip: an image fetch (textures) or a buffer load.
         if meta["tex_dim"]:
@@ -86,10 +112,18 @@ def expected(meta: dict) -> dict:
         # FULL_UNROLL; ELEMS independent elements (chains) per thread.
         flops, elems = meta["flops_per_element"], meta.get("elems", 4)
         steps = flops if flops <= 32 or meta.get("full_unroll") else 32
-        return {"fma": elems * steps, "load_StorageBuffer": elems, "store_StorageBuffer": elems}
+        return {
+            "fma": elems * steps,
+            "load_StorageBuffer": elems,
+            "store_StorageBuffer": elems,
+        }
     return {}
 
 
 def check(meta: dict, counts: dict) -> dict:
     """Return {key: (expected, actual)} for every mismatch; empty means OK."""
-    return {k: (v, counts.get(k, 0)) for k, v in expected(meta).items() if counts.get(k, 0) != v}
+    return {
+        k: (v, counts.get(k, 0))
+        for k, v in expected(meta).items()
+        if counts.get(k, 0) != v
+    }

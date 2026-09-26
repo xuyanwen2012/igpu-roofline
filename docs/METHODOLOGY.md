@@ -22,9 +22,25 @@ this caught: a chain of affine FMAs with uniform coefficients (`x = x*a + b`) wa
 composed into a single FMA by a driver compiler, which inflated the ERT plateau 10×;
 the ERT kernel therefore uses the Horner form `y = y*x + a` with per-element `x`.
 
-**Validate.** The runner recomputes every result on the CPU (exactly for integer and
-memory kernels; with a relative tolerance for float reductions whose summation order
-differs). A configuration that fails validation is recorded but never used.
+**Validate.** Schema version 2 records independent `validation_pre` and
+`validation_post` events and `validation_scope=pre_and_post`. CPU reference checks
+sample output positions (exactly for integer and memory kernels, with relative
+tolerance for float reductions). Matrix checks cover every subgroup and accumulator
+chain in each sampled workgroup. Each subgroup owns its own output tile, indexed by
+`workgroup_id * subgroups_per_workgroup + subgroup_id`; allocation and logical bytes
+include all those tiles. Workgroups must contain whole subgroups. Matrix output is
+limited by both 256 MiB and the device's storage-buffer range.
+
+Checks bracket continuous formal sampling; they **do not guarantee detection of
+transient errors between the two checks**. Sample events contain timing only. The
+last differential pair runs half length then full length, so the post check reads
+the actual last full dispatch without another dispatch. Sustained runs check their
+last actual sample. Post-check CPU time and readback are outside GPU sample timing
+and sustained duty-cycle duration. Missing or failed post checks, process failures,
+and GPU faults exclude a result; raw output remains available for diagnosis.
+Historical rows without this coverage remain readable and are labelled historical,
+but cannot define current trusted roofs. Old confirmed configurations may still be
+imported for remeasurement.
 
 **Count work with fixed formulas.** FMA = 2 FLOP; int8 dot4 = 8 integer ops; matrix
 multiply-add = 2·M·N·K. Address arithmetic, loop control and operand recurrences are
@@ -32,7 +48,7 @@ not counted, so rates are conservative. Bytes are shader-logical bytes
 (BabelStream conventions), never physical DRAM traffic.
 
 **Time on the GPU.** A timestamp pair brackets each command buffer. The loop count is
-calibrated so a dispatch takes ≥ 2 ms; short dispatches are batched in one command
+calibrated toward a full sample of 5–7.5 ms; short dispatches are batched in one command
 buffer (with barriers between them). Reported per configuration: median and minimum
 ("best", the STREAM/BabelStream convention) of 21 samples.
 
@@ -106,7 +122,10 @@ DEVICE_LOCAL vs host-visible coherent buffers, arms alternating order, three rep
 **Sustained.** The confirmed configuration of each roof (see below) runs for 300 s after a cooldown;
 the last-60 s median is reported with a steadiness test (halves within 5 %, CV ≤ 10 %)
 and the GPU-timestamp duty cycle. Sustained values replace short-run roofs only with
-three batches (`gold`).
+at least three distinct batches (`gold`) for every required roof, all stable and
+linked to its current confirmed configuration. Different configurations or sustained
+durations never combine toward that count. Both the sustained executable hash and
+its reference short-run executable hash must match the deployed manifest.
 
 ## Verifying the code
 
@@ -130,8 +149,19 @@ compute AI, and compare its measured rate to `min(...)`.
 
 ## Roof selection and device state
 
-**Calibrate, warm up at full size, re-calibrate.** Each configuration first sizes its
-loop count so a dispatch lasts >= 5 ms (`target_seconds`), then warms up with that
+**Calibrate, warm up at full size, re-calibrate.** Calibration can increase or decrease
+loops and dispatch batches. The default full-sample target is 5 ms, with 5–7.5 ms
+preferred. Each candidate uses the median of three GPU timings, with at most ten
+rounds and adjustment factors bounded to 1/8–8. Excess batches are removed before
+shortening loops; differential configurations retain at least two loops. FP16 loop
+bounds and the 256-dispatch batch cap remain in force. Fixed overhead takes priority:
+if shortening raises its fraction above 10%, calibration increases loop work again.
+The target never relaxes quality gates. Each round logs its measurement, decision,
+loop/batch counts and stopping reason, including limits or nonconvergence. The usual
+quality gates decide whether the final sample is usable. `calibrate=False`, fixed-step
+latency and transfer-copy tests retain their original semantics.
+
+The runner then warms up with that
 dispatch for `warmup_seconds` and until the last five dispatch times agree within 3 %
 (cap 4 x `warmup_seconds`), then re-calibrates. Load-based governors key on GPU busy %:
 on a Radeon 780M, 1 s of 0.08 ms dispatches left the clock low and samples ramped from
@@ -244,3 +274,18 @@ microarchitecture through microbenchmarking" (ISPASS 2010); Mei & Chu, "Dissecti
 memory hierarchy through microbenchmarking" (TPDS 2017); Jia et al., "Dissecting the
 NVIDIA Volta GPU architecture via microbenchmarking" (2018); Google uVkCompute;
 clpeak; vkpeak.
+
+
+**One admission policy.** Candidate selection, confirmation, reports, tuning advice,
+supplements and replay export share validation, build and quality checks. Missing
+hashes never match. All planned confirmation repeats must be present; the existing
+allowance of at most one failed repeat remains. Rejected/short/noisy/drifting rows
+remain in raw files and diagnostic CSV with exclusion reasons. An incomplete report
+lists missing evidence instead of implying a sustained or confirmed roof.
+
+**Sentinel boundary reuse.** Only a successful healthy stage-end probe may serve the
+immediately following stage-start check, within five seconds in the same process,
+device and build. Actual measurement, cooling or errors invalidate reuse. First,
+last, every-20-configurations and slowdown rechecks remain actual probes. Reuse logs
+reference the original probe and neither add baseline samples nor advance the last
+healthy timestamp used for quarantine.

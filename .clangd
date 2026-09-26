@@ -1,0 +1,4 @@
+# The runner's compile database is written by CMake into the build directory
+# (`igpu-roofline build --host` → build/host, Android builds → build/android).
+CompileFlags:
+  CompilationDatabase: build/host

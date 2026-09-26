@@ -52,5 +52,5 @@ void main(){
 #endif
  [[unroll]]for(uint c=0;c<CHAINS;c++)acc[c]=coopMatMulAdd(ma,mb,acc[c]);
  }
- [[unroll]]for(uint c=0;c<CHAINS;c++)coopMatStore(acc[c],d,(gl_WorkGroupID.x*CHAINS+c)*M*N,N,gl_CooperativeMatrixLayoutRowMajor);
+ [[unroll]]for(uint c=0;c<CHAINS;c++)coopMatStore(acc[c],d,((gl_WorkGroupID.x*gl_NumSubgroups+gl_SubgroupID)*CHAINS+c)*M*N,N,gl_CooperativeMatrixLayoutRowMajor);
 }

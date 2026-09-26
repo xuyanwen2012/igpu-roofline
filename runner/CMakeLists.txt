@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 project(igpu_roofline_runner LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# compile_commands.json for clangd (see ../.clangd); does not change the binaries.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(JSON_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/nlohmann_json/include)
 
 # Android links the NDK's libvulkan. Host builds (Linux iGPU) need Vulkan headers,

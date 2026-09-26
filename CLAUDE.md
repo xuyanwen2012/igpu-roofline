@@ -148,7 +148,7 @@ Fleet overview (hardware, driver, WMMA yes/no, where each device is connected):
 
 Check all of these before calling a number usable, and state what was not checked:
 
-1. **Validated**: every sample passed the CPU reference (`accepted`).
+1. **Validated**: schema v2 passed separate pre/post CPU references (`accepted`); checks bracket continuous sampling and do not guarantee detection of transient errors. Historical pre-only rows are diagnostic, not current trusted results.
 2. **Quality gates**: median standard error ≤ 3 %, sample ≥ 80 % of the 5 ms target,
    differential fixed cost ≤ 10 %, pre-sampling warm-up steady, sample drift ≤ 5 %.
 3. **Confirmed**: REPORT.md "Roof confirmation" shows a confirmed median with a tight
