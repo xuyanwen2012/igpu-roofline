@@ -1,4 +1,5 @@
 build/
+out/
 __pycache__/
 *.egg-info/
 .venv/
