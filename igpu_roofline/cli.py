@@ -3,6 +3,7 @@
 import argparse
 import signal
 import sys
+from pathlib import Path
 
 from . import paths
 
@@ -151,6 +152,18 @@ def cmd_report(args):
         analyze_all(root)
 
 
+def cmd_workload(args):
+    from .workload import analyze
+
+    root = paths.results_root(args.results)
+    for et_json in args.et_json:
+        result = analyze(root / args.device, et_json)
+        print(
+            f"{len(result['rows'])} kernels -> "
+            f"{root / args.device / 'report'}/WORKLOAD-{et_json.stem}.md"
+        )
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(
         prog="igpu-roofline",
@@ -276,6 +289,20 @@ def main(argv=None):
     p = sub.add_parser("report", help="(re)generate reports from existing results")
     p.add_argument("--device", help="only this serial")
     p.set_defaults(func=cmd_report)
+
+    w = sub.add_parser(
+        "workload",
+        help="place ExecuTorch quantized-linear kernels on a device's confirmed roofs",
+    )
+    w.add_argument("--device", required=True, help="results subfolder of the device")
+    w.add_argument(
+        "--et-json",
+        required=True,
+        action="append",
+        type=Path,
+        help="test_llama_microbench.v1 JSON (--json-out); repeatable",
+    )
+    w.set_defaults(func=cmd_workload)
 
     args = ap.parse_args(argv)
     if args.command == "run" and args.replay and args.stage:
