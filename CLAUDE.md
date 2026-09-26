@@ -68,7 +68,9 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
 Fleet overview (hardware, driver, WMMA yes/no, where each device is connected):
 [docs/FLEET.md](docs/FLEET.md). Full cooperative-matrix (WMMA) shape lists per device:
 [docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md) (refresh with `igpu-roofline shapes
---device <serial>` or `--local`).
+--device <serial>` or `--local`). Build, debug and profiling tools (validation layers,
+RenderDoc, clangd, vendor profilers, Perfetto on the phones):
+[docs/TOOLING.md](docs/TOOLING.md).
 
 | device | GPU | access | root | clocks | ISA route | known issues |
 |---|---|---|---|---|---|---|
