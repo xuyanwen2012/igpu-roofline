@@ -59,6 +59,28 @@ Results go to `~/igpu-roofline-results/<serial>/` (override with `--results` or
 `$IGPU_ROOFLINE_RESULTS`); regenerate reports any time with `uv run igpu-roofline report`.
 Tests: `uv run --group dev pytest`.
 
+For development, select the work you need instead of repeating device discovery:
+
+```sh
+uv run igpu-roofline run --local --family alu --stage compute
+uv run igpu-roofline run --local --variant sharedbw_fp32_v4_op0 --stage shared
+uv run igpu-roofline --results ./results/new-build run --local --replay /path/to/previous/report/summary.json
+uv run igpu-roofline --results ./results/new-build sustain --local --roof alu_fp32 --duration 60
+```
+
+Selectors are repeatable and intersect across types. Focused/replay runs retain
+validation, warm-up, timing quality gates and confirmation, but omit sustained tests
+unless `--sustain` is explicit. Unfiltered plans keep their existing defaults;
+`--no-sustain` disables their sustained portion. Replay accepts `best-configurations.json`
+(exported after confirmation) or an existing `report/summary.json`, uses only confirmed
+roof configurations, and measures them with the current build. The standalone
+`sustain` command requires confirmations from the current build in the chosen results
+directory. See [development workflow details](docs/HOW-TO-RUN.md#development-workflow).
+
+`timings.jsonl` records stage/configuration wall time, including failed stages. New
+result rows also separate config upload, telemetry, runner process and analysis time,
+with observed warm-up wall time and sampled GPU time reported separately.
+
 ## Output
 
 Per device, in `report/`:
@@ -89,3 +111,12 @@ More: [docs/HOW-TO-RUN.md](docs/HOW-TO-RUN.md).
 
 Apache-2.0. Third-party code keeps its own license: nlohmann/json (MIT) and the access
 pattern adapted from Google uVkCompute (Apache-2.0); see [NOTICE](NOTICE).
+
+
+Measurement trust: new results record separate pre/post validation (schema v2),
+strict build hashes and unchanged quality gates. Continuous sampling does not check
+every intermediate output. Legacy results remain diagnostic and their confirmed
+configurations can be replayed. Device ownership uses host/user-wide Vulkan UUID
+locks (ADB serial locks), independent of result and staging directories. See
+[methodology](docs/METHODOLOGY.md) and [running](docs/HOW-TO-RUN.md) for coverage,
+calibration and sustained-roof eligibility.
