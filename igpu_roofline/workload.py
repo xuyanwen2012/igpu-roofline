@@ -18,6 +18,8 @@ from pathlib import Path
 SCHEMA = "test_llama_microbench.v1"
 MAX_SPREAD = 0.05  # CLAUDE.md "Confirmed": repeat spread <= 5 %
 MEMORY_ROOF = "global_read"
+# `--linear` (production dispatch) and `--baseline` (forced tiled); `op` is the Llama layer.
+LINEAR_SUITES = ("linear", "baseline")
 
 # Which compute roof a kernel is held to: (scheme, uses WMMA) -> roof keys, most
 # specific first. 4w coopmat accumulates in fp16 (linear_q4gsw_coopmat_*); the
@@ -76,6 +78,8 @@ def place(case: dict, group_size: int, roofs: dict) -> dict:
     seconds = case["kernel_median_us"] * 1e-6
     row = {
         "model": case.get("model"),
+        "layer": case.get("op"),
+        "variant": case.get("variant"),
         "scheme": case["scheme"],
         "regime": case.get("regime"),
         "storage": case.get("storage"),
@@ -128,8 +132,7 @@ def load_cases(path: Path) -> tuple[dict, list[dict]]:
         c
         for c in data["cases"]
         if c.get("ok")
-        and c.get("suite") != "correctness"
-        and c.get("op") == "linear"
+        and c.get("suite") in LINEAR_SUITES
         and c.get("scheme") in ("4w", "8da4w")
         and (c.get("kernel_median_us") or 0) > 0
         and c.get("kernel")
@@ -203,13 +206,13 @@ def write(report: Path, result: dict):
         "",
         "## Kernels",
         "",
-        "| model | scheme | regime | storage | kernel | M×K×N | µs | TOP/s | ops/B | bound | "
+        "| model | layer | scheme | regime | storage | suite | kernel | M×K×N | µs | TOP/s | ops/B | bound | "
         "% attainable | % compute roof | % shared-fed MMA |",
-        "|---|---|---|---|---|---|---:|---:|---:|---|---:|---:|---:|",
+        "|---|---|---|---|---|---|---|---|---:|---:|---:|---|---:|---:|---:|",
     ]
     for r in rows:
         lines.append(
-            f"| {r['model']} | {r['scheme']} | {r['regime']} | {r['storage']} | "
+            f"| {r['model']} | {r['layer']} | {r['scheme']} | {r['regime']} | {r['storage']} | {r['suite']} | "
             f"`{r['kernel']}` | {r['M']}×{r['K']}×{r['N']} | {r['kernel_median_us']:.1f} | "
             f"{r['achieved_tops']:.2f} | {r['intensity_ops_per_byte']:.0f} | "
             f"{r.get('bound', 'no usable roof')} | {_pct(r.get('roof_fraction'))} | "

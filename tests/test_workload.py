@@ -31,7 +31,7 @@ def case(**kw):
     base = {
         "suite": "linear",
         "model": "llama-1b",
-        "op": "linear",
+        "op": "wq_wo",
         "storage": "buffer",
         "variant": "coopmat",
         "ok": True,
@@ -125,7 +125,7 @@ def test_workload_cli_writes_report_and_skips_failed_cases(tmp_path):
             good | {"ok": False},
             good | {"suite": "correctness"},
             good | {"kernel_median_us": None},
-            good | {"op": "sdpa"},
+            good | {"suite": "sdpa"},
         ],
     )
     cli.main(
