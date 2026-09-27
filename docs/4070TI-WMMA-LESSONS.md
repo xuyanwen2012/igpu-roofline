@@ -12,7 +12,8 @@ for the other GPUs.
 - ExecuTorch branch `yanwen/release14-quant-shaders-4070ti`, on top of `be54d12db`:
   - `1eb8dc705` test tooling;
   - `d4e86b465` default-on coopmat and the 8da4w tile;
-  - `0270403ba` per-shape 4w tiles.
+  - `0270403ba` per-shape 4w tiles;
+  - `432709b92` per-group fp32 accumulation for 4w (correctness fix).
   Only "4070 ti super" devices change.
 - Roofs: `results/fleet-fast-20260926/gpu-dev-4004/4070tis` (fast plan, automatic clocks).
 - Raw runs, profiles and tools live in `sarc-acl/.artifacts/roofline-et-study/`:
@@ -36,8 +37,8 @@ within 4 % repeat spread. Checks:
 |---|---:|---:|---:|
 | 8da4w texture3d (model path) | **1.34×** (1.26–1.47) | 6.66× → **8.99×** | 28–32 % → 37–42 % (int8, 369 TOP/s) |
 | 8da4w buffer | **2.12×** (2.04–2.28) | 3.83× → 8.18× | 16–18 % → 34–40 % |
-| 4w texture3d (model path) | 1.04× (up to 1.15×) | 9.77× | 52–76 % (fp16, 184 TFLOP/s) |
-| 4w buffer | 1.13× (up to 1.83×) | 7.45× | 39–74 % |
+| 4w texture3d (model path) | 1.04× tiles, then 0.92× for the accuracy fix | 9.77× → **9.01×** | 54–67 % (fp16, 184 TFLOP/s) |
+| 4w buffer | 1.13× tiles, then 0.87× for the accuracy fix | 7.45× → **6.48×** | 46–58 % |
 
 Deployment effect: before, the branch ran tiled kernels unless `ET_VK_COOPMAT_ANY_DEVICE=1`
 was set. Coopmat is now on by default on this device (`ET_VK_COOPMAT_ANY_DEVICE=0` turns it
@@ -117,16 +118,37 @@ Structural options were left for the owner to decide:
   where matrix and vector units issue independently (NVIDIA, possibly Xe2; not RDNA3);
 - a larger `WG_TILE_K` for 4w, which measured slower.
 
-## Open issue: 4w fp16 accumulation at K = 14336
+## 4w accuracy fix: per-group fp32 accumulation
 
-The sampled production diff fails 8B `w2` (K = 14336) for 4w on both storages:
-- 4 of 8254 sampled outputs exceed tolerance (max |diff| 0.52 vs 0.50 abs, 5 % rel).
-- The previous tiles fail too (6 of 8254).
-- Cause: fp16 accumulation over 14336 products; the test data is all-positive, the worst case.
+The sampled production diff failed 8B `w2` (K = 14336) for 4w on both storages with the fp16
+accumulator: max |err| 1.49 against the 0.5 tolerance, and 0.35–0.45 already at K = 4096.
 
-The 780M fixed the same issue with fp32 accumulation. On this GPU fp16→fp32 MMA is
-half rate (92 vs 184 TFLOP/s, roofline), so that would cost ≈35 % on 4w. Options such as
-per-group fp32 flush or fp32 only at large K need an owner decision.
+The same data passes on B580 and B70 with fp16 accumulation. Their ISA shows `dpas ... :hf`
+accumulators, so the difference is inside the matrix units: Xe2 keeps more precision within
+each DPAS step. On GeForce the fp16-accumulate tensor path loses more; this is the likely
+explanation, not ISA-verified. 8da4w is unaffected everywhere, because it accumulates each
+group in int32 and adds groups in fp32.
+
+| 4070 Ti 4w | max \|err\| 8B w2 (K = 14336) | max \|err\| K = 4096 | speed vs fp16 acc (texture3d / buffer) |
+|---|---:|---:|---:|
+| fp16 accumulation (before) | 1.49 (fails) | 0.35–0.45 | 1 / 1 |
+| **per-group fp32 (`ACC_GROUP_FP32`, shipped)** | **0.08** | 0.04–0.05 | **0.92× / 0.87×** |
+| plain fp32 accumulation | 0.04 | 0.02–0.03 | 0.63× / 0.67× (half-rate fp16→fp32 MMA) |
+
+How `ACC_GROUP_FP32` works: each 128-K quantization group accumulates in fp16 at full rate,
+then the group sum is added into an fp32 total and the fp16 accumulator restarts. The cost is
+the extra accumulator registers, not the adds, so it needs smaller per-warp tiles.
+
+Tiles (screen of every projection):
+- texture3d: `t256x128k16g42` when M % 256 == 0 and N > 512, else `t128x128k16g24`;
+- buffer: `t128x256k16g42` when N % 256 == 0 and N > 512, else `t128x128k16g42`.
+
+Every 4w dispatch on this device uses them.
+
+A measurement mistake worth recording: ComfyUI was restored between milestones and ran jobs
+during the first attempt at these timings. The unchanged tiled baseline got up to 2×
+slower. Those rows are in `superseded/comfyui-contended/`. The numbers above come from a
+rerun with the service stopped and no other compute process on the GPU.
 
 ## Lessons (in addition to the 780M and Xe2 lessons)
 
@@ -144,3 +166,8 @@ per-group fp32 flush or fp32 only at large K need an owner decision.
    crashes.
 6. `--production-diff` must use the exported model's rank-3 layout: rank 2 bypassed the
    shape-keyed tile selection and validated only the default tile.
+7. The same declared accumulator type is not the same accuracy on different vendors. Check
+   long-K production shapes per device, and print the error margin, not only pass/fail:
+   the fp16 4w kernel passed at K = 4096 with 90 % of its tolerance used.
+8. Keep co-tenant GPU services stopped until the last timing run on that device, and record
+   `nvidia-smi --query-compute-apps` before and after each run.
