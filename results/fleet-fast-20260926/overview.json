@@ -1,0 +1,871 @@
+{
+ "780m": {
+  "alu_fp32": {
+   "value": 5.755994875583853,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.012186015688340957,
+   "shape": "alu_fp32_v1_c8"
+  },
+  "alu_fp16": {
+   "value": 8.135959342549366,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.03219305327419273,
+   "shape": "alu_fp16_v2_c1"
+  },
+  "dot_int8": {
+   "value": 11.716955739851592,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 0.014414094550178388,
+   "shape": "dot8_c2"
+  },
+  "matrix_fp16": {
+   "value": 10.957631281561707,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.001429287214318999,
+   "shape": "matrix_fp16_16x16x16_c8"
+  },
+  "matrix_fp16_fp32": {
+   "value": 14.771956391107445,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.001965304375052726,
+   "shape": "matrix_fp16_fp32_16x16x16_c8"
+  },
+  "matrix_int8": {
+   "value": 14.392603042493672,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 0.0017859738731589763,
+   "shape": "matrix_int8_16x16x16_c8"
+  },
+  "matrix_fp16_feed_shared": {
+   "value": 10.784124655750421,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.002782749109500243,
+   "shape": "matrix_fp16_16x16x16_c8_lds"
+  },
+  "matrix_fp16_fp32_feed_shared": {
+   "value": 14.467599390975113,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.0012476313400093426,
+   "shape": "matrix_fp16_fp32_16x16x16_c8_lds"
+  },
+  "matrix_int8_feed_shared": {
+   "value": 14.14042876842035,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 0.0023575347471274147,
+   "shape": "matrix_int8_16x16x16_c8_lds"
+  },
+  "global_read": {
+   "value": 86.67171568706279,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0008454526595445413,
+   "shape": "mem_read_v4"
+  },
+  "global_write": {
+   "value": 77.41782105117437,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0019355774873270042,
+   "shape": "mem_write_v4"
+  },
+  "global_copy": {
+   "value": 71.47833459371371,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0051553226600077945,
+   "shape": "mem_copy_v4"
+  },
+  "cache_read_effective": {
+   "value": 3343.03651180019,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.009086067061329275,
+   "shape": "mem_read_v4"
+  },
+  "shared_fp16_read": {
+   "value": 2157.6297485727196,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0010514441008296778,
+   "shape": "sharedbw_fp16_v4_op0_acc32"
+  },
+  "shared_fp32_read": {
+   "value": 2282.1575798693325,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00490582296181618,
+   "shape": "sharedbw_fp32_v2_op0_acc32"
+  },
+  "texture_rgba16f_tex2d_dram": {
+   "value": 45.88009162741615,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.014441916011243498,
+   "shape": "texture_rgba16f_tex2d"
+  },
+  "texture_rgba16f_buffer_dram": {
+   "value": 83.69800565787465,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0009624754262475173,
+   "shape": "texture_rgba16f_buffer"
+  },
+  "_sentinel": {
+   "median": 3.268927086525272,
+   "degraded": 0,
+   "n": 34
+  },
+  "_sustained": {
+   "alu_fp16": {
+    "value": 8.216124166661224,
+    "batches": 1,
+    "steady": true
+   },
+   "global_read": {
+    "value": 86.63354315216903,
+    "batches": 1,
+    "steady": true
+   },
+   "matrix_fp16_fp32": {
+    "value": 14.789266086539678,
+    "batches": 1,
+    "steady": true
+   }
+  },
+  "_ridges": {
+   "global": {
+    "alu_fp16": 93.87098522342734,
+    "alu_fp32": 66.41145649367863,
+    "dot_int8": 135.18776739296214,
+    "matrix_fp16": 126.4268417291446,
+    "matrix_fp16_feed_cache": 118.78723056949971,
+    "matrix_fp16_feed_shared": 124.42495882610218,
+    "matrix_fp16_fp32": 170.43572143469646,
+    "matrix_fp16_fp32_feed_cache": 149.2258450405991,
+    "matrix_fp16_fp32_feed_shared": 166.9241144736523,
+    "matrix_int8": 166.05882240129708,
+    "matrix_int8_feed_cache": 144.3675562435603,
+    "matrix_int8_feed_shared": 163.14928874231398
+   },
+   "cache": {
+    "alu_fp16": 2.4337034052219306,
+    "alu_fp32": 1.721786422393667,
+    "dot_int8": 3.5048841669821114,
+    "matrix_fp16": 3.277748012288725,
+    "matrix_fp16_feed_cache": 3.07968310810618,
+    "matrix_fp16_feed_shared": 3.2258471056731843,
+    "matrix_fp16_fp32": 4.418724216431875,
+    "matrix_fp16_fp32_feed_cache": 3.8688360024987745,
+    "matrix_fp16_fp32_feed_shared": 4.3276821356594946,
+    "matrix_int8": 4.305248534286395,
+    "matrix_int8_feed_cache": 3.742879787585691,
+    "matrix_int8_feed_shared": 4.2298158331527995
+   },
+   "shared_fp32": {
+    "alu_fp16": 3.4424061055770028,
+    "alu_fp32": 2.4354192381166717,
+    "dot_int8": 4.95756164447621,
+    "matrix_fp16": 4.636283840436447,
+    "matrix_fp16_feed_cache": 4.356126515597458,
+    "matrix_fp16_feed_shared": 4.562871444564804,
+    "matrix_fp16_fp32": 6.250163100757524,
+    "matrix_fp16_fp32_feed_cache": 5.472361442196125,
+    "matrix_fp16_fp32_feed_shared": 6.121386597407602,
+    "matrix_int8": 6.089654889192404,
+    "matrix_int8_feed_cache": 5.294199862472886,
+    "matrix_int8_feed_shared": 5.982957421298292
+   },
+   "shared_fp16": {
+    "alu_fp16": 3.7707856725331745,
+    "alu_fp32": 2.6677398563824335,
+    "dot_int8": 5.430475616867261,
+    "matrix_fp16": 5.078550334602228,
+    "matrix_fp16_feed_cache": 4.7716681149691045,
+    "matrix_fp16_feed_shared": 4.99813495011559,
+    "matrix_fp16_fp32": 6.846381498437881,
+    "matrix_fp16_fp32_feed_cache": 5.994383430742072,
+    "matrix_fp16_fp32_feed_shared": 6.705320688382929,
+    "matrix_int8": 6.6705620146433535,
+    "matrix_int8_feed_cache": 5.799226580674941,
+    "matrix_int8_feed_shared": 6.553686413423943
+   }
+  },
+  "_device": "AMD Radeon 780M Graphics (RADV PHOENIX)",
+  "_commit": null,
+  "_runner": "e91952e1b236",
+  "_stale": 0,
+  "_unconfirmed": []
+ },
+ "b70-0": {
+  "alu_fp32": {
+   "value": 20.300123187179047,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.000653881100870132,
+   "shape": "alu_fp32_v2_c16"
+  },
+  "alu_fp16": {
+   "value": 42.870243234316206,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 8.682515151171588e-06,
+   "shape": "alu_fp16_v4_c1"
+  },
+  "dot_int8": {
+   "value": 50.36495844404532,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 2.0596023705579106e-05,
+   "shape": "dot8_c4"
+  },
+  "matrix_fp16": {
+   "value": 173.32431106398184,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 9.475570257185275e-06,
+   "shape": "matrix_fp16_8x16x16_c4"
+  },
+  "matrix_fp16_fp32": {
+   "value": 179.942139311382,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 2.360124180382963e-05,
+   "shape": "matrix_fp16_fp32_8x16x16_c8"
+  },
+  "matrix_int8": {
+   "value": 359.8878373774255,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 8.685079034219128e-06,
+   "shape": "matrix_int8_8x16x32_c8"
+  },
+  "matrix_fp16_feed_shared": {
+   "value": 168.44225420526772,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.00024675919527071403,
+   "shape": "matrix_fp16_8x16x16_c8_lds"
+  },
+  "matrix_fp16_fp32_feed_shared": {
+   "value": 166.62854761137837,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.0003888343355326938,
+   "shape": "matrix_fp16_fp32_8x16x16_c8_lds"
+  },
+  "matrix_int8_feed_shared": {
+   "value": 323.16696268315343,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 0.002565800889782187,
+   "shape": "matrix_int8_8x16x32_c8_lds"
+  },
+  "global_read": {
+   "value": 604.3790043019536,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.001628816022861847,
+   "shape": "mem_read_v4"
+  },
+  "global_write": {
+   "value": 510.7229729008693,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.012995697125636347,
+   "shape": "mem_write_v4"
+  },
+  "global_copy": {
+   "value": 532.5669336555223,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0017422956449323732,
+   "shape": "mem_copy_v4"
+  },
+  "cache_read_effective": {
+   "value": 9978.783303200646,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00010335239916615519,
+   "shape": "mem_read_v4"
+  },
+  "shared_fp16_read": {
+   "value": 3331.0162999353897,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 2.654938161677299e-05,
+   "shape": "sharedbw_fp16_v4_op0"
+  },
+  "shared_fp32_read": {
+   "value": 10017.52105129788,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 1.0122686965986879e-05,
+   "shape": "sharedbw_fp32_v2_op0"
+  },
+  "texture_rgba16f_tex2d_dram": {
+   "value": 536.6648528189446,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0026379021110541833,
+   "shape": "texture_rgba16f_tex2d"
+  },
+  "texture_rgba16f_buffer_dram": {
+   "value": 564.1036752463393,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 4.292361313819655e-05,
+   "shape": "texture_rgba16f_buffer"
+  },
+  "_sentinel": {
+   "median": 18.349959959790652,
+   "degraded": 0,
+   "n": 34
+  },
+  "_sustained": {
+   "alu_fp16": {
+    "value": 42.86949879770697,
+    "batches": 1,
+    "steady": true
+   },
+   "global_read": {
+    "value": 604.0201934341244,
+    "batches": 1,
+    "steady": true
+   },
+   "matrix_fp16_fp32": {
+    "value": 179.93900756810547,
+    "batches": 1,
+    "steady": true
+   }
+  },
+  "_ridges": {
+   "global": {
+    "alu_fp16": 70.93271428882697,
+    "alu_fp32": 33.58839907191235,
+    "dot_int8": 83.33340186463938,
+    "matrix_fp16": 286.7808276433563,
+    "matrix_fp16_feed_cache": 266.1526348815329,
+    "matrix_fp16_feed_shared": 278.70302079704993,
+    "matrix_fp16_fp32": 297.7306260319413,
+    "matrix_fp16_fp32_feed_cache": 254.85888308385316,
+    "matrix_fp16_fp32_feed_shared": 275.7020783735385,
+    "matrix_int8": 595.467140346957,
+    "matrix_int8_feed_cache": 467.5479068949967,
+    "matrix_int8_feed_shared": 534.7091152784257
+   },
+   "cache": {
+    "alu_fp16": 4.296139311950565,
+    "alu_fp32": 2.0343284917979814,
+    "dot_int8": 5.047204344831399,
+    "matrix_fp16": 17.36928298747493,
+    "matrix_fp16_feed_cache": 16.119907565328944,
+    "matrix_fp16_feed_shared": 16.88003928808041,
+    "matrix_fp16_fp32": 18.032472882106422,
+    "matrix_fp16_fp32_feed_cache": 15.43588565013957,
+    "matrix_fp16_fp32_feed_shared": 16.698283001889926,
+    "matrix_int8": 36.06530239633456,
+    "matrix_int8_feed_cache": 28.31769463738387,
+    "matrix_int8_feed_shared": 32.38540740527949
+   },
+   "shared_fp32": {
+    "alu_fp16": 4.082512761018899,
+    "alu_fp32": 1.9331710228220726,
+    "dot_int8": 4.796230906182802,
+    "matrix_fp16": 16.505591252328276,
+    "matrix_fp16_feed_cache": 15.31834132073829,
+    "matrix_fp16_feed_shared": 16.040675312458678,
+    "matrix_fp16_fp32": 17.135803871430372,
+    "matrix_fp16_fp32_feed_cache": 14.668332558264217,
+    "matrix_fp16_fp32_feed_shared": 15.86795690090625,
+    "matrix_int8": 34.27194664136523,
+    "matrix_int8_feed_cache": 26.909590524257737,
+    "matrix_int8_feed_shared": 30.775035305552215
+   },
+   "shared_fp16": {
+    "alu_fp16": 6.6407041115031,
+    "alu_fp32": 3.1445380604981192,
+    "dot_int8": 7.801653580246807,
+    "matrix_fp16": 26.84835396932604,
+    "matrix_fp16_feed_cache": 24.91714739053174,
+    "matrix_fp16_feed_shared": 26.092111582805046,
+    "matrix_fp16_fp32": 27.87347153190972,
+    "matrix_fp16_fp32_feed_cache": 23.85982899028323,
+    "matrix_fp16_fp32_feed_shared": 25.811164055419425,
+    "matrix_int8": 55.747494323502835,
+    "matrix_int8_feed_cache": 43.77172562436872,
+    "matrix_int8_feed_shared": 50.05934223564515
+   }
+  },
+  "_device": "Intel(R) Graphics (BMG G31)",
+  "_commit": null,
+  "_runner": "810e098c8abb",
+  "_stale": 0,
+  "_unconfirmed": []
+ },
+ "b580": {
+  "alu_fp32": {
+   "value": 12.913149717580012,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.00012154636135455127,
+   "shape": "alu_fp32_v2_c16"
+  },
+  "alu_fp16": {
+   "value": 27.295440545122588,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 1.123201605947936e-05,
+   "shape": "alu_fp16_v4_c1"
+  },
+  "dot_int8": {
+   "value": 32.05983428573594,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 5.346508552214189e-05,
+   "shape": "dot8_c4"
+  },
+  "matrix_fp16": {
+   "value": 111.66721375539218,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.0001215319980050484,
+   "shape": "matrix_fp16_8x16x16_c4"
+  },
+  "matrix_fp16_fp32": {
+   "value": 115.67606819664196,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 8.885859143171064e-05,
+   "shape": "matrix_fp16_fp32_8x16x16_c8"
+  },
+  "matrix_int8": {
+   "value": 231.3603138365582,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 4.6823448960974126e-05,
+   "shape": "matrix_int8_8x16x32_c8"
+  },
+  "matrix_fp16_feed_shared": {
+   "value": 109.65490484185557,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.00024491795495978495,
+   "shape": "matrix_fp16_8x16x16_c8_lds"
+  },
+  "matrix_fp16_fp32_feed_shared": {
+   "value": 106.34860641949425,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.0007244960951028207,
+   "shape": "matrix_fp16_fp32_8x16x16_c8_lds"
+  },
+  "matrix_int8_feed_shared": {
+   "value": 206.39318636305194,
+   "unit": "TOP/s",
+   "usable": true,
+   "spread": 0.0004876044431134997,
+   "shape": "matrix_int8_8x16x32_c8_lds"
+  },
+  "global_read": {
+   "value": 465.2307171226189,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00027043106940592443,
+   "shape": "mem_read_v4"
+  },
+  "global_write": {
+   "value": 394.21830796371563,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.005617186113405727,
+   "shape": "mem_write_v4"
+  },
+  "global_copy": {
+   "value": 408.20219238310807,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0038793974738603985,
+   "shape": "mem_copy_v4"
+  },
+  "cache_read_effective": {
+   "value": 6020.185109277694,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00013846923280442746,
+   "shape": "mem_read_v4"
+  },
+  "shared_fp16_read": {
+   "value": 3450.2114993852465,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 3.6791039817343054e-05,
+   "shape": "sharedbw_fp16_v4_op0"
+  },
+  "shared_fp32_read": {
+   "value": 7258.850660784008,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 9.535825380827829e-05,
+   "shape": "sharedbw_fp32_v2_op0"
+  },
+  "texture_rgba16f_tex2d_dram": {
+   "value": 261.5130580751405,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0008986441060757909,
+   "shape": "texture_rgba16f_tex2d"
+  },
+  "texture_rgba16f_buffer_dram": {
+   "value": 421.5867079958682,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00030791074629306706,
+   "shape": "texture_rgba16f_buffer"
+  },
+  "_sentinel": {
+   "median": 11.67937582437835,
+   "degraded": 0,
+   "n": 34
+  },
+  "_sustained": {
+   "alu_fp16": {
+    "value": 27.295203568506924,
+    "batches": 1,
+    "steady": true
+   },
+   "global_read": {
+    "value": 465.27265019971253,
+    "batches": 1,
+    "steady": true
+   },
+   "matrix_fp16_fp32": {
+    "value": 115.67709034995424,
+    "batches": 1,
+    "steady": true
+   }
+  },
+  "_ridges": {
+   "global": {
+    "alu_fp16": 58.670761711395,
+    "alu_fp32": 27.75644264730815,
+    "dot_int8": 68.91168855749923,
+    "matrix_fp16": 240.02545327625157,
+    "matrix_fp16_feed_cache": 230.80898187829467,
+    "matrix_fp16_feed_shared": 235.70005334139253,
+    "matrix_fp16_fp32": 248.64237020307004,
+    "matrix_fp16_fp32_feed_cache": 226.6376171143641,
+    "matrix_fp16_fp32_feed_shared": 228.5932603015643,
+    "matrix_int8": 497.30231758445893,
+    "matrix_int8_feed_cache": 425.05057949361253,
+    "matrix_int8_feed_shared": 443.6361976259056
+   },
+   "cache": {
+    "alu_fp16": 4.53398692061107,
+    "alu_fp32": 2.1449755253670832,
+    "dot_int8": 5.325390117378384,
+    "matrix_fp16": 18.548800697723077,
+    "matrix_fp16_feed_cache": 17.83656585444497,
+    "matrix_fp16_feed_shared": 18.214540392265786,
+    "matrix_fp16_fp32": 19.214702886523177,
+    "matrix_fp16_fp32_feed_cache": 17.51420915190559,
+    "matrix_fp16_fp32_feed_shared": 17.665338272672155,
+    "matrix_int8": 38.43076411056021,
+    "matrix_int8_feed_cache": 32.84726006289262,
+    "matrix_int8_feed_shared": 34.28352826642819
+   },
+   "shared_fp32": {
+    "alu_fp16": 3.760297851640122,
+    "alu_fp32": 1.7789523880610183,
+    "dot_int8": 4.416654341566692,
+    "matrix_fp16": 15.383594314548318,
+    "matrix_fp16_feed_cache": 14.79289672367813,
+    "matrix_fp16_feed_shared": 15.10637289099595,
+    "matrix_fp16_fp32": 15.935865552598118,
+    "matrix_fp16_fp32_feed_cache": 14.525547647193088,
+    "matrix_fp16_fp32_feed_shared": 14.650887776772064,
+    "matrix_int8": 31.872857653138386,
+    "matrix_int8_feed_cache": 27.242134485494432,
+    "matrix_int8_feed_shared": 28.43331486044927
+   },
+   "shared_fp16": {
+    "alu_fp16": 6.653884902586101,
+    "alu_fp32": 3.1478741590046657,
+    "dot_int8": 7.81531431891064,
+    "matrix_fp16": 27.221425002925226,
+    "matrix_fp16_feed_cache": 26.176179669454953,
+    "matrix_fp16_feed_shared": 26.730878903220923,
+    "matrix_fp16_fp32": 28.198674518249998,
+    "matrix_fp16_fp32_feed_cache": 25.703102787269074,
+    "matrix_fp16_fp32_feed_shared": 25.924893408331172,
+    "matrix_int8": 56.399342474424344,
+    "matrix_int8_feed_cache": 48.20523121278521,
+    "matrix_int8_feed_shared": 50.31303687762417
+   }
+  },
+  "_device": "Intel(R) Arc(tm) B580 Graphics (BMG G21)",
+  "_commit": null,
+  "_runner": "810e098c8abb",
+  "_stale": 0,
+  "_unconfirmed": []
+ },
+ "s24": {
+  "alu_fp32": {
+   "value": 2.0840490209152356,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.00012260502596259454,
+   "shape": "alu_fp32_v1_c8"
+  },
+  "alu_fp16": {
+   "value": 3.043902308851539,
+   "unit": "TFLOP/s",
+   "usable": false,
+   "spread": null,
+   "shape": "alu_fp16_v4_c1"
+  },
+  "dot_int8": {
+   "value": 2.313555837276366,
+   "unit": "TOP/s",
+   "usable": false,
+   "spread": null,
+   "shape": "dot8_c8"
+  },
+  "matrix_fp16": null,
+  "matrix_fp16_fp32": null,
+  "matrix_int8": null,
+  "matrix_fp16_feed_shared": null,
+  "matrix_fp16_fp32_feed_shared": null,
+  "matrix_int8_feed_shared": null,
+  "global_read": {
+   "value": 49.36374549031347,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0018609653926896172,
+   "shape": "mem_read_v4"
+  },
+  "global_write": {
+   "value": 56.22765889712109,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.01378893905344571,
+   "shape": "mem_write_v4"
+  },
+  "global_copy": {
+   "value": 46.97667502550684,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.00725983808638467,
+   "shape": "mem_copy_v4"
+  },
+  "cache_read_effective": {
+   "value": 1330.6075452563077,
+   "unit": "GB/s",
+   "usable": false,
+   "spread": null,
+   "shape": "mem_read_v4"
+  },
+  "shared_fp16_read": {
+   "value": 497.19678124563535,
+   "unit": "GB/s",
+   "usable": false,
+   "spread": null,
+   "shape": "sharedbw_fp16_v4_op0"
+  },
+  "shared_fp32_read": {
+   "value": 560.1111029577296,
+   "unit": "GB/s",
+   "usable": false,
+   "spread": null,
+   "shape": "sharedbw_fp32_v2_op0"
+  },
+  "texture_rgba16f_tex2d_dram": {
+   "value": 26.445406121805895,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.01239784802647533,
+   "shape": "texture_rgba16f_tex2d"
+  },
+  "texture_rgba16f_buffer_dram": {
+   "value": 50.64714526750969,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.01749001979128587,
+   "shape": "texture_rgba16f_buffer"
+  },
+  "_sentinel": {
+   "median": 1.8197662212497028,
+   "degraded": 0,
+   "n": 26
+  },
+  "_sustained": {
+   "global_read": {
+    "value": 49.450275895110764,
+    "batches": 1,
+    "steady": true
+   }
+  },
+  "_ridges": {
+   "global": {
+    "alu_fp32": 37.06448146326684,
+    "alu_fp16": 54.135320028545415,
+    "dot_int8": 41.14622380969915
+   },
+   "cache": {
+    "alu_fp32": 1.5662386917502382,
+    "alu_fp16": 2.287603373138252,
+    "dot_int8": 1.7387214175391728
+   },
+   "shared_fp32": {
+    "alu_fp32": 3.7207779133642958,
+    "alu_fp16": 5.434461650158105,
+    "dot_int8": 4.130530219914182
+   },
+   "shared_fp16": {
+    "alu_fp32": 4.1915979739330425,
+    "alu_fp16": 6.122127945449687,
+    "dot_int8": 4.653199547028797
+   }
+  },
+  "_device": "Samsung Xclipse 940",
+  "_commit": null,
+  "_runner": "ec26df94490b",
+  "_stale": 0,
+  "_unconfirmed": [
+   "alu_fp16",
+   "cache_read_effective",
+   "dot_int8",
+   "shared_fp16_read",
+   "shared_fp16_write",
+   "shared_fp32_read",
+   "texture_rgba32f_tex3d_cache"
+  ]
+ },
+ "pixel-7a": {
+  "alu_fp32": {
+   "value": 0.7184497538858442,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.005920629227098565,
+   "shape": "alu_fp32_v4_c4"
+  },
+  "alu_fp16": {
+   "value": 1.4716430483209684,
+   "unit": "TFLOP/s",
+   "usable": true,
+   "spread": 0.005733654492772626,
+   "shape": "alu_fp16_v2_c8"
+  },
+  "dot_int8": {
+   "value": 1.225215277513363,
+   "unit": "TOP/s",
+   "usable": false,
+   "spread": null,
+   "shape": "dot8_c8"
+  },
+  "matrix_fp16": null,
+  "matrix_fp16_fp32": null,
+  "matrix_int8": null,
+  "matrix_fp16_feed_shared": null,
+  "matrix_fp16_fp32_feed_shared": null,
+  "matrix_int8_feed_shared": null,
+  "global_read": null,
+  "global_write": {
+   "value": 40.06917773409929,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.01225435759781761,
+   "shape": "mem_write_v4"
+  },
+  "global_copy": {
+   "value": 62.712128608120246,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.014272443852439023,
+   "shape": "mem_copy_v4"
+  },
+  "cache_read_effective": {
+   "value": 94.85554234691736,
+   "unit": "GB/s",
+   "usable": false,
+   "spread": null,
+   "shape": "mem_read_v4"
+  },
+  "shared_fp16_read": {
+   "value": 51.47091207027813,
+   "unit": "GB/s",
+   "usable": false,
+   "spread": null,
+   "shape": "sharedbw_fp16_v4_op0"
+  },
+  "shared_fp32_read": {
+   "value": 32.072468838121274,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.026877559483584317,
+   "shape": "sharedbw_fp32_v2_op0"
+  },
+  "texture_rgba16f_tex2d_dram": {
+   "value": 9.218316212017047,
+   "unit": "GB/s",
+   "usable": true,
+   "spread": 0.0007652187140469005,
+   "shape": "texture_rgba16f_tex2d"
+  },
+  "texture_rgba16f_buffer_dram": null,
+  "_sentinel": {
+   "median": 0.637433362410765,
+   "degraded": 0,
+   "n": 25
+  },
+  "_sustained": {
+   "alu_fp16": {
+    "value": 1.472283191755581,
+    "batches": 1,
+    "steady": true
+   }
+  },
+  "_ridges": {
+   "global": {
+    "alu_fp16": 23.46664163669312,
+    "alu_fp32": 11.456312675580527,
+    "dot_int8": 19.53713427859498
+   },
+   "cache": {
+    "alu_fp16": 15.514571019357986,
+    "alu_fp32": 7.574146287185217,
+    "dot_int8": 12.916644058945495
+   },
+   "shared_fp32": {
+    "alu_fp16": 38.15994030300358,
+    "alu_fp32": 18.629517361748135,
+    "dot_int8": 31.77002867752529
+   },
+   "shared_fp16": {
+    "alu_fp16": 28.591742192397795,
+    "alu_fp32": 13.958364540050823,
+    "dot_int8": 23.80403276787596
+   }
+  },
+  "_device": "Mali-G710",
+  "_commit": null,
+  "_runner": "ec26df94490b",
+  "_stale": 0,
+  "_unconfirmed": [
+   "cache_read_effective",
+   "dot_int8",
+   "shared_fp16_read",
+   "shared_fp16_write",
+   "texture_rgba16f_tex3d_cache",
+   "texture_rgba32f_tex3d_cache"
+  ]
+ }
+}
