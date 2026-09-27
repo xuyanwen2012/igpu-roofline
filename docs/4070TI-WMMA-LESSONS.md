@@ -150,6 +150,23 @@ during the first attempt at these timings. The unchanged tiled baseline got up t
 slower. Those rows are in `superseded/comfyui-contended/`. The numbers above come from a
 rerun with the service stopped and no other compute process on the GPU.
 
+## End-to-end result and a bug the microbench missed
+
+End-to-end `llama_main` prefill (2048 tokens, tiled → tuned, same binary):
+- 4w: 3.57× / 4.30× / 5.11× for 1B / 3B / 8B (8B: 880 → 4501 tokens/s).
+- 8da4w: 3.11× / 3.78× / 4.54× (8B: 1108 → 5032 tokens/s).
+
+See [WMMA-STUDY-TAKEAWAYS.md](WMMA-STUDY-TAKEAWAYS.md) and `results/e2e-20260926/`.
+
+The end-to-end correctness check found that **8da4w produced garbage for every prompt length that is not
+a multiple of 128**. The activation layout (row-major `kPackedInt8_4W`) is fixed at graph build, but
+`pick_linear_dqa_qw_shader` re-runs on each resize and fell back to the tiled kernel, which reads the
+4h4w layout.
+- Fixed in `6fa64bf74`: keep coopmat whenever the activations are row-major.
+- The same bug was in the dev branch default on AMD (`d529bfc7b`).
+- The microbench (M = 2048) and the timing prompt are aligned, and the microbench data had zero-valued
+  activation zero points (now covered by `--production-diff-nonzero-zp`).
+
 ## Lessons (in addition to the 780M and Xe2 lessons)
 
 1. Divide per-chunk MMA cycles by the staging cost before tuning. int8 MMA is 2× fp16, so
