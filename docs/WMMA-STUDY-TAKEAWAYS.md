@@ -132,8 +132,9 @@ Two real bugs passed every microbench check and were found only end to end or on
      - `e2e_prefill.py --check` (real 1973-token prompt);
      - prompt-length probes.
 
-Also found, not fixed:
-- The `-4070ti` branch lacks the `sdpa_*_coop` shaders, so short prompts and decode crash.
+Also found:
+- The `-4070ti` branch lacked the `sdpa_*_coop` shaders, so short prompts and decode crashed. Fixed on
+  2026-09-27: dev restored them (`784ad6d1c4`), and every per-GPU branch now inherits them.
 - On the dev branch, the default 4w coopmat on the 780M is 4× slower than tiled; the `-780m` branch
   retune fixes that.
 
@@ -155,9 +156,38 @@ Also found, not fixed:
   unconfirmed roofs (sentinel warm-up).
 - **4070 Ti 8da4w** reaches 37–42 % of the int8 roof. Producer/consumer warp specialization is the next
   structural step (252 µs full vs 142 µs MMA-only on 3B wq_wo).
-- Missing `sdpa_*_coop` shaders on `-4070ti`: decode is unusable on that branch.
 - **Housekeeping (done 2026-09-26):**
   - Superseded build trees (≈ 15 GB) were deleted with the owner's approval.
   - Only the latest microbench binary is kept per GPU host.
   - Remote result directories are mirrored in `.artifacts/roofline-et-study/remote/`; the index is in its
     `README.md`.
+
+## Commit hashes after the 2026-09-27 rebase
+
+On 2026-09-27 the ExecuTorch branches were rebased onto the dev branch. Dev now carries the shared build
+fixes, test tooling, SDPA restore and ETDump link. The hashes cited in this and the per-GPU documents
+are pre-rebase commits; they stay reachable through the tags `archive/pre-reorg-2026-09-27/<branch>`.
+
+| Branch | Cited (old) | Now |
+|---|---|---|
+| dev | `d529bfc7b` (unaligned-M fix) | unchanged; head `779f74317a` |
+| `-4070ti` | `9ede1f778`, `599567009`, `be54d12db`, `d4e86b465`, `0270403ba`, `432709b92` | `7982799a8f`, `9a890e9f70`, `593f3503f7`, `13f814737f`, `b0bbb4fc60`, `5037360112` |
+| `-4070ti` | `6fa64bf74` (unaligned-M fix) | dropped: identical to dev `d529bfc7b` |
+| `-b580` | `13d5b4a45`, `ab9978f16`, `7d47b6ee3` | `6e97b11527`, `775436ad88`, `dafc07aa91` |
+| `-b70` | `9629b3910`, `7eefbb260`; tests `545ccf85c`, `61bbec3b3` | `ffd8136daf`, `c35e2c731c`; tests are in dev |
+| `-780m` | `269931b3f`, `eae4d4af4`, `9178cee44` | `d8a07cf855`, `47de7a9972`, `e4786474b9` |
+| `-jetson` | base `0270403ba`, `0b260ffab`, `11859f251` | base `b0bbb4fc60`, `89c9dc556a`; the fix commit was dropped |
+
+Behaviour is unchanged on the verified devices:
+- the same 48 dispatched prefill kernels;
+- kernel times within ±3 % of the final confirmations, except one single-run outlier of +5 % on a
+  150 µs B70 kernel;
+- production-diff passes (12/12);
+- the next token matches tiled.
+
+What did change:
+- decode now works on every branch;
+- on B580/B70, prefill is about 5 % faster (for example B580 1B 4w 8678 vs 8292 tok/s). This comes from
+  dev's SDPA changes, which the old Intel base lacked; the linear kernels are unchanged.
+
+Full record: `sarc-acl/.artifacts/repo-reorg-2026-09-27/manifest.md`.
