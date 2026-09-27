@@ -1,5 +1,9 @@
 # Roofline-guided WMMA tuning across four GPUs: results and takeaways (2026-09-26)
 
+The later Jetson study brings coverage to five GPUs; see the
+[results index](GPU-STUDY-RESULTS.md). The figures and comparisons below retain
+their original four-GPU campaign scope.
+
 This is a cross-GPU summary of the roofline study and the ExecuTorch Vulkan 4w / 8da4w prefill kernel
 work on the RTX 4070 Ti SUPER, Arc Pro B70, Arc B580 and Radeon 780M. Per-GPU detail:
 - [XE2-WMMA-LESSONS.md](XE2-WMMA-LESSONS.md) (B580, B70)
