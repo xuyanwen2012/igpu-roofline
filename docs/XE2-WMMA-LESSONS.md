@@ -1,4 +1,16 @@
-# Arc B580 WMMA tuning: results and lessons (2026-09-26)
+# Intel Xe2 (Arc B580, Arc Pro B70) WMMA tuning: results and lessons (2026-09-26)
+
+Two Battlemage GPUs, tuned in this order: Arc B580 (BMG G21, 20 Xe cores) first, then
+Arc Pro B70 (BMG G31, 32 Xe cores) with the same method. The sections below describe
+the B580 work in detail; [Arc Pro B70](#arc-pro-b70-bmg-g31) lists what carried over,
+what differed, and its confirmed results.
+
+| Texture3d prefill (model path), WMMA vs forced tiled, geomean | B580 | B70 |
+|---|---:|---:|
+| 4w | 7.16× | 7.25× |
+| 8da4w | 2.44× | 2.70× |
+
+## Arc B580 (BMG G21)
 
 Roofline-guided tuning of the ExecuTorch Vulkan 4w (`linear_q4gsw_coopmat_tsweep_dbuf4`) and
 8da4w (`linear_dq8ca_q4gsw_coopmat_tsweep_dbuf4zpg`) prefill microkernels on an Intel Arc
@@ -12,7 +24,7 @@ microkernels only; no decode, no end-to-end model runs.
 - Raw runs, ISA and OA captures: `sarc-acl/.artifacts/roofline-et-study/` (`confirm/`,
   `sweep/`, `isa/`, `oa/`), negative experiments in `b580-8da4w-exploration-negative.patch`.
 
-## Result
+### Result
 
 Branch defaults (no `ET_VK_*` overrides), Llama 3.2 1B / 3.2 3B / 3.1 8B prefill shapes
 (M = 2048), 3 repeats each of `--linear` and `--baseline` (forced tiled), GT0 at 2850 MHz:
@@ -29,7 +41,7 @@ Before: the `-b70` branch's Xe2 tiles gave 2.9× / 1.55× on B580, and only with
 Correctness: `--correctness-only` 10/10 runs with zero failures; `--production-diff` passed
 all four Llama 3.1 8B 8da4w shapes with the new kernel dispatched.
 
-## What changed (and why)
+### What changed (and why)
 
 | Change | Evidence | Effect (1B, texture3d unless noted) |
 |---|---|---|
@@ -41,7 +53,7 @@ all four Llama 3.1 8B 8da4w shapes with the new kernel dispatched.
 | BMG G21 defaults + texture3d coopmat on by default | exported models use `TEXTURE_3D` storage (`vulkan_preprocess.py`), so the opt-in flag meant the model never used WMMA | model path gets WMMA |
 | Buffer variants for the Xe2 tiles | the `-b70` branch shipped texture3d-only Xe2 variants, so buffer dispatch on Intel threw "Could not find ShaderInfo" | no crash |
 
-## What did not help (measured, then dropped)
+### What did not help (measured, then dropped)
 
 - `IMG_W` (weights via `imageLoad`): −7 to −10 %. The 2D weight access is well served by the
   sampler cache; only the row-streamed A operand benefits from the storage-image path.
@@ -58,7 +70,7 @@ all four Llama 3.1 8B 8da4w shapes with the new kernel dispatched.
 - 8da4w 16×32 subgroup tiles: slower than 32×16 (more B fragments per subgroup).
 - fp32 8da4w results in SLM: a 256×64 fp32 tile needs 64 KiB > 48 KiB per workgroup.
 
-## Why the kernels sit at 20–49 % of the matrix roof
+### Why the kernels sit at 20–49 % of the matrix roof
 
 The register-resident matrix roof is the wrong ceiling for a quantized GEMM: operands come
 from SLM, so the relevant ceiling is the LDS-fed roof at the tile's reuse (≈ 70 TFLOP/s for
@@ -80,7 +92,60 @@ SLM staging, scoreboard syncs, address math and (8da4w) int4→int8 unpack and g
 The kernels are issue/latency bound on operand staging, not MMA bound. 8da4w is further
 capped at 4 MMAs per subgroup because it keeps an int32 and an fp32 accumulator per tile.
 
-## Lessons for the next GPU (B70, other Xe2, other vendors)
+## Arc Pro B70 (BMG G31)
+
+- ExecuTorch branch `yanwen/release14-quant-shaders-b70`: `9629b3910` (the B580 commit,
+  cherry-picked), `7eefbb260` (G31 defaults), `545ccf85c` (sampled reference). Not pushed
+  at the time of writing.
+- Roofs: `results/fleet-fast-20260926/fedora-gpu-eval/b70-0`. The B70 has 1.55× the B580's
+  matrix and FMA roofs, 1.30× its DRAM read, and 1.38× its 32-bit-granularity SLM read.
+
+Round 1 (1B prefill, single runs) re-measured the B580 candidates on the B70: the same
+tiles won (4w `t128x128k16g44s16fli`, 8da4w `t256x64k32g48s16`). The previous `-b70`
+defaults ran at 36.1 TFLOP/s (4w) and 53.1 TOP/s (8da4w) on texture3d, versus 62.5 and 87.7
+with the new tiles. The branch's per-shape 8B 8da4w tile (`t128x128k32g48s32`, G31 only)
+was 1.56–1.73× slower than the new default on all four 8B shapes (3 repeats each), so it
+was removed.
+
+Confirmed (defaults only, 1B/3B/8B prefill, 3 repeats of WMMA and forced tiled, every cell
+within 5 % repeat spread, GT0 at 2800 MHz):
+
+| B70 prefill | WMMA | % matrix roof | tiled | WMMA / tiled (geomean, min–max) | vs previous `-b70` WMMA |
+|---|---|---:|---|---|---:|
+| 4w texture3d | 46.4–69.4 TFLOP/s | 27–40 % | 7.1–10.4 | **7.25×** (5.14–9.15) | 2.54× |
+| 8da4w texture3d | 79.3–93.2 TOP/s | 22–26 % | 26.7–36.0 | **2.70×** (2.49–3.06) | 1.69× |
+| 4w buffer | 56.6–81.1 TFLOP/s | 33–47 % | 7.7–8.7 | 9.05× | — |
+| 8da4w buffer | 79.2–95.5 TOP/s | 22–27 % | 25.7–34.1 | 2.88× | — |
+
+Correctness: `--correctness-only` 10/10 runs clean; sampled `--production-diff` passed all
+four 8B shapes (~8,000 checked elements each, 27 s). Before the change, texture3d WMMA
+needed `ET_VK_TEXTURE_COOPMAT=1`, so an exported model ran the tiled kernels.
+
+What differed from the B580:
+
+- `FRAG_LAYOUT` gained only 0–4 % (12 % on B580). Xe OA shows why: the 4w kernel reads SLM
+  at 4.17 TB/s on B70, 42 % of the 32-bit-granularity SLM roof, so SLM bandwidth is not
+  its limiter there (see lesson 10).
+- 4w is healthier on the B70: XVE active 63 % (B580 52 %), stalls spread over SBID 32 %,
+  barrier 18 %, instruction fetch 17 %.
+- 8da4w's OA profile is nearly identical on both GPUs (SBID ~55 %, ALU dependency ~21 %,
+  barrier ~20 %, 1.71 int32 instructions per XMX instruction): its limit is the kernel's
+  structure (two accumulators, 4 MMAs per subgroup), not the GPU.
+- The B70 host (fedora-gpu-eval) has no igt-gpu-tools; `xe-perf-recorder`/`-reader` were run
+  from a private copy with the missing libraries (`LD_LIBRARY_PATH`), leaving the system
+  unchanged. `observation_paranoid` was set to 0 only for the capture and restored to 1.
+
+## Sampled reference for production-size correctness
+
+`test_llama_microbench --production-diff` used to compute the full O(M·N·K) CPU reference
+(Debug build, single thread): over 40 minutes for the four 8B shapes. `--ref-samples=N`
+(default 8192 for `--production-diff`; `--ref-full` restores the full check) computes only
+the tile-boundary rows/columns crossed with each other plus seeded random elements; the
+comparator skips the rest and prints how many elements it checked. All four shapes now
+take about 25 s. Addressing or layout bugs in a tile corrupt whole tiles or tile edges,
+which this sample covers.
+
+## Lessons for the next GPU (other Xe2, other vendors)
 
 1. Put the kernel on the roofline with the matching ceiling first: the LDS/cache-fed
    `matrix_feed` roof at the tile's reuse explains far more than the register-resident peak.
@@ -105,3 +170,10 @@ capped at 4 MMAs per subgroup because it keeps an int32 and an fp32 accumulator 
 9. Operational: `intel_gpu_top` does not support the xe driver (use sysfs `act_freq` /
    `throttle`); don't let background samplers inherit a `flock` fd; `pkill -f` can match the
    invoking shell.
+10. Match the roof to the kernel's access granularity (learned on B70). The B70's
+    fp16-granularity SLM read roof (3.33 TB/s) is no higher than the B580's, which predicted
+    an SLM wall and a large `FRAG_LAYOUT` gain on B70. Xe OA then measured the 4w kernel
+    reading SLM at 4.17 TB/s — above that roof — because `coopMatLoad` uses wide
+    accesses; against the 32-bit-granularity roof (10.0 TB/s) it is at 42 %, and
+    `FRAG_LAYOUT` gained only 0–4 % on B70. A kernel rate above a roof means the wrong
+    roof was chosen.
