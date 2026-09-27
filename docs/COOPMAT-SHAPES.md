@@ -1,21 +1,26 @@
-# Cooperative-matrix (WMMA) shapes by device
+# Roofline cooperative-matrix shape snapshots
 
-What each device's driver reports through `vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR`.
+Historical results from `vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR`, with
+driver and query dates below. Current fleet queries and refresh instructions live
+in [gpu-lab's matrix inventory](../../gpu-lab/docs/cooperative-matrices.md).
+These records also cover devices outside gpu-lab's selected fleet.
+
 The suite only runs exact matches (M, N, K, A, B, C, Result, subgroup scope); see
 `matrix-coverage.json` in a results folder for reported shapes that have no compiled
 variant. Types: f16/f32 float, s8/u8 8-bit int, s32/u32 32-bit int accumulators.
 
-**Add or refresh a device:** connect it and run
+**Check roofline runner coverage:** on the execution host, run
 
 ```sh
 uv run igpu-roofline shapes --device <serial>   # phone (needs `igpu-roofline build`)
 uv run igpu-roofline shapes --local             # this host's GPU (needs `build --host`)
 ```
 
-and paste the printed table below with the device, driver and date. Shapes change with
-drivers: re-probe after a driver update.
+and retain the output with device, driver, date and campaign artifacts. Refresh the
+shared inventory through gpu-lab after driver updates; keep historical snapshots
+here as provenance rather than maintaining a second current fleet inventory.
 
-## Summary (what the suite measures)
+## Recorded suite coverage
 
 | device | GPU | subgroup | fp16 → fp16 | fp16 → fp32 | int8 → int32 |
 |---|---|---:|---|---|---|

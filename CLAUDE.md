@@ -10,6 +10,21 @@ The results tune GPU shaders (ExecuTorch Vulkan q4gsw / dq8ca linear kernels, ba
 vs cooperative-matrix). Values are **measured, achievable** rates; theoretical peaks are
 optional context only.
 
+The objective is to explain and improve real ExecuTorch workloads, including
+4w and 8da4w WMMA shaders in both the main and development checkouts listed in
+[docs/EXECUTORCH-WORKFLOW.md](docs/EXECUTORCH-WORKFLOW.md). Read that document before
+planning workload comparisons. Evaluate kernel, complete operator and model gains
+separately, and record the actual dispatched kernel and quantization parameters.
+
+Use [gpu-lab's registry](../gpu-lab/gpus.toml) and [agent guide](../gpu-lab/AGENTS.md)
+for GPU access, availability and device-use rules. Its `./gpu caps [SEL] --json`
+provides driver capabilities for planning; roofline verifies the execution device
+and measures performance. Use its [profiling tools](../gpu-lab/docs/profiling-tools.md)
+for installed tools and verified per-GPU restrictions before diagnostic captures.
+See the [documentation index](docs/README.md) for current
+references and historical snapshots. Roofline and gpu-lab use separate locks:
+coordinate ownership across both tools before measuring.
+
 - Methods must stay textbook (BabelStream, ERT, pointer chasing, bank-conflict stride,
   differential timing, confirmation repeats). Never trade rigor for speed without
   asking the owner.
@@ -22,6 +37,19 @@ optional context only.
   a device another agent or process owns; check `workflow-state.json` and running
   processes first.
 - Report to the owner in the owner's language (currently Chinese).
+
+## Shader optimization evidence
+
+For each new study, follow the six required practices in
+[the ExecuTorch workflow](docs/EXECUTORCH-WORKFLOW.md#six-practices-required-for-new-studies)
+and copy [the experiment record](docs/templates/SHADER-EXPERIMENT.md) into its
+artifact directory before measuring. Record matching roof types/feed/reuse/access
+width; inspect ISA or available pipeline evidence before a broad sweep; verify
+production storage and actual dispatch; check phase hypotheses against clean
+whole-kernel timing; validate affected production shapes; retain negative results
+with raw data and patches. State unknowns and failed checks explicitly. These are
+normal study deliverables, not a new permission gate. Do not call a tuned kernel
+ready for deployment while its correctness failures remain unresolved.
 
 ## Setup
 
@@ -40,11 +68,14 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
 
 ## Pick the procedure
 
-1. `adb devices` (phones get swapped) or `vulkaninfo --summary` (host iGPU). Identify
-   the device in the table below. Unknown device: run `quick` first and report.
+1. Resolve access through gpu-lab, then verify the execution device with
+   `adb devices` or `vulkaninfo --summary` on its host. Historical-only devices
+   without a current registry entry need their access confirmed. Unknown device:
+   run `quick` first and report.
 2. Backend: phone → `run --device <serial>`; host GPU → `run --local`.
-3. Root? Only then may clocks be pinned (see the device's section). Non-root devices
-   run DVFS-governed; the sentinel and thermal pacing handle that.
+3. Follow gpu-lab's device-use rules for clocks. Root access does not authorize
+   pinning; use a verified pin/restore procedure only when requested. Record the
+   actual clock state; use sentinel and thermal pacing for DVFS runs.
 4. Plan:
    - `quick` (~15–30 min on a phone): smoke test (top 1 × 3 repeats). Its narrow grid
      can read FMA/shared roofs low; use it to check that a device works, not for numbers.
@@ -54,9 +85,10 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
    - `fast` (~30 min on the 780M; phones longer): the roofs shader tuning needs —
      FMA/dot at every width and chain count, WMMA register + fed roofs, DRAM, cache,
      shared, texture vs buffer, latency levels; top 2 × 3 confirmation; 120 s
-     sustained runs of three representative roofs. **Default for phones.** On the
-     780M every fast roof matched `standard` within ±4 %. Ask before `standard` on a
-     phone (4–5 h).
+     sustained runs of three representative roofs. Preferred phone plan after
+     smoke testing; pass `--plan fast` explicitly (the CLI default is `quick`).
+     In the recorded 780M comparison, every fast roof matched `standard` within
+     ±4 %. Ask before `standard` on a phone (4–5 h).
 5. Results root: pass `--results <dir>`; one directory per campaign and per runner
    build. Only rows of the current runner and of the current build of each shader
    (`shader-shas.json`, written at deploy) define roofs; older rows stay on disk as
@@ -65,23 +97,15 @@ SPIR-V is portable: compile shaders once and copy `build/shaders/` and
 
 ## Devices
 
-Fleet overview (hardware, driver, WMMA yes/no, where each device is connected):
-[docs/FLEET.md](docs/FLEET.md). Full cooperative-matrix (WMMA) shape lists per device:
-[docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md) (refresh with `igpu-roofline shapes
---device <serial>` or `--local`). Build, debug and profiling tools (validation layers,
-RenderDoc, clangd, vendor profilers, Perfetto on the phones):
+Current access, root status and driver capabilities belong in gpu-lab. Historical
+roofline probes are retained in [docs/FLEET.md](docs/FLEET.md) and
+[docs/COOPMAT-SHAPES.md](docs/COOPMAT-SHAPES.md). The notes below record
+measurement-specific behavior and campaign conventions; recheck conditions before
+reusing a procedure. Tool installation/profiling notes are in
 [docs/TOOLING.md](docs/TOOLING.md).
 
-| device | GPU | access | root | clocks | ISA route | known issues |
-|---|---|---|---|---|---|---|
-| vivo V2502A `<mali-serial>` | Mali-G1-Ultra MC12 (MT6993), r54p1 | adb on the owner's Mac | no | DVFS, not readable | `malioc` if installed (not yet) | latched ~40 % slow state (below) |
-| Samsung S26 Ultra `<s26-serial>` | Adreno 840 | adb on the owner's Mac | no | DVFS, kgsl readable | none offline; driver stats only | stepwise throttling after 40–90 s |
-| Samsung M51 `<private>` | Xclipse (<private>) | host `<private>` | **yes** | pinned: GPU <private> | pipeline dump + ISA: **TODO(owner)** | driver/profiler state checks (below) |
-| Samsung Galaxy S24+ `R5CY21Y3VEV` | Xclipse 940 (Exynos 2400), Samsung 24.0.534 | adb on `rocky-ryzen` | no | DVFS, `/sys/kernel/gpu` readable | **TODO(owner)** | no WMMA (coopmat not exposed); no run yet |
-| Google Pixel 7a `3A021JEHN02756` | Mali-G710 (Tensor G2), r54p3 | adb on `rocky-ryzen` | no | DVFS | `malioc` (in `~/tools/` on rocky-ryzen) | no WMMA (coopmat not exposed); no run with current `main` |
-| host `rocky-ryzen` (Minisforum UM790 Pro) | Radeon 780M, RADV (Mesa 25.2.7) | `ssh doremy@rocky-ryzen`, `run --local` | no (no sudo) | DVFS, `pp_dpm_*` readable | driver-returned ISA (RADV `Assembly`) | shares DRAM with the CPU |
-
 ### Mali-G1 phone (vivo V2502A)
+
 - The GPU can latch into a state ~40 % slower (FP32 sentinel ~3.5 → ~2.2 TFLOP/s)
   after heavy load (GPU reached 61–66 °C), invisible to Android thermal service, logcat,
   battery state and screen state; idling 15 min does not recover it, **a reboot does**.
@@ -95,25 +119,32 @@ RenderDoc, clangd, vendor profilers, Perfetto on the phones):
 - **TODO(owner)**: physical cooling setup (clip-on cooler? case off?), charging policy.
 
 ### Adreno 840 phone (S26 Ultra)
-- No run with the current `main` yet: start with `quick`.
+
+- The recorded campaigns predate current-build verification: start with `quick`
+  unless a matching current-build campaign is available.
 - Coopmat: M=64 only, N ∈ {16, 32, 64}; fp16 K=16 (fp16 acc), int8 K=32.
 - Earlier (v1) data: the FP16 coopmat roof came out below FP16 FMA and the int8 dot
   roof below a real kernel — both measurement artefacts; do not reuse v1 numbers.
+- Historical runs showed stepwise throttling after 40–90 s; GPU clocks were
+  readable through kgsl, with driver statistics but no recorded offline ISA route.
 - **TODO(owner)**: cooling and whether pacing thresholds should differ from Mali's.
 
 ### Xclipse (Samsung M51, internal device)
+
 - Earlier agent procedure (verify with the owner before reuse): check the driver hash
   against the known-good one (`<private>`, <private>),
   pin clocks, adjust the profiler configuration, run, then
   confirm driver hash and pins unchanged and restore the profiler configuration.
 - Only 16×16×16 coopmat shapes (fp16, fp16→fp32, int8 s8×s8→s32; the int8 shape exists
   in the catalogue since #2).
-- Clocks pinned at the max OPP, so results are peak-clock values; say so in reports.
+- Historical runs used GPU <private>; label those
+  results as peak-clock values and verify the clock state for each new campaign.
 - **TODO(owner)**: how to dump pipelines / get driver ISA on this device, where the
   tools live, and how to feed them into `pipeline-inspection/` or `offline-isa/`.
 - **TODO(owner)**: which host drives it and where results must be stored.
 
 ### Radeon 780M (rocky-ryzen)
+
 - Everything lives under `~/igpu-roofline/`; read `~/igpu-roofline/CLAUDE.md` first (host
   layout and conventions). Code: `~/igpu-roofline/main` (tracks `main`). **Do not touch
   `~/igpu-roofline/other-agent/`**: another agent's checkout and results.
@@ -135,6 +166,8 @@ RenderDoc, clangd, vendor profilers, Perfetto on the phones):
 
 - Launch in the background and poll `workflow-state.json` and the log; do not sit in
   sleep loops in the foreground.
+- `paused_probe_invalid`: no quality-passing sentinel; health is unknown. Inspect
+  the probe exclusions and quarantined interval before retrying.
 - `paused_device_degraded`: device changed state; follow the device's section (usually
   reboot + cool + rerun). `stopped_by_user` / killed runs: an unfinished `*.jsonl`
   without its `.json` blocks resume; move it to `superseded/interrupted/<stage>/`.
@@ -154,10 +187,12 @@ Check all of these before calling a number usable, and state what was not checke
 2. **Quality gates**: median standard error ≤ 3 %, sample ≥ 80 % of the 5 ms target,
    differential fixed cost ≤ 10 %, pre-sampling warm-up steady, sample drift ≤ 5 %.
 3. **Confirmed**: REPORT.md "Roof confirmation" shows a confirmed median with a tight
-   repeat range; "unconfirmed" roofs are not usable yet.
+   repeat spread ≤ 5%; "unconfirmed" roofs are not usable yet, even if a plot
+   or ridge table displays them.
 4. **Sentinel healthy** for the stages that produced the roof (no `degraded` rows).
-5. **Physically plausible**: no roof above a known hardware bound; a real kernel above
-   a roof means the roof is wrong, not that the hardware was beaten.
+5. **Physically plausible**: investigate rates above a known hardware bound. If a
+   real kernel exceeds a measured roof, check matching units, work/byte accounting,
+   workload path, device state and whether the microbenchmark saturated the resource.
 6. **Instruction check** where an ISA route exists: the driver/offline ISA must contain
    the intended work (e.g. one LDS store per intended store, FMA counts matching the
    design). Without an ISA route say "not ISA-verified".
