@@ -191,3 +191,30 @@ What did change:
   dev's SDPA changes, which the old Intel base lacked; the linear kernels are unchanged.
 
 Full record: `sarc-acl/.artifacts/repo-reorg-2026-09-27/manifest.md`.
+
+## Release 1.5 migration and archived 1.4 branches (2026-09-27)
+
+The ExecuTorch work now lives on a single branch.
+- `dev/1.5` in sarc-acl/executorch is the one SARC branch and is based on upstream `release/1.5`.
+- SARC releases are generated from it as `sarc/1.5` and tagged `sarc/1.5-rN`.
+- The branch model, zones and promotion rules are in `sarc-acl/CLAUDE.md` and in `dev/1.5:sarc/README.md`.
+
+Every winner in this document was ported and re-verified on release 1.5 (evidence under
+`dev/1.5:openspec/changes/sarc-1.5-*`). The port covers 4w and 8da4w on the 780M, B580, B70,
+RTX 4070 Ti SUPER and Orin, plus the SDPA coopmat on the 780M.
+
+Release 1.5 reproduces release 1.4 for these kernels:
+- kernel times are within ±3 % on all five GPUs;
+- end-to-end prefill is within ~3 %.
+
+The 780M needed one extra port to get there. At first it was ~30 % slower end to end, because its 1.4
+branch carried SARC's SDPA coopmat, which release 1.5 lacked. With that ported, it matches 1.4
+within 0.7 %.
+
+All 1.4-based branches are now tags. The hashes cited above resolve through them:
+
+| Branch (deleted) | Tag |
+|---|---|
+| `yanwen/release14-quant-shaders[-780m,-b580,-b70,-4070ti,-jetson,-mali,-qualcomm,-7900xtx]` | `archive/yanwen/release14-quant-shaders[...]` (heads after the 2026-09-27 rebase) |
+| same branches before the rebase | `archive/pre-reorg-2026-09-27/<branch>` |
+| `release/1.4-mali`, `release/1.4-qualcomm` | `archive/release/1.4-mali`, `archive/release/1.4-qualcomm` |
