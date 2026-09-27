@@ -45,3 +45,7 @@ python-version = "3.10"
 
 [tool.ty.src]
 exclude = ["third_party", "build"]
+
+[tool.pytest.ini_options]
+# Only the repo tests: campaign source snapshots under results/ carry their own tests/.
+testpaths = ["tests"]

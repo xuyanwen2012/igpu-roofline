@@ -155,3 +155,25 @@ def test_wrong_schema_is_rejected(tmp_path):
     path.write_text(json.dumps({"schema": "other", "cases": []}))
     with pytest.raises(ValueError):
         workload.load_cases(path)
+
+
+def test_fp32_accumulate_4w_kernel_uses_fp16_fp32_matrix_roof():
+    summary = dict(
+        SUMMARY,
+        short_run=dict(SUMMARY["short_run"], matrix_fp16_fp32=roof(300.0, "TFLOP/s")),
+    )
+    usable, _ = workload.usable_roofs(summary)
+    c = case(
+        scheme="4w",
+        regime="prefill",
+        kernel="linear_q4gsw_coopmat_tsweep_dbuf4_t128x128k32g42s32f32c_texture3d_texture2d_half",
+        M=2048,
+        K=2048,
+        N=2048,
+        kernel_median_us=100.0,
+    )
+    assert workload.place(c, 128, usable)["compute_roof"] == "matrix_fp16_fp32"
+    plain = c | {
+        "kernel": "linear_q4gsw_coopmat_tsweep_dbuf4_t128x128k32g42s32_buffer_texture2d_half"
+    }
+    assert workload.place(plain, 128, usable)["compute_roof"] == "matrix_fp16"

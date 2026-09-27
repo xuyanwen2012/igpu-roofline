@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from pathlib import Path
 
 SCHEMA = "test_llama_microbench.v1"
@@ -32,6 +33,9 @@ COMPUTE_ROOFS = {
     ("8da4w", False): ["dot_int8"],
 }
 # The same MMA fed through shared memory: what a tiled WMMA kernel can reach.
+# ExecuTorch coopmat tile tokens end in s<subgroup>[suffixes]; "f32" marks an
+# fp32 accumulator (e.g. tsweep_dbuf4_t128x128k32g42s32f32c).
+FP32_ACC_TOKEN = re.compile(r"s\d+f32")
 FEED_ROOFS = {"4w": "matrix_fp16_feed_shared", "8da4w": "matrix_int8_feed_shared"}
 
 
@@ -96,9 +100,12 @@ def place(case: dict, group_size: int, roofs: dict) -> dict:
         "memory_roof": None,
         "feed_roof": None,
     }
-    compute = next(
-        (k for k in COMPUTE_ROOFS[(case["scheme"], wmma)] if k in roofs), None
-    )
+    candidates = COMPUTE_ROOFS[(case["scheme"], wmma)]
+    if wmma and case["scheme"] == "4w" and FP32_ACC_TOKEN.search(case["kernel"]):
+        # fp32-accumulate 4w coopmat variants (tile token ...s<sg>f32...) are
+        # bounded by the fp16 -> fp32 matrix roof, not the fp16 -> fp16 one.
+        candidates = ["matrix_fp16_fp32", "matrix_fp16"]
+    compute = next((k for k in candidates if k in roofs), None)
     ceilings = {}
     if compute:
         row["compute_roof"] = compute
