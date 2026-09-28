@@ -134,8 +134,18 @@ ACCEL = {
         "int8": (1.5, "yes", "Yes", "ratio; ISA pending"),
     },
     "s26": {
-        "fp16": (0.9, "no", "No gain measured", "ratio below FMA; ISA pending"),
-        "int8": (1.7, "yes", "Yes", "ratio; ISA pending"),
+        "fp16": (
+            0.9,
+            "no",
+            "No: ALU lowering",
+            "driver statistics: MMA counted as ALU-32; no ISA route",
+        ),
+        "int8": (
+            1.7,
+            "unk",
+            "Open",
+            "counted as ALU-16; 1.7× may be dot-roof overhead",
+        ),
     },
     "m51": {
         "fp16": (

@@ -21,7 +21,8 @@ Use the strongest evidence available, in this order.
    | Intel Xe2 | native `dpas.8x8` (count these; `@dpas_intel` lines are NIR intrinsics, not instructions) | Mesa ANV `MESA_SHADER_CACHE_DISABLE=true INTEL_DEBUG=cs` ([XE2-WMMA-LESSONS.md](XE2-WMMA-LESSONS.md)) |
    | NVIDIA | Nsight `Tensor Active` (SASS `HMMA`/`IMMA`) | `nsys --gpu-metrics-set` ([4070TI-WMMA-LESSONS.md](4070TI-WMMA-LESSONS.md)) |
    | Arm Mali | arithmetic unit split in `malioc` reports | `malioc` |
-   | Qualcomm Adreno, Samsung Xclipse | no recorded route yet | ask the device owner |
+   | Qualcomm Adreno | no ISA; `VK_KHR_pipeline_executable_properties` gives per-class instruction statistics only (enable the `pipelineExecutableInfo` feature, not just the extension) | `contrib/s26/isa/README.md` |
+   | Samsung Xclipse | no recorded route yet | ask the device owner |
 
    Only plain FMA/dot instructions in the loop means the driver emulates the
    operation.
@@ -68,7 +69,7 @@ and [FLEET.md](FLEET.md) for the M51.
 | RX 7600 | 43.42 ÷ 20.23 = **2.1×** (fp32 acc; 1.6× with fp16 acc) | 43.90 ÷ 29.03 = 1.5× | ISA not captured (RADV statistics only, VGPR/LDS); `contrib/rx7600/roofline.json`, Mesa 26.2.3 | Accelerated by ratio (RDNA3 WMMA) |
 | Radeon 780M | 14.77 ÷ 8.14 = **1.8×** (fp32 acc) | 14.39 ÷ 11.72 = 1.2× | `v_wmma_f16/f32_16x16x16_f16` and `v_wmma_i32_16x16x16_iu8` in `roofline-et-study/remote/rocky-ryzen/.../isa/780m/` | Hardware (RDNA3 WMMA), ISA-verified |
 | Xclipse (M51) | 7.77 ÷ 7.70 = 1.0× | 15.09 ÷ 3.56 = **4.2×** | **Owner-confirmed real matrix hardware**; ISA check requested | Hardware. The fp16 ratio of 1.0× is unexplained (driver lowering, configuration or measurement), not evidence of emulation |
-| Adreno 840 (S26) | 6.95 ÷ 7.76 = **0.9×** | 12.24 ÷ 7.05 = **1.7×** | No ISA route; ISA check requested | int8 accelerated by ratio; the fp16 path runs below scalar FMA |
+| Adreno 840 (S26) | 6.95 ÷ 7.76 = **0.9×** | 12.24 ÷ 7.05 = 1.7× | No ISA route works (2026-09-28, `contrib/s26/isa/`): the driver returns statistics but no internal representations. Every MMA is counted as ordinary ALU with no matrix instruction class: ≈128 ALU-32 instructions per 64×16×16 fp16 block (2 FMAs each) and ≈128 ALU-16 per 64×16×32 int8 block (one 4-way dot each) | **fp16: ALU lowering** (statistics, not disassembly). **int8: open.** The 1.7× may come from the dot roof shader issuing ≈2.3× more instructions per dot, not from matrix hardware |
 | Mali-G1-Ultra | unconfirmed | unconfirmed (~9.4 vs ~13.3) | none | Unknown: the old data violates physical limits (matrix < dot; cache-fed > register). Re-measure first |
 | Galaxy S24+ (Xclipse 940), Pixel 7a (Mali-G710), Ryzen 9600X iGPU | — | — | driver exposes no cooperative matrix | None available through Vulkan |
 
@@ -76,9 +77,10 @@ Notes:
 - **RDNA3 (780M, 7900 XTX, RX 7600).** The ratio is about 2× because RDNA3 executes WMMA on
   its vector SIMDs, not on a separate matrix core. int8 WMMA runs at the fp16 rate,
   which is why 8da4w gains less than 4w on the 780M.
-- **M51 and Adreno.** The int8 path is where the matrix gain is today, which matches
-  the e2e results: M51 8da4w gains 2.5×, and the S26's fp16 4w row has no releasable
-  gain.
+- **M51 and Adreno.** On the M51 the int8 path is where the matrix gain is today
+  (8da4w gains 2.5× end to end). On the Adreno 840 the driver statistics show fp16
+  coopmat lowered to packed ALU code, which matches the S26's fp16 4w row having no
+  releasable gain; its int8 path is unresolved.
 - **Limits of this evidence.** All ratios are short-run roofs, not sustained. The M51
   numbers are pinned-clock values from an external summary.
 
