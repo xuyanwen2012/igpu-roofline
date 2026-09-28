@@ -22,7 +22,7 @@ Use the strongest evidence available, in this order.
    | NVIDIA | Nsight `Tensor Active` (SASS `HMMA`/`IMMA`) | `nsys --gpu-metrics-set` ([4070TI-WMMA-LESSONS.md](4070TI-WMMA-LESSONS.md)) |
    | Arm Mali | arithmetic unit split in `malioc` reports | `malioc` |
    | Qualcomm Adreno | no ISA; `VK_KHR_pipeline_executable_properties` gives per-class instruction statistics only (enable the `pipelineExecutableInfo` feature, not just the extension) | `contrib/s26/isa/README.md` |
-   | Samsung Xclipse | no recorded route yet | ask the device owner |
+   | Samsung Xclipse | the driver's pipeline-executable ISA dump (details stay with the owner) | `contrib/m51/isa/SUMMARY.md` |
 
    Only plain FMA/dot instructions in the loop means the driver emulates the
    operation.
@@ -68,7 +68,7 @@ and [FLEET.md](FLEET.md) for the M51.
 | RX 7900 XTX | 136.4 ÷ 63.4 = **2.2×** | 142.6 ÷ 69.2 = **2.1×** | ISA (2026-09-28, `contrib/7900xtx/isa/`): 64 `v_wmma_f32_16x16x16_f16` per 4w pipeline (32 in the loop) and 8 `v_wmma_i32_16x16x16_iu8` per 8da4w pipeline, under both AMDVLK 2025.Q2.1 and RADV 25.0.7; roofline matrix shaders compile to the matching WMMA | Hardware (RDNA3 WMMA), ISA-verified |
 | RX 7600 | 43.42 ÷ 20.23 = **2.1×** (fp32 acc; 1.6× with fp16 acc) | 43.90 ÷ 29.03 = 1.5× | ISA not captured (RADV statistics only, VGPR/LDS); `contrib/rx7600/roofline.json`, Mesa 26.2.3 | Accelerated by ratio (RDNA3 WMMA) |
 | Radeon 780M | 14.77 ÷ 8.14 = **1.8×** (fp32 acc) | 14.39 ÷ 11.72 = 1.2× | `v_wmma_f16/f32_16x16x16_f16` and `v_wmma_i32_16x16x16_iu8` in `roofline-et-study/remote/rocky-ryzen/.../isa/780m/` | Hardware (RDNA3 WMMA), ISA-verified |
-| Xclipse (M51) | 7.77 ÷ 7.70 = 1.0× | 15.09 ÷ 3.56 = **4.2×** | **Owner-confirmed real matrix hardware**; ISA check requested | Hardware. The fp16 ratio of 1.0× is unexplained (driver lowering, configuration or measurement), not evidence of emulation |
+| Xclipse (M51) | 7.77 ÷ 7.70 = 1.0× | 15.09 ÷ 3.56 = **4.2×** | ISA (2026-09-28, summary in `contrib/m51/isa/SUMMARY.md`; raw ISA kept by the owner): fp16 (fp16 and fp32 accumulate) and int8 coopmat each compile to one native matrix instruction per 16×16×16 tile; the ET 4w and 8da4w rows are straight matrix-instruction sequences without spills | Hardware, ISA-verified. fp16 matrix ≈ fp16 FMA because the matrix instructions run on the SIMD's vector ALUs (as on RDNA3): they buy operand reuse and fewer instructions, not more peak FLOP/s. int8 gains 2× packing; the 4.2× over dot is partly the dot roof shader being issue-bound |
 | Adreno 840 (S26) | 6.95 ÷ 7.76 = **0.9×** | 12.24 ÷ 7.05 = 1.7× | No ISA route works (2026-09-28, `contrib/s26/isa/`): the driver returns statistics but no internal representations. Every MMA is counted as ordinary ALU with no matrix instruction class: ≈128 ALU-32 instructions per 64×16×16 fp16 block (2 FMAs each) and ≈128 ALU-16 per 64×16×32 int8 block (one 4-way dot each) | **fp16: ALU lowering** (statistics, not disassembly). **int8: open.** The 1.7× may come from the dot roof shader issuing ≈2.3× more instructions per dot, not from matrix hardware |
 | Mali-G1-Ultra | unconfirmed | unconfirmed (~9.4 vs ~13.3) | none | Unknown: the old data violates physical limits (matrix < dot; cache-fed > register). Re-measure first |
 | Galaxy S24+ (Xclipse 940), Pixel 7a (Mali-G710), Ryzen 9600X iGPU | — | — | driver exposes no cooperative matrix | None available through Vulkan |
