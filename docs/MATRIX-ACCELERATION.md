@@ -65,6 +65,7 @@ and [FLEET.md](FLEET.md) for the M51.
 | Arc B580 | 111.7 ÷ 27.3 = **4.1×** | 231.4 ÷ 32.1 = **7.2×** | native `dpas.8x8`: 64 (4w, fp16) and 32 (8da4w, int8) in `roofline-et-study/isa/b580/` (older SIMD32 tiles) | Hardware (XMX), ISA-verified |
 | Arc Pro B70 | 173.3 ÷ 42.9 = **4.0×** | 359.9 ÷ 50.4 = **7.1×** | native `dpas.8x8`: 16 per compile, 64 per dump, in both the 4w (fp16 → fp16) and 8da4w (s8 × s8 → s32) winners; Mesa 26.2.3, 2026-09-28 (`roofline-et-study/isa/b70/`) | Hardware (XMX), ISA-verified |
 | RX 7900 XTX | 136.4 ÷ 63.4 = **2.2×** | 142.6 ÷ 69.2 = **2.1×** | ISA check requested from the device agent | Accelerated by ratio (RDNA3 WMMA) |
+| RX 7600 | 43.42 ÷ 20.23 = **2.1×** (fp32 acc; 1.6× with fp16 acc) | 43.90 ÷ 29.03 = 1.5× | ISA not captured (RADV statistics only, VGPR/LDS); `contrib/rx7600/roofline.json`, Mesa 26.2.3 | Accelerated by ratio (RDNA3 WMMA) |
 | Radeon 780M | 14.77 ÷ 8.14 = **1.8×** (fp32 acc) | 14.39 ÷ 11.72 = 1.2× | `v_wmma_f16/f32_16x16x16_f16` and `v_wmma_i32_16x16x16_iu8` in `roofline-et-study/remote/rocky-ryzen/.../isa/780m/` | Hardware (RDNA3 WMMA), ISA-verified |
 | Xclipse (M51) | 7.77 ÷ 7.70 = 1.0× | 15.09 ÷ 3.56 = **4.2×** | **Owner-confirmed real matrix hardware**; ISA check requested | Hardware. The fp16 ratio of 1.0× is unexplained (driver lowering, configuration or measurement), not evidence of emulation |
 | Adreno 840 (S26) | 6.95 ÷ 7.76 = **0.9×** | 12.24 ÷ 7.05 = **1.7×** | No ISA route; ISA check requested | int8 accelerated by ratio; the fp16 path runs below scalar FMA |
@@ -72,7 +73,7 @@ and [FLEET.md](FLEET.md) for the M51.
 | Galaxy S24+ (Xclipse 940), Pixel 7a (Mali-G710), Ryzen 9600X iGPU | — | — | driver exposes no cooperative matrix | None available through Vulkan |
 
 Notes:
-- **RDNA3 (780M, 7900 XTX).** The ratio is about 2× because RDNA3 executes WMMA on
+- **RDNA3 (780M, 7900 XTX, RX 7600).** The ratio is about 2× because RDNA3 executes WMMA on
   its vector SIMDs, not on a separate matrix core. int8 WMMA runs at the fp16 rate,
   which is why 8da4w gains less than 4w on the 780M.
 - **M51 and Adreno.** The int8 path is where the matrix gain is today, which matches

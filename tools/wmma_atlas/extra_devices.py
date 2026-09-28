@@ -87,16 +87,27 @@ def dev(id_, host, name, driver, info, sg, src, khr):
 
 x, xk = from_roofline(CONTRIB / "7900xtx/roofline.json", "7900xtx")
 s, sk = from_roofline(CONTRIB / "s26/roofline.json", "s26")
+r7, r7k = from_roofline(CONTRIB / "rx7600/roofline.json", "rx7600")
 gpus = [
     dev(
         "7900xtx",
         x["host"],
         "AMD Radeon RX 7900 XTX",
-        "RADV",
+        "AMDVLK",
         f"driver {x['driver_version']}",
         x["subgroup_default"],
         "igpu-roofline campaign by the 7900 XTX agent, 2026-09-27 (contrib/7900xtx/roofline.json)",
         xk,
+    ),
+    dev(
+        "rx7600",
+        r7["host"],
+        "AMD Radeon RX 7600",
+        "RADV",
+        f"Mesa 26.2.3 (driver {r7['driver_version']})",
+        r7["subgroup_default"],
+        "igpu-roofline campaign by the RX 7600 agent, 2026-09-28 (contrib/rx7600/roofline.json)",
+        r7k,
     ),
     dev(
         "s26",
