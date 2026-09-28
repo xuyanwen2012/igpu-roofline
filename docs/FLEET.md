@@ -11,6 +11,7 @@ Pixel 7a on Fedora and Pixel 7a rooted.
 Per-device measurement notes and known issues are in
 [CLAUDE.md](../CLAUDE.md#devices). Full cooperative-matrix shape lists are in
 [COOPMAT-SHAPES.md](COOPMAT-SHAPES.md).
+RX 7900 XTX and RX 7600 shapes are in [the extra-devices snapshot](reports/data/cooperative-matrices-extra-2026-09-28.json) and [the atlas](reports/wmma-shape-atlas.html).
 
 ## Historical overview
 

@@ -57,7 +57,7 @@ Use the strongest evidence available, in this order.
 Ratios use confirmed short-run `fast`-plan roofs (TFLOP/s for fp16, TOP/s for int8).
 The sources are the SARC 1.5 e2e benchmark roofline evidence
 (`openspec/changes/sarc-1.5-e2e-benchmark/evidence/roofline.md`), `contrib/*/roofline.json`,
-and [FLEET.md](FLEET.md) for the M51.
+with only ratios published for the M51.
 
 | GPU | fp16 matrix ÷ FMA | int8 matrix ÷ dot | ISA / counter evidence | Verdict |
 |---|---|---|---|---|
@@ -68,7 +68,7 @@ and [FLEET.md](FLEET.md) for the M51.
 | RX 7900 XTX | 136.4 ÷ 63.4 = **2.2×** | 142.6 ÷ 69.2 = **2.1×** | ISA (2026-09-28, `contrib/7900xtx/isa/`): 64 `v_wmma_f32_16x16x16_f16` per 4w pipeline (32 in the loop) and 8 `v_wmma_i32_16x16x16_iu8` per 8da4w pipeline, under both AMDVLK 2025.Q2.1 and RADV 25.0.7; roofline matrix shaders compile to the matching WMMA | Hardware (RDNA3 WMMA), ISA-verified |
 | RX 7600 | 43.42 ÷ 20.23 = **2.1×** (fp32 acc; 1.6× with fp16 acc) | 43.90 ÷ 29.03 = 1.5× | ISA not captured (RADV statistics only, VGPR/LDS); `contrib/rx7600/roofline.json`, Mesa 26.2.3 | Accelerated by ratio (RDNA3 WMMA) |
 | Radeon 780M | 14.77 ÷ 8.14 = **1.8×** (fp32 acc) | 14.39 ÷ 11.72 = 1.2× | `v_wmma_f16/f32_16x16x16_f16` and `v_wmma_i32_16x16x16_iu8` in `roofline-et-study/remote/rocky-ryzen/.../isa/780m/` | Hardware (RDNA3 WMMA), ISA-verified |
-| Xclipse (M51) | 1.0× (ratio only; internal device) | **4.2×** (ratio only) | ISA (2026-09-28; summary in `contrib/m51/isa/SUMMARY.md`, further detail stays with the owner): fp16 (fp16 and fp32 accumulate) and int8 coopmat compile to native matrix instructions, one per 16×16×16 tile, in the roofline shaders and the ET 4w and 8da4w rows | Hardware, ISA-verified. On this device the fp16 matrix path delivers about the same throughput as fp16 FMA; its benefit is operand reuse and fewer instructions, not a higher peak |
+| Xclipse (M51) | 1.0× (ratio only; internal device) | **4.2×** (ratio only) | ISA (2026-09-28; summary in the owner-held sarc-acl checkout, `openspec/changes/sarc-1.5-e2e-benchmark/contrib/m51/isa/SUMMARY.md`, further detail stays with the owner): fp16 (fp16 and fp32 accumulate) and int8 coopmat compile to native matrix instructions, one per 16×16×16 tile, in the roofline shaders and the ET 4w and 8da4w rows | Hardware, ISA-verified. On this device the fp16 matrix path delivers about the same throughput as fp16 FMA; its benefit is operand reuse and fewer instructions, not a higher peak |
 | Adreno 840 (S26) | 6.95 ÷ 7.76 = **0.9×** | 12.24 ÷ 7.05 = 1.7× | No ISA route works (2026-09-28, `contrib/s26/isa/`): the driver returns statistics but no internal representations. Every MMA is counted as ordinary ALU with no matrix instruction class: ≈128 ALU-32 instructions per 64×16×16 fp16 block (2 FMAs each) and ≈128 ALU-16 per 64×16×32 int8 block (one 4-way dot each) | **fp16: ALU lowering** (statistics, not disassembly). **int8: open.** The 1.7× may come from the dot roof shader issuing ≈2.3× more instructions per dot, not from matrix hardware |
 | Mali-G1-Ultra | unconfirmed | unconfirmed (~9.4 vs ~13.3) | none | Unknown: the old data violates physical limits (matrix < dot; cache-fed > register). Re-measure first |
 | Galaxy S24+ (Xclipse 940), Pixel 7a (Mali-G710), Ryzen 9600X iGPU | — | — | driver exposes no cooperative matrix | None available through Vulkan |
@@ -82,7 +82,7 @@ Notes:
   coopmat lowered to packed ALU code, which matches the S26's fp16 4w row having no
   releasable gain; its int8 path is unresolved.
 - **Limits of this evidence.** All ratios are short-run roofs, not sustained. The M51
-  ratios come from pinned-clock values; its absolute rates are not published.
+  ratios are short-run values; its absolute rates are not published.
 
 ## Keeping this page current
 

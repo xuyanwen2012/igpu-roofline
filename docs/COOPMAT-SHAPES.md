@@ -6,6 +6,7 @@ in [gpu-lab's matrix inventory](../../gpu-lab/docs/cooperative-matrices.md).
 These records also cover devices outside gpu-lab's selected fleet.
 A listed shape does not mean the GPU accelerates it; see
 [MATRIX-ACCELERATION.md](MATRIX-ACCELERATION.md).
+RX 7900 XTX and RX 7600 shapes are in [the extra-devices snapshot](reports/data/cooperative-matrices-extra-2026-09-28.json) and [the atlas](reports/wmma-shape-atlas.html).
 
 The suite only runs exact matches (M, N, K, A, B, C, Result, subgroup scope); see
 `matrix-coverage.json` in a results folder for reported shapes that have no compiled

@@ -1,3 +1,5 @@
+Covers Pixel 7a and S24+ only; other phones are in [MATRIX-ACCELERATION.md](MATRIX-ACCELERATION.md) and the contrib notes.
+
 # Profiling ExecuTorch Vulkan workloads on the phones
 
 How to get per-shader GPU time, Mali hardware counters and compiler evidence for a real ExecuTorch Llama
