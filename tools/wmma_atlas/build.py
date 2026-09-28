@@ -126,8 +126,8 @@ ACCEL = {
         "int8": (9.3, "yes", "Yes", "Nsight Tensor Active"),
     },
     "7900xtx": {
-        "fp16": (2.2, "yes", "Yes", "ratio; ISA pending"),
-        "int8": (2.1, "yes", "Yes", "ratio; ISA pending"),
+        "fp16": (2.2, "yes", "Yes", "ISA: v_wmma_f32/f16"),
+        "int8": (2.1, "yes", "Yes", "ISA: v_wmma_i32_iu8"),
     },
     "rx7600": {
         "fp16": (2.1, "yes", "Yes", "ratio (fp32 acc); ISA pending"),
