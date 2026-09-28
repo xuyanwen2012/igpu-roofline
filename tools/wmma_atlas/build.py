@@ -152,7 +152,7 @@ ACCEL = {
             1.0,
             "yes",
             "Yes, no extra peak",
-            "ISA: native matrix op; runs on the vector ALUs",
+            "ISA: native matrix op; ~FMA throughput",
         ),
         "int8": (4.2, "yes", "Yes", "ISA: native matrix op"),
     },
@@ -187,7 +187,7 @@ def accel_table():
         '<p class="notes">A listed shape only promises a correct result; a driver may lower it to ordinary FMA. '
         "The ratio divides the measured register-resident matrix roof by the scalar roof of the same input type "
         "(fp16 FMA, int8 dot) from confirmed short-run roofline campaigns. ISA or hardware-counter evidence outranks the ratio. "
-        "The Xclipse (M51) compiles fp16 and int8 coopmat to native matrix instructions; its fp16 ratio of 1.0× is because those instructions run on the vector ALUs, as on RDNA3. "
+        "The Xclipse (M51) compiles fp16 and int8 coopmat to native matrix instructions; on that device the fp16 matrix path delivers about the same throughput as fp16 FMA, so its benefit is operand reuse, not a higher peak. "
         "Method and sources: igpu-roofline/docs/MATRIX-ACCELERATION.md.</p>"
         '<div class="table-scroll"><table><thead><tr><th>GPU</th><th>fp16 matrix ÷ FMA</th><th>fp16 verdict</th>'
         "<th>int8 matrix ÷ dot</th><th>int8 verdict</th></tr></thead><tbody>"
