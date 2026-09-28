@@ -100,6 +100,86 @@ chart = chart.replace(
     '<svg role="img" aria-label="Fixed shape support across nine GPU models." ',
     1,
 )
+# Is the matrix path really hardware-accelerated? See docs/MATRIX-ACCELERATION.md.
+# Per GPU and input class: (ratio vs scalar roof or None, verdict class, label, evidence).
+ACCEL = {
+    "4070tis": {
+        "fp16": (4.1, "yes", "Yes", "Nsight Tensor Active"),
+        "int8": (4.7, "yes", "Yes", "Nsight Tensor Active"),
+    },
+    "b70-0": {
+        "fp16": (4.0, "yes", "Yes", "ratio; ISA pending"),
+        "int8": (7.1, "yes", "Yes", "ratio; ISA pending"),
+    },
+    "b580": {
+        "fp16": (4.1, "yes", "Yes", "ISA: dpas"),
+        "int8": (7.2, "yes", "Yes", "ISA: dpas"),
+    },
+    "780m": {
+        "fp16": (1.8, "yes", "Yes", "ISA: v_wmma_f32/f16"),
+        "int8": (1.2, "yes", "Yes, small gain", "ISA: v_wmma_i32_iu8"),
+    },
+    "orin-naughty": {
+        "fp16": (5.5, "yes", "Yes", "Nsight Tensor Active"),
+        "int8": (9.3, "yes", "Yes", "Nsight Tensor Active"),
+    },
+    "7900xtx": {
+        "fp16": (2.2, "yes", "Yes", "ratio; ISA pending"),
+        "int8": (2.1, "yes", "Yes", "ratio; ISA pending"),
+    },
+    "s26": {
+        "fp16": (0.9, "no", "No gain measured", "ratio below FMA; ISA pending"),
+        "int8": (1.7, "yes", "Yes", "ratio; ISA pending"),
+    },
+    "m51": {
+        "fp16": (
+            1.0,
+            "own",
+            "Hardware (owner); ratio unexplained",
+            "owner-confirmed; ISA pending",
+        ),
+        "int8": (4.2, "yes", "Yes", "ratio + owner-confirmed"),
+    },
+    "mali-g1": {
+        "fp16": (None, "unk", "Unknown", "data invalid; re-measure"),
+        "int8": (None, "unk", "Unknown", "data invalid; re-measure"),
+    },
+}
+TYPE_CLASS = {0: "fp16", 3: "int8", 7: "int8"}
+
+
+def badge(gid, a_type):
+    cls = TYPE_CLASS.get(a_type)
+    if cls is None:
+        return '<span class="acc acc-unk">Not measured</span>'
+    ratio, kind, label, ev = ACCEL[gid][cls]
+    r = f" · {ratio:.1f}×" if ratio is not None else ""
+    return f'<span class="acc acc-{kind}" title="{html.escape(ev)}">{html.escape(label)}{r}</span>'
+
+
+def accel_table():
+    body = ""
+    for gid, name in zip(ids, names):
+        cells = ""
+        for cls in ("fp16", "int8"):
+            ratio, kind, label, ev = ACCEL[gid][cls]
+            r = f"{ratio:.1f}×" if ratio is not None else "—"
+            cells += f'<td class="num">{r}</td><td><span class="acc acc-{kind}">{html.escape(label)}</span><br><small class="notes">{html.escape(ev)}</small></td>'
+        body += f'<tr><th scope="row">{name}</th>{cells}</tr>'
+    return (
+        '<h3 style="margin-top:34px">Is the matrix path really accelerated?</h3>'
+        '<p class="notes">A listed shape only promises a correct result; a driver may lower it to ordinary FMA. '
+        "The ratio divides the measured register-resident matrix roof by the scalar roof of the same input type "
+        "(fp16 FMA, int8 dot) from confirmed short-run roofline campaigns. ISA or hardware-counter evidence outranks the ratio. "
+        "The Xclipse (M51) has real matrix hardware per its owner; its fp16 ratio of 1.0× is unexplained. "
+        "Method and sources: igpu-roofline/docs/MATRIX-ACCELERATION.md.</p>"
+        '<div class="table-scroll"><table><thead><tr><th>GPU</th><th>fp16 matrix ÷ FMA</th><th>fp16 verdict</th>'
+        "<th>int8 matrix ÷ dot</th><th>int8 verdict</th></tr></thead><tbody>"
+        + body
+        + "</tbody></table></div>"
+    )
+
+
 rows = ""
 cards = ""
 for g, name in zip(gpus, names):
@@ -109,15 +189,16 @@ for g, name in zip(gpus, names):
         grouped.setdefault(key, []).append("×".join(str(r[k]) for k in ["m", "n", "k"]))
     for key, ss in grouped.items():
         a, b, c, res, sat = key
-        rows += f'<tr data-gpu="{g["id"]}"><th scope="row">{name}</th><td>{types[a]} × {types[b]}</td><td>{types[c]} → {types[res]}</td><td class="mono">{", ".join(ss)}</td><td>{"Yes" if sat else "No"}</td></tr>'
+        rows += f'<tr data-gpu="{g["id"]}"><th scope="row">{name}</th><td>{types[a]} × {types[b]}</td><td>{types[c]} → {types[res]}</td><td class="mono">{", ".join(ss)}</td><td>{"Yes" if sat else "No"}</td><td>{badge(g["id"], a)}</td></tr>'
     count = len({(r["m"], r["n"], r["k"]) for r in g["khr"]})
-    cards += f'<article class="gpu-card"><span class="eyebrow">{g["host"]}</span><h3>{name}</h3><p><b>{count}</b> fixed shapes · <b>{len(g["khr"])}</b> typed entries</p><small>{html.escape(g["driver"])} {html.escape(g["driver_info"])}<br>{("Vulkan " + g["api"]) if g["api"] else "from " + ("roofline campaign" if "campaign" in g.get("source", "") else "historical snapshot")}</small></article>'
+    cards += f'<article class="gpu-card"><span class="eyebrow">{g["host"]}</span><h3>{name}</h3><p><b>{count}</b> fixed shapes · <b>{len(g["khr"])}</b> typed entries</p><small>{html.escape(g["driver"])} {html.escape(g["driver_info"])}<br>{("Vulkan " + g["api"]) if g["api"] else "from " + ("roofline campaign" if "campaign" in g.get("source", "") else "historical snapshot")}</small><br><span class="acc acc-{ACCEL[g["id"]]["fp16"][1]}">fp16: {html.escape(ACCEL[g["id"]]["fp16"][2])}</span> <span class="acc acc-{ACCEL[g["id"]]["int8"][1]}">int8: {html.escape(ACCEL[g["id"]]["int8"][2])}</span></article>'
 sha = hashlib.sha256(src.read_bytes()).hexdigest()
 template = """<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Matrix Geometry — Homelab WMMA Atlas</title>
 <style>
 :root{--paper:#fbfaf6;--ink:#192f35;--muted:#58666b;--green:#17685f;--line:#d6dcd6;--orange:#b95e30;--blue:#3b6591}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 system-ui,-apple-system,sans-serif}main{max-width:1240px;margin:auto;padding:48px 48px 32px}h1,h2,h3,p{margin-top:0}h1{font-family:Georgia,serif;font-size:clamp(42px,6vw,78px);font-weight:400;line-height:1.06;letter-spacing:-2px;margin-bottom:24px}h2{font:400 34px/1.2 Georgia,serif;margin-bottom:16px}h3{font-size:17px;line-height:1.3}.eyebrow{font-size:11px;letter-spacing:1.7px;text-transform:uppercase;font-weight:700;color:var(--green)}.mast{display:flex;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:15px;margin-bottom:40px}.lead{max-width:810px;font-size:20px;color:var(--muted)}.tag{display:inline-block;border:1px solid var(--line);padding:3px 10px;font-size:12px;margin:0 5px 8px 0;border-radius:3px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin:32px 0 44px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0}.stat b{display:block;font:42px Georgia,serif}.stat span{font-size:13px;color:var(--muted)}section{padding:30px 0;border-top:1px solid var(--line)}.section-top{display:grid;grid-template-columns:60px 1fr}.section-no{font:italic 24px Georgia,serif;color:var(--green)}.caption{font-size:13px;color:var(--muted);margin:12px 0 24px}.figure{margin:24px 0}.figure svg{display:block;width:100%;height:auto}.callout{border-left:3px solid var(--green);padding:14px 20px;background:#edf1e9}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px}.gpu-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:25px 0}.gpu-card{border:1px solid var(--line);padding:16px}.gpu-card .eyebrow{font-size:9px;letter-spacing:.6px}.gpu-card small{font-size:11px;color:var(--muted)}.gpu-card p{font-size:13px}.controls{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}.controls label{font-size:12px;font-weight:600}select,button,input{font:inherit;padding:9px 12px;border:1px solid #adb9b5;border-radius:4px;background:var(--paper);color:var(--ink)}select{display:block;max-width:100%}button{cursor:pointer}button:hover{background:#edf1e9}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:3px}.explorer{padding:24px;border:1px solid var(--line);background:#fffefa}.explorer svg{width:100%;height:auto}.metrics{display:flex;gap:30px;flex-wrap:wrap;font-size:13px}.metrics b{font-size:20px;display:block}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;margin:18px 0}th{text-align:left}td,th{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}thead{background:#e8eee8}tbody tr:nth-child(even){background:#f2f3ed}.mono{font-family:ui-monospace,monospace;font-size:12px}.legend{display:flex;gap:20px;font-size:13px}.dot{display:inline-block;width:11px;height:11px;margin-right:6px}.notes{font-size:13px;color:var(--muted)}a{color:var(--green)}footer{border-top:2px solid var(--ink);padding-top:20px;margin-top:24px}.sources{overflow-wrap:anywhere}details summary{cursor:pointer;font-weight:600}.print-button{font-size:12px}.interactive{display:none}.js .interactive{display:block}#empty{display:none}.flex-rule{font:25px/1.5 Georgia,serif;padding:20px;background:#edf1e9} @media(max-width:800px){main{padding:24px 18px}.stats{grid-template-columns:repeat(2,1fr)}.gpu-grid{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}.section-top{grid-template-columns:35px 1fr}.mast{gap:15px}.lead{font-size:17px}.explorer{padding:12px}h2{font-size:28px}}
 @media print{@page{size:A4 landscape;margin:14mm}body{font-size:11px;print-color-adjust:exact;-webkit-print-color-adjust:exact}main{max-width:none;padding:0}h1{font-size:48px}h2{font-size:25px}.print-button,.controls,.interactive,details{display:none!important}.stats{margin:20px 0}.gpu-grid{grid-template-columns:repeat(5,1fr)}section{break-inside:auto}figure,.callout,.gpu-grid,thead,tr{break-inside:avoid}thead{display:table-header-group}.table-scroll{overflow:visible}table{font-size:10px}td,th{padding:6px 8px}tr[hidden]{display:table-row!important}.section-top{break-after:avoid}.caption{font-size:10px}a{color:inherit}}
+.acc{display:inline-block;padding:2px 8px;border-radius:3px;font-size:12px;font-weight:600;margin-top:4px}.acc-yes{background:#dcebe4;color:#125249}.acc-own{background:#e1e8f1;color:#2f5178}.acc-no{background:#f6e3d8;color:#8d3f19}.acc-unk{background:#ecebe6;color:#4d585c}td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 </style></head><body><main>
 <header><div class="mast"><span class="eyebrow">Homelab / Compute Research</span><span class="eyebrow">Capability atlas · 28 September 2026</span><button class="print-button" onclick="window.print()">Print / Save PDF</button></div>
 <span class="eyebrow">Vulkan cooperative matrices</span><h1>Small tiles.<br>Many ways to multiply.</h1><p class="lead">A visual atlas of WMMA-style matrix shapes across every GPU we tune for: NVIDIA, Intel and AMD desktop and edge GPUs, plus the Adreno, Xclipse and Mali phone GPUs. Read the geometry first, then the supported arithmetic.</p><span class="tag">Installed-driver query</span><span class="tag">Nine GPU models</span><span class="tag">No performance ranking</span>
@@ -129,9 +210,9 @@ template = """<!doctype html>
 <section><div class="section-top"><span class="section-no">02</span><div><h2>The fixed-shape landscape</h2><p>Each filled cell means at least one supported arithmetic combination uses that geometry. All fixed entries here have subgroup scope.</p></div></div><figure class="figure">__CHART__<figcaption class="caption">Figure 2. Exact fixed shapes returned by VK_KHR_cooperative_matrix. A dash means that exact shape was absent from the fixed list; NVIDIA flexible dimensions can permit additional shapes. Precision restrictions are listed in Section 04.</figcaption></figure>
 <div class="twocol"><p><b>Intel uses an 8×16 output tile.</b> FP16 and BF16 use K=16; integer inputs use K=32. B70 and B580 return the same six typed entries.</p><p><b>Radeon uses a 16×16 output tile.</b> The 780M and RX 7900 XTX both expose only 16×16×16, with multiple signedness, accumulator and saturation combinations. The Xclipse (M51) exposes the same single shape.</p></div>
 <div class="twocol"><p><b>Adreno 840 always uses M = 64.</b> N can be 16, 32 or 64; FP16 uses K=16 with <b>FP16 accumulation only</b> (no FP16 → FP32), integer inputs use K=32 and FP32 uses K=8.</p><p><b>Mali-G1 has the smallest tiles.</b> 4×8×8 and 16×32×32 for FP16, 4×16×16 for INT8, plus FP32 4×4×4 and 16×16×16.</p></div>
-<div class="gpu-grid">__CARDS__</div><p class="notes">The first five GPUs come from gpu-lab's installed-driver query of 26 September 2026. The RX 7900 XTX and Adreno 840 come from their agents' roofline campaigns of 27 September 2026; the Xclipse (M51) and Mali-G1 come from historical snapshots in <code>docs/COOPMAT-SHAPES.md</code> and still need a re-probe. The M51 is an internal device: its driver build is not published, and its subgroup size was not recorded. Two Arc Pro B70 cards and two Jetson Orin Nano devices are documented in the homelab; support on the second B70 and on <code>duck-stable</code> is inferred from matching hardware.</p></section>
+<div class="gpu-grid">__CARDS__</div><p class="notes">The first five GPUs come from gpu-lab's installed-driver query of 26 September 2026. The RX 7900 XTX and Adreno 840 come from their agents' roofline campaigns of 27 September 2026; the Xclipse (M51) and Mali-G1 come from historical snapshots in <code>docs/COOPMAT-SHAPES.md</code> and still need a re-probe. The M51 is an internal device: its driver build is not published, and its subgroup size was not recorded. Two Arc Pro B70 cards and two Jetson Orin Nano devices are documented in the homelab; support on the second B70 and on <code>duck-stable</code> is inferred from matching hardware.</p>__ACCEL__</section>
 <section class="interactive"><div class="section-top"><span class="section-no">03</span><div><h2>Explore one tile at a time</h2><p>Choose a queried GPU and an exact typed entry. The diagram keeps a common scale so longer K dimensions are immediately visible.</p></div></div><div class="explorer"><div class="controls"><label>GPU<select id="gpu"></select></label><label>Arithmetic and shape<select id="entry"></select></label></div><div id="diagram" aria-live="polite"></div><div id="metrics" class="metrics"></div></div></section>
-<section><div class="section-top"><span class="section-no">04</span><div><h2>The complete fixed-shape catalogue</h2><p>Input types are listed separately for A and B. C is the accumulator; D is the result. Entries that differ in saturation remain separate.</p></div></div><div class="controls interactive"><label>Show GPU<select id="filter"><option value="all">All nine GPUs</option>__OPTIONS__</select></label></div><div class="table-scroll"><table id="fixed"><caption class="caption" style="text-align:left">Table 1. All __NE__ KHR typed entries, grouped only when their arithmetic and saturation match.</caption><thead><tr><th>GPU</th><th>A × B</th><th>C → D</th><th>M×N×K</th><th>Saturating</th></tr></thead><tbody>__ROWS__</tbody></table></div><p class="notes">The 780M, RX 7900 XTX and Xclipse (M51) allow INT8/UINT8 input pairings; see each row for the accumulator types. The 780M allows every INT8/UINT8 input pairing, with either INT32 or UINT32 output. Only its INT32 variants additionally offer saturating accumulation. The RX 7900 XTX, Adreno 840 and Xclipse (M51) also report saturating variants, as listed. The legacy NVIDIA NV query adds no fixed shapes and omits BF16 and FP8 entries returned by KHR.</p></section>
+<section><div class="section-top"><span class="section-no">04</span><div><h2>The complete fixed-shape catalogue</h2><p>Input types are listed separately for A and B. C is the accumulator; D is the result. Entries that differ in saturation remain separate.</p></div></div><div class="controls interactive"><label>Show GPU<select id="filter"><option value="all">All nine GPUs</option>__OPTIONS__</select></label></div><div class="table-scroll"><table id="fixed"><caption class="caption" style="text-align:left">Table 1. All __NE__ KHR typed entries, grouped only when their arithmetic and saturation match.</caption><thead><tr><th>GPU</th><th>A × B</th><th>C → D</th><th>M×N×K</th><th>Saturating</th><th>Hardware acceleration</th></tr></thead><tbody>__ROWS__</tbody></table></div><p class="notes">The 780M, RX 7900 XTX and Xclipse (M51) allow INT8/UINT8 input pairings; see each row for the accumulator types. The 780M allows every INT8/UINT8 input pairing, with either INT32 or UINT32 output. Only its INT32 variants additionally offer saturating accumulation. The RX 7900 XTX, Adreno 840 and Xclipse (M51) also report saturating variants, as listed. The legacy NVIDIA NV query adds no fixed shapes and omits BF16 and FP8 entries returned by KHR.</p></section>
 <section><div class="section-top"><span class="section-no">05</span><div><h2>NVIDIA: a family of flexible tiles</h2><p>The queried RTX 4070 Ti SUPER and Orin Nano also expose flexible dimensions and workgroup scope through VK_NV_cooperative_matrix2.</p></div></div><div class="flex-rule">(M, N, K) = (a·g<sub>M</sub>, b·g<sub>N</sub>, c·g<sub>K</sub>)<br><small style="font:14px system-ui">a, b and c are independent positive integers; each resulting dimension must be ≤ 1024.</small></div>
 <div class="table-scroll"><table><caption class="caption" style="text-align:left">Table 2. Flexible-dimension granularities, not an exhaustive fixed-shape list.</caption><thead><tr><th>Scope</th><th>Workgroup invocations</th><th>FP16 / BF16 granularity</th><th>INT8 / UINT8 / FP8 granularity</th></tr></thead><tbody><tr><td>Subgroup</td><td>Not specified</td><td>16×16×16</td><td>16×16×32</td></tr><tr><td>Workgroup</td><td>32 or 64</td><td>16×16×16</td><td>16×16×32</td></tr><tr><td>Workgroup</td><td>128</td><td>32×16×16</td><td>32×16×32</td></tr><tr><td>Workgroup</td><td>256</td><td>32×32×16</td><td>32×32×32</td></tr></tbody></table></div>
 <p><b>Example:</b> subgroup FP16 supports a 32×64×16 API tile because all three dimensions are multiples of 16. A 24×64×16 tile fails the M granularity rule.</p><p class="notes">At every row: FP16 → FP16/FP32, BF16 → FP32, INT8 → INT32 and UINT8 → UINT32. FP8 E4M3/E5M2 → FP16/FP32 is RTX-only and uses the integer column's granularity. All flexible entries are non-saturating. Shader resource limits still apply; satisfying these dimension rules does not guarantee a particular shader will compile or execute. Intel advertises the NV2 extension but returns both flexible-dimension and workgroup-scope features as false.</p></section>
@@ -198,6 +279,7 @@ for k, v in {
 }.items():
     template = template.replace("__" + k + "__", v)
 print("entries", sum(len(g["khr"]) for g in gpus), "shapes", len(shapes))
+template = template.replace("__ACCEL__", accel_table())
 out = Path("docs/reports/wmma-shape-atlas.html")
 out.write_text(template)
 print(out, out.stat().st_size)
