@@ -4,6 +4,8 @@ Historical results from `vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR`, wit
 driver and query dates below. Current fleet queries and refresh instructions live
 in [gpu-lab's matrix inventory](../../gpu-lab/docs/cooperative-matrices.md).
 These records also cover devices outside gpu-lab's selected fleet.
+A listed shape does not mean the GPU accelerates it; see
+[MATRIX-ACCELERATION.md](MATRIX-ACCELERATION.md).
 
 The suite only runs exact matches (M, N, K, A, B, C, Result, subgroup scope); see
 `matrix-coverage.json` in a results folder for reported shapes that have no compiled

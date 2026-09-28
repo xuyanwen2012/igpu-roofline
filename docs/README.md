@@ -23,6 +23,8 @@ The sibling gpu-lab repository owns the current registry and capability inventor
   dispatch, memory, numeric and timing properties; refresh with `./gpu caps` there.
 - [Cooperative matrices](../../gpu-lab/docs/cooperative-matrices.md): shapes,
   types, scope and flexible-dimension support.
+- [Is cooperative matrix hardware-accelerated?](MATRIX-ACCELERATION.md): how to tell
+  real matrix hardware from API-only support, and the verdict for each GPU.
 - [Android phones](../../gpu-lab/docs/android-phones.md): current phone access,
   root and clock-control procedures.
 
