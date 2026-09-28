@@ -108,8 +108,8 @@ ACCEL = {
         "int8": (4.7, "yes", "Yes", "Nsight Tensor Active"),
     },
     "b70-0": {
-        "fp16": (4.0, "yes", "Yes", "ratio; ISA pending"),
-        "int8": (7.1, "yes", "Yes", "ratio; ISA pending"),
+        "fp16": (4.0, "yes", "Yes", "ISA: dpas"),
+        "int8": (7.1, "yes", "Yes", "ISA: dpas"),
     },
     "b580": {
         "fp16": (4.1, "yes", "Yes", "ISA: dpas"),

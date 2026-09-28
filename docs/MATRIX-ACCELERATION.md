@@ -18,7 +18,7 @@ Use the strongest evidence available, in this order.
    | Vendor | Matrix instruction / counter | Route |
    |---|---|---|
    | AMD RDNA3 | `v_wmma_f16_16x16x16_f16`, `v_wmma_f32_16x16x16_f16`, `v_wmma_i32_16x16x16_iu8` | RADV shader dump or `rga` ([TOOLING.md](TOOLING.md)) |
-   | Intel Xe2 | `dpas`, `dpas.8x8` | Mesa ANV `INTEL_DEBUG=cs` ([XE2-WMMA-LESSONS.md](XE2-WMMA-LESSONS.md)) |
+   | Intel Xe2 | native `dpas.8x8` (count these; `@dpas_intel` lines are NIR intrinsics, not instructions) | Mesa ANV `MESA_SHADER_CACHE_DISABLE=true INTEL_DEBUG=cs` ([XE2-WMMA-LESSONS.md](XE2-WMMA-LESSONS.md)) |
    | NVIDIA | Nsight `Tensor Active` (SASS `HMMA`/`IMMA`) | `nsys --gpu-metrics-set` ([4070TI-WMMA-LESSONS.md](4070TI-WMMA-LESSONS.md)) |
    | Arm Mali | arithmetic unit split in `malioc` reports | `malioc` |
    | Qualcomm Adreno, Samsung Xclipse | no recorded route yet | ask the device owner |
@@ -62,8 +62,8 @@ and [FLEET.md](FLEET.md) for the M51.
 |---|---|---|---|---|
 | Jetson Orin Nano | 9.70 ÷ 1.77 = **5.5×** | 19.52 ÷ 2.09 = **9.3×** | Nsight Tensor Active 9.9 → 20.9 % on the 8da4w kernel ([JETSON-WMMA-LESSONS.md](JETSON-WMMA-LESSONS.md)) | Hardware (Tensor Cores), counter-verified |
 | RTX 4070 Ti SUPER | 183.7 ÷ 45.0 = **4.1×** | 369.2 ÷ 78.1 = **4.7×** | Nsight Tensor Active 70–76 % on 4w large shapes ([4070TI-WMMA-LESSONS.md](4070TI-WMMA-LESSONS.md)) | Hardware (Tensor Cores), counter-verified |
-| Arc B580 | 111.7 ÷ 27.3 = **4.1×** | 231.4 ÷ 32.1 = **7.2×** | `dpas` 128 + `dpas.8x8` 64 (4w), `dpas` 64 + `dpas.8x8` 32 (8da4w) in `roofline-et-study/isa/b580/` | Hardware (XMX), ISA-verified |
-| Arc Pro B70 | 173.3 ÷ 42.9 = **4.0×** | 359.9 ÷ 50.4 = **7.1×** | ISA capture requested (`roofline-et-study/isa/b70/`) | Hardware (XMX) by ratio; same Xe2 architecture as the B580 |
+| Arc B580 | 111.7 ÷ 27.3 = **4.1×** | 231.4 ÷ 32.1 = **7.2×** | native `dpas.8x8`: 64 (4w, fp16) and 32 (8da4w, int8) in `roofline-et-study/isa/b580/` (older SIMD32 tiles) | Hardware (XMX), ISA-verified |
+| Arc Pro B70 | 173.3 ÷ 42.9 = **4.0×** | 359.9 ÷ 50.4 = **7.1×** | native `dpas.8x8`: 16 per compile, 64 per dump, in both the 4w (fp16 → fp16) and 8da4w (s8 × s8 → s32) winners; Mesa 26.2.3, 2026-09-28 (`roofline-et-study/isa/b70/`) | Hardware (XMX), ISA-verified |
 | RX 7900 XTX | 136.4 ÷ 63.4 = **2.2×** | 142.6 ÷ 69.2 = **2.1×** | ISA check requested from the device agent | Accelerated by ratio (RDNA3 WMMA) |
 | Radeon 780M | 14.77 ÷ 8.14 = **1.8×** (fp32 acc) | 14.39 ÷ 11.72 = 1.2× | `v_wmma_f16/f32_16x16x16_f16` and `v_wmma_i32_16x16x16_iu8` in `roofline-et-study/remote/rocky-ryzen/.../isa/780m/` | Hardware (RDNA3 WMMA), ISA-verified |
 | Xclipse (M51) | 7.77 ÷ 7.70 = 1.0× | 15.09 ÷ 3.56 = **4.2×** | **Owner-confirmed real matrix hardware**; ISA check requested | Hardware. The fp16 ratio of 1.0× is unexplained (driver lowering, configuration or measurement), not evidence of emulation |
