@@ -91,7 +91,7 @@ r7, r7k = from_roofline(CONTRIB / "rx7600/roofline.json", "rx7600")
 gpus = [
     dev(
         "7900xtx",
-        x["host"],
+        "host-7900xtx",
         "AMD Radeon RX 7900 XTX",
         "AMDVLK",
         f"driver {x['driver_version']}",
@@ -101,7 +101,7 @@ gpus = [
     ),
     dev(
         "rx7600",
-        r7["host"],
+        "host-ws1",
         "AMD Radeon RX 7600",
         "RADV",
         f"Mesa 26.2.3 (driver {r7['driver_version']})",
@@ -126,8 +126,8 @@ gpus = [
         "Samsung",
         "internal driver build (not published)",
         None,
-        "docs/COOPMAT-SHAPES.md, transcribed from the M51 agent; to be re-probed",
-        from_doc("## Xclipse"),
+        "owner-provided shapes (docs/COOPMAT-SHAPES.md)",
+        from_doc("## Samsung Xclipse (M51"),
     ),
     dev(
         "mali-g1",

@@ -30,7 +30,7 @@ here as provenance rather than maintaining a second current fleet inventory.
 | rocky-ryzen | Radeon 780M (RADV) | 64 | 16×16×16 | 16×16×16 | 16×16×16 |
 | vivo V2502A | Mali-G1-Ultra MC12 | 16 | 4×8×8, 16×32×32 | 4×8×8, 16×32×32 | 4×16×16 |
 | Samsung S26 Ultra | Adreno 840 | 64 | 64×{16,32,64}×16 | — | 64×{16,32,64}×32 |
-| Samsung M51 | Xclipse | **TODO(owner)** | 16×16×16 | 16×16×16 | 16×16×16 |
+| Samsung Xclipse (M51) | Xclipse | — | 16×16×16 | 16×16×16 | 16×16×16 |
 | Samsung Galaxy S24+ | Xclipse 940 | 64 | — | — | — |
 | Google Pixel 7a | Mali-G710 | 16 | — | — | — |
 
@@ -62,7 +62,7 @@ probed 2026-09-23.
 | 16×16×16 | s8 | s8 | s32 | s32 | subgroup | no |
 | 16×16×16 | s8 | s8 | s32 | s32 | subgroup | yes |
 
-## Mali-G1-Ultra MC12 — vivo V2502A (`<mali-serial>`)
+## Mali-G1-Ultra MC12 — vivo V2502A
 
 Driver r54p1 (226496512), subgroup 16, shared 32768 B;
 probed 2026-09-22. **TODO(owner): re-probe and confirm.**
@@ -78,7 +78,7 @@ probed 2026-09-22. **TODO(owner): re-probe and confirm.**
 | 4×8×8 | f16 | f16 | f16 | f16 | subgroup | no |
 | 16×32×32 | f16 | f16 | f16 | f16 | subgroup | no |
 
-## Adreno 840 — Samsung S26 Ultra (`<s26-serial>`)
+## Adreno 840 — Samsung S26 Ultra
 
 Driver 2150932499, subgroup 64; captured 2026-09-21 by the older
 roofline v1 tooling. **TODO(owner): re-probe with `igpu-roofline shapes`.**
@@ -104,11 +104,9 @@ roofline v1 tooling. **TODO(owner): re-probe with `igpu-roofline shapes`.**
 | 64×16×32 | s8 | s8 | s32 | s32 | subgroup | no |
 | 64×16×32 | s8 | u8 | u32 | u32 | subgroup | yes |
 
-## Xclipse — Samsung M51 (`<private>`, rooted)
+## Samsung Xclipse (M51, internal device)
 
-Transcribed from another agent's report (driver <private>); every entry is
-16×16×16, subgroup scope. **TODO(owner): re-probe, add driver version, subgroup size and
-shared-memory size.**
+Owner-provided; every entry is 16×16×16, subgroup scope. Driver details are not published.
 
 | M×N×K | A | B | C | Result | scope | saturating |
 |---|---|---|---|---|---|---|

@@ -126,22 +126,16 @@ reusing a procedure. Tool installation/profiling notes are in
 - Earlier (v1) data: the FP16 coopmat roof came out below FP16 FMA and the int8 dot
   roof below a real kernel — both measurement artefacts; do not reuse v1 numbers.
 - Historical runs showed stepwise throttling after 40–90 s; GPU clocks were
-  readable through kgsl, with driver statistics but no recorded offline ISA route.
+  readable through kgsl. No ISA route: the driver returns pipeline statistics only
+  (the `pipelineExecutableInfo` feature must be enabled); see `docs/MATRIX-ACCELERATION.md`.
 - **TODO(owner)**: cooling and whether pacing thresholds should differ from Mali's.
 
-### Xclipse (Samsung M51, internal device)
+### Samsung Xclipse (M51, internal device)
 
-- Earlier agent procedure (verify with the owner before reuse): check the driver hash
-  against the known-good one (`<private>`, <private>),
-  pin clocks, adjust the profiler configuration, run, then
-  confirm driver hash and pins unchanged and restore the profiler configuration.
-- Only 16×16×16 coopmat shapes (fp16, fp16→fp32, int8 s8×s8→s32; the int8 shape exists
-  in the catalogue since #2).
-- Historical runs used GPU <private>; label those
-  results as peak-clock values and verify the clock state for each new campaign.
-- **TODO(owner)**: how to dump pipelines / get driver ISA on this device, where the
-  tools live, and how to feed them into `pipeline-inspection/` or `offline-isa/`.
-- **TODO(owner)**: which host drives it and where results must be stored.
+- Internal device: publish only relative results (speedups, ratios, whether kernels emit
+  matrix instructions). The device procedure, identifiers and clock settings are in the
+  owner's private notes, not in this repository; ask the owner before running on it.
+- Only 16×16×16 coopmat shapes (fp16, fp16→fp32, int8).
 
 ### Radeon 780M (rocky-ryzen)
 
