@@ -74,9 +74,9 @@ RenderDoc, clangd, vendor profilers, Perfetto on the phones):
 
 | device | GPU | access | root | clocks | ISA route | known issues |
 |---|---|---|---|---|---|---|
-| vivo V2502A `<mali-serial>` | Mali-G1-Ultra MC12 (MT6993), r54p1 | adb on the owner's Mac | no | DVFS, not readable | `malioc` if installed (not yet) | latched ~40 % slow state (below) |
-| Samsung S26 Ultra `<s26-serial>` | Adreno 840 | adb on the owner's Mac | no | DVFS, kgsl readable | none offline; driver stats only | stepwise throttling after 40–90 s |
-| Samsung M51 `<private>` | Xclipse (<private>) | host `<private>` | **yes** | pinned: GPU <private> | pipeline dump + ISA: **TODO(owner)** | driver/profiler state checks (below) |
+| vivo V2502A | Mali-G1-Ultra MC12 (MT6993), r54p1 | adb on the owner's Mac | no | DVFS, not readable | `malioc` if installed (not yet) | latched ~40 % slow state (below) |
+| Samsung S26 Ultra | Adreno 840 | adb on the owner's Mac | no | DVFS, kgsl readable | none offline; driver stats only | stepwise throttling after 40–90 s |
+| Samsung Xclipse (M51), internal device | Xclipse | private (owner) | — | not published | owner-side ISA check; summary only | publish relative results only |
 | Samsung Galaxy S24+ `R5CY21Y3VEV` | Xclipse 940 (Exynos 2400), Samsung 24.0.534 | adb on `rocky-ryzen` | no | DVFS, `/sys/kernel/gpu` readable | **TODO(owner)** | no WMMA (coopmat not exposed); no run yet |
 | Google Pixel 7a `3A021JEHN02756` | Mali-G710 (Tensor G2), r54p3 | adb on `rocky-ryzen` | no | DVFS | `malioc` (in `~/tools/` on rocky-ryzen) | no WMMA (coopmat not exposed); no run with current `main` |
 | host `rocky-ryzen` (Minisforum UM790 Pro) | Radeon 780M, RADV (Mesa 25.2.7) | `ssh doremy@rocky-ryzen`, `run --local` | no (no sudo) | DVFS, `pp_dpm_*` readable | driver-returned ISA (RADV `Assembly`) | shares DRAM with the CPU |
@@ -101,17 +101,11 @@ RenderDoc, clangd, vendor profilers, Perfetto on the phones):
   roof below a real kernel — both measurement artefacts; do not reuse v1 numbers.
 - **TODO(owner)**: cooling and whether pacing thresholds should differ from Mali's.
 
-### Xclipse (Samsung M51, internal device)
-- Earlier agent procedure (verify with the owner before reuse): check the driver hash
-  against the known-good one (`<private>`, <private>),
-  pin clocks, adjust the profiler configuration, run, then
-  confirm driver hash and pins unchanged and restore the profiler configuration.
-- Only 16×16×16 coopmat shapes (fp16, fp16→fp32, int8 s8×s8→s32; the int8 shape exists
-  in the catalogue since #2).
-- Clocks pinned at the max OPP, so results are peak-clock values; say so in reports.
-- **TODO(owner)**: how to dump pipelines / get driver ISA on this device, where the
-  tools live, and how to feed them into `pipeline-inspection/` or `offline-isa/`.
-- **TODO(owner)**: which host drives it and where results must be stored.
+### Samsung Xclipse (M51, internal device)
+- Internal device: publish only relative results (speedups, ratios, whether kernels emit
+  matrix instructions). The device procedure, identifiers and clock settings are in the
+  owner's private notes, not in this repository; ask the owner before running on it.
+- Only 16×16×16 coopmat shapes (fp16, fp16→fp32, int8).
 
 ### Radeon 780M (rocky-ryzen)
 - Everything lives under `~/igpu-roofline/`; read `~/igpu-roofline/CLAUDE.md` first (host

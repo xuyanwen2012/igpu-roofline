@@ -9,9 +9,9 @@ which roofs it can have. Per-device measurement notes and known issues are in
 
 | device | serial | SoC | GPU | driver | Vulkan | subgroup | WMMA | root | connected to |
 |---|---|---|---|---|---|---|---|---|---|
-| vivo V2502A | `<mali-serial>` | MediaTek MT6993 | Mali-G1-Ultra MC12 | Arm r54p1 | 1.3+ | 16 | **yes** | no | owner's Mac |
-| Samsung S26 Ultra | `<s26-serial>` | Snapdragon (Adreno 840) | Adreno 840 | 2150932499 | 1.3+ | 64 | **yes** | no | owner's Mac |
-| Samsung M51 | `<private>` | Exynos <private> | Xclipse | <private> | 1.3+ | **TODO(owner)** | **yes** | **yes** | `<private>` |
+| vivo V2502A | (private) | MediaTek MT6993 | Mali-G1-Ultra MC12 | Arm r54p1 | 1.3+ | 16 | **yes** | no | owner's Mac |
+| Samsung S26 Ultra | (private) | Snapdragon (Adreno 840) | Adreno 840 | 2150932499 | 1.3+ | 64 | **yes** | no | owner's Mac |
+| Samsung Xclipse (M51) | (internal device) | (not published) | Xclipse | (not published) | 1.3+ | — | **yes** | — | (private) |
 | Samsung Galaxy S24+ (SM-S926B) | `R5CY21Y3VEV` | Exynos 2400 (s5e9945) | Xclipse 940 | Samsung 24.0.534 (1900168dcb) | 1.3.279 | 64 (32–64) | **no** | no | `rocky-ryzen` (USB) |
 | Google Pixel 7a | `3A021JEHN02756` | Tensor G2 (gs201) | Mali-G710 | Arm r54p3 | 1.4.343 | 16 | **no** | no | `rocky-ryzen` (USB) |
 | Minisforum UM790 Pro | host `rocky-ryzen` | Ryzen 9 7940HS | Radeon 780M (RDNA3) | RADV, Mesa 25.2.7 | 1.4.318 | 64 | **yes** | no (no sudo) | local (`run --local`) |
@@ -31,7 +31,7 @@ saturating accumulation) are in [COOPMAT-SHAPES.md](COOPMAT-SHAPES.md).
 | rocky-ryzen | Radeon 780M (RADV) | 16×16×16 | 16×16×16 | 16×16×16 | 2026-09-23 |
 | vivo V2502A | Mali-G1-Ultra MC12 | 4×8×8, 16×32×32 | 4×8×8, 16×32×32 | 4×16×16 | 2026-09-22 |
 | Samsung S26 Ultra | Adreno 840 | 64×{16,32,64}×16 | — | 64×{16,32,64}×32 | 2026-09-21 (v1 tooling) |
-| Samsung M51 | Xclipse | 16×16×16 | 16×16×16 | 16×16×16 | transcribed, **TODO(owner)** |
+| Samsung Xclipse (M51) | Xclipse | 16×16×16 | 16×16×16 | 16×16×16 | owner-provided |
 | Samsung Galaxy S24+ | Xclipse 940 | — | — | — | 2026-09-23 (not exposed) |
 | Google Pixel 7a | Mali-G710 | — | — | — | 2026-09-23 (not exposed) |
 
@@ -71,8 +71,7 @@ that neither driver exposes any `cooperative_matrix` extension. Both expose
   100663830), Vulkan 1.3.279, 154 device extensions.
 - Subgroup 64 by default; subgroup size control allows 32–64 in compute. Shared memory
   32768 B.
-- The Xclipse in the M51 exposes 16×16×16 WMMA, but this Xclipse 940 driver does not,
-  even though both GPUs are RDNA3-based.
+- The Xclipse in the M51 exposes 16×16×16 WMMA, but this Xclipse 940 driver does not.
 - The GPU clock is readable without root via `/sys/kernel/gpu/` (`gpu_clock`,
   `gpu_max_clock` = 1095000 kHz).
 
