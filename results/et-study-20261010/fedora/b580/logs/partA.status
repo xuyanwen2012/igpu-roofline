@@ -1,0 +1,4 @@
+2026-10-09T17:49:46Z preflight busy_pct=0 threshold=50
+clock policy as found: min 1200 max 2850 rp0 2850 rpn 400 MHz, power_profile [base]    power_saving
+2026-10-09T17:49:46Z RUNNING pid 1343775
+2026-10-09T18:13:48Z DONE rc=0 {  "phase": "finished",  "plan": "fast",  "focused": false,  "utc": "2026-10-09T18:13:38.426089+00:00",  "elapsed_hours": 0.4}
