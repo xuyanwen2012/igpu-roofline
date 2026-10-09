@@ -1,0 +1,19 @@
+isa/raw/roofline/matrix_fp16_8x16x16_c8.compute.GEN_Assembly.txt
+(loop lines 55-71 of the listing)
+L0:
+        cmp (32)       (ge)f0.0   null          r81               r2<0>           {I@2}
+(f0.0)  break (32)                            jip:L1              uip:L1
+(W)     sync.nop (1)                            null                              {$0.dst}
+(W)     sync.nop (1)                            null                              {I@3}
+(W)     dpas.8x8 (16)             r15<0>:hf     r15<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$9}
+(W)     dpas.8x8 (16)             r19<0>:hf     r19<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$10}
+(W)     dpas.8x8 (16)             r23<0>:hf     r23<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$11}
+(W)     dpas.8x8 (16)             r27<0>:hf     r27<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$12}
+(W)     dpas.8x8 (16)             r31<0>:hf     r31<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$13}
+(W)     dpas.8x8 (16)             r35<0>:hf     r35<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$14}
+(W)     dpas.8x8 (16)             r39<0>:hf     r39<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$15}
+(W)     dpas.8x8 (16)             r43<0>:hf     r43<0;0,0>:hf     r3<0;0,0>:hf      r11<0;0,0>:hf {$0}
+        add (32)                  r81:d         r81:d             1:d
+
+L1:
+        while (32)                            L0

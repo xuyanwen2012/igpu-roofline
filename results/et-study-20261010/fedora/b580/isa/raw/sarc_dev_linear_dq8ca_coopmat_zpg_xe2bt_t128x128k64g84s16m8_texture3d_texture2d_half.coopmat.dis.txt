@@ -1,0 +1,19 @@
+; Version: 1.3
+       %uint = OpTypeInt 32 0
+        %int = OpTypeInt 32 1
+      %float = OpTypeFloat 32
+        %113 = OpTypeCooperativeMatrixKHR %float %uint_3 %uint_8 %uint_16 %uint_2
+        %124 = OpTypeCooperativeMatrixKHR %int %uint_3 %uint_8 %uint_16 %uint_2
+       %half = OpTypeFloat 16
+       %char = OpTypeInt 8 1
+        %789 = OpTypeCooperativeMatrixKHR %char %uint_3 %uint_8 %uint_32 %uint_0
+        %823 = OpTypeCooperativeMatrixKHR %char %uint_3 %uint_32 %uint_16 %uint_1
+       %1134 = OpTypeCooperativeMatrixKHR %half %uint_3 %uint_8 %uint_16 %uint_2
+        %854 = OpCooperativeMatrixMulAddKHR %124 %805 %835 %2118 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1625 = OpCooperativeMatrixMulAddKHR %124 %1581 %835 %2124 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1638 = OpCooperativeMatrixMulAddKHR %124 %1597 %835 %2130 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1651 = OpCooperativeMatrixMulAddKHR %124 %1613 %835 %2136 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1745 = OpCooperativeMatrixMulAddKHR %124 %1676 %1736 %854 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1757 = OpCooperativeMatrixMulAddKHR %124 %1691 %1736 %1625 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1769 = OpCooperativeMatrixMulAddKHR %124 %1706 %1736 %1638 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1781 = OpCooperativeMatrixMulAddKHR %124 %1721 %1736 %1651 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR

@@ -1,0 +1,56 @@
+isa/raw/roofline/matrix_fp16_fp32_8x16x16_c8_lds.compute.GEN_Assembly.txt
+(loop lines 277-330 of the listing)
+L4:
+        cmp (32)       (ge)f0.0   null          r79               r2<0>           {I@2}
+(f0.0)  break (32)                            jip:L5              uip:L5
+        add (32)                  r85:d         r79:d             r119<0>:d       {Compacted,$14.src}
+        add (32)                  r79:d         r79:d             1:d
+        and (32)                  r87           r85               0x00000003      {@2,$0.src}
+        shl (32)                  r92:d         r87:d             0x00000009      {@1,$2.src}
+        shl (32)                  r89:d         r87:d             0x00000008
+        add3 (32)                 r94:d         r81:d             r81:d             r92<1>:d {@2,$4.src}
+        add (32)                  r91:d         r89:d             r83:d           {Compacted,I@2}
+(W)     sync.nop (1)                            null                              {$6.src}
+        send.slm (32)             r96     r94    null:0  0x00400000  0x04200B00   {I@2,$2}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$2.src}
+        send.slm (32)             r98     r94    null:0  0x00480000  0x04200B00   {$3}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$3.src}
+(W)     sync.nop (1)                            null                              {$8.src}
+        send.slm (32)             r100    r94    null:0  0x00500000  0x04200B00   {$4}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$4.src}
+(W)     sync.nop (1)                            null                              {$10.src}
+        send.slm (32)             r102    r94    null:0  0x00580000  0x04200B00   {$5}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$15.src}
+        send.slm (32)             r75     r91    null:0  0x00000000  0x04200500   {I@1,$6}  // wr:2+0, rd:2; load.slm.d32.a32
+(W)     sync.nop (1)                            null                              {$6.src}
+        send.slm (32)             r77     r91    null:0  0x00080000  0x04200500   {$2}  // wr:2+0, rd:2; load.slm.d32.a32.?
+        mov (32)                  r3<2>:uw      r96<2>:uw                         {$2.dst}
+        mov (32)                  r5<2>:uw      r98<2>:uw                         {$3.dst}
+(W)     sync.nop (1)                            null                              {$5.src}
+        send.slm (32)             r97     r94    null:0  0x00420000  0x04200B00   {I@1,$7}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+        mov (32)                  r7<2>:uw      r100<2>:uw                        {$4.dst}
+        mov (32)                  r9<2>:uw      r102<2>:uw                        {$5.dst}
+(W)     sync.nop (1)                            null                              {$7.src}
+        send.slm (32)             r99     r94    null:0  0x004A0000  0x04200B00   {I@2,$8}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$8.src}
+        send.slm (32)             r101    r94    null:0  0x00520000  0x04200B00   {I@1,$9}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+(W)     sync.nop (1)                            null                              {$9.src}
+        send.slm (32)             r103    r94    null:0  0x005A0000  0x04200B00   {I@1,$4}  // wr:2+0, rd:2; load.slm.d16u32.a32.?
+        mov (32)                  r3.1<2>:uw    r97<2>:uw                         {@4,$7.dst}
+        mov (32)                  r5.1<2>:uw    r99<2>:uw                         {@4,$8.dst}
+        mov (32)                  r7.1<2>:uw    r101<2>:uw                        {@4,$9.dst}
+        mov (32)                  r9.1<2>:uw    r103<2>:uw                        {@4,$4.dst}
+(W)     sync.nop (1)                            null                              {$6.dst}
+(W)     sync.nop (1)                            null                              {$2.dst}
+(W)     sync.nop (1)                            null                              {I@1}
+(W)     dpas.8x8 (16)             r11<0>:f      r11<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$10}
+(W)     dpas.8x8 (16)             r19<0>:f      r19<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$11}
+(W)     dpas.8x8 (16)             r27<0>:f      r27<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$12}
+(W)     dpas.8x8 (16)             r35<0>:f      r35<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$13}
+(W)     dpas.8x8 (16)             r43<0>:f      r43<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$14}
+(W)     dpas.8x8 (16)             r51<0>:f      r51<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$15}
+(W)     dpas.8x8 (16)             r59<0>:f      r59<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$0}
+(W)     dpas.8x8 (16)             r67<0>:f      r67<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$15}
+
+L5:
+        while (32)                            L4

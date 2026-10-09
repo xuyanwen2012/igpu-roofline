@@ -1,0 +1,4 @@
+{"utc": "2026-10-09T18:24:02.331297+00:00", "label": "matrix_feed_start", "reused": false, "source": "probe/alu_fp32_v4_c16_d5e8faf143d1.jsonl", "value": 11.680897091451108, "exclusion_reasons": []}
+{"utc": "2026-10-09T18:24:05.278792+00:00", "label": "matrix_feed_end", "reused": false, "source": "probe/alu_fp32_v4_c16_06a4364eb1d6.jsonl", "value": 11.680592806333586, "exclusion_reasons": []}
+{"utc": "2026-10-09T18:24:05.290797+00:00", "label": "confirm_start", "reused": true, "source": "probe/alu_fp32_v4_c16_06a4364eb1d6.jsonl", "value": 11.680592806333586, "exclusion_reasons": []}
+{"utc": "2026-10-09T18:24:06.851064+00:00", "label": "confirm_end", "reused": false, "source": "probe/alu_fp32_v4_c16_fc9220fd276f.jsonl", "value": 11.680592806333586, "exclusion_reasons": []}

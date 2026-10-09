@@ -1,0 +1,81 @@
+isa/raw/roofline/matrix_int8_8x16x32_c8_lds.compute.GEN_Assembly.txt
+(loop lines 196-274 of the listing)
+L3:
+        cmp (32)       (ge)f0.0   null          r79               r2<0>           {I@2}
+(f0.0)  break (32)                            jip:L4              uip:L4
+        add (32)                  r93:d         r79:d             r81<0>:d        {Compacted,$9.src}
+        add (32)                  r79:d         r79:d             1:d
+        and (32)                  r95           r93               0x00000003      {I@2}
+        shl (32)                  r100:d        r95:d             0x00000009      {@1,$13.src}
+        shl (32)                  r97:d         r95:d             0x00000008      {$11.src}
+        add3 (32)                 r102:d        r87:d             r89:d             r100<1>:d {@2,$15.src}
+        add (32)                  r99:d         r97:d             r91:d           {Compacted,I@2}
+        send.slm (32)             r104    r102   null:0  0x00400000  0x04200900   {I@2,$15}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+(W)     sync.nop (1)                            null                              {$15.src}
+(W)     sync.nop (1)                            null                              {$3.src}
+        send.slm (32)             r108    r102   null:0  0x00480000  0x04200900   {$0}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+(W)     sync.nop (1)                            null                              {$0.src}
+(W)     sync.nop (1)                            null                              {$5.src}
+        send.slm (32)             r112    r102   null:0  0x00500000  0x04200900   {$1}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+(W)     sync.nop (1)                            null                              {$1.src}
+        send.slm (32)             r116    r102   null:0  0x00580000  0x04200900   {$2}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+(W)     sync.nop (1)                            null                              {$15.src}
+        send.slm (32)             r75     r99    null:0  0x00000000  0x04200500   {I@1,$3}  // wr:2+0, rd:2; load.slm.d32.a32
+(W)     sync.nop (1)                            null                              {$3.src}
+        send.slm (32)             r77     r99    null:0  0x00080000  0x04200500   {$13}  // wr:2+0, rd:2; load.slm.d32.a32.?
+        mov (32)                  r3<4>:ub      r104<4>:ub                        {$15.dst}
+(W)     sync.nop (1)                            null                              {$2.src}
+(W)     sync.nop (1)                            null                              {$1.src}
+        send.slm (32)             r105    r102   null:0  0x00410000  0x04200900   {I@1,$4}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r5<4>:ub      r108<4>:ub                        {$0.dst}
+        mov (32)                  r7<4>:ub      r112<4>:ub                        {$1.dst}
+(W)     sync.nop (1)                            null                              {$4.src}
+        send.slm (32)             r109    r102   null:0  0x00490000  0x04200900   {I@2,$5}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r9<4>:ub      r116<4>:ub                        {$2.dst}
+(W)     sync.nop (1)                            null                              {$5.src}
+        send.slm (32)             r113    r102   null:0  0x00510000  0x04200900   {I@2,$6}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+(W)     sync.nop (1)                            null                              {$6.src}
+(W)     sync.nop (1)                            null                              {$9.src}
+        send.slm (32)             r117    r102   null:0  0x00590000  0x04200900   {I@1,$7}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r3.1<4>:ub    r105<4>:ub                        {@4,$4.dst}
+(W)     sync.nop (1)                            null                              {$7.src}
+        send.slm (32)             r106    r102   null:0  0x00420000  0x04200900   {I@1,$8}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r5.1<4>:ub    r109<4>:ub                        {@4,$5.dst}
+(W)     sync.nop (1)                            null                              {$8.src}
+        send.slm (32)             r110    r102   null:0  0x004A0000  0x04200900   {I@1,$9}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r7.1<4>:ub    r113<4>:ub                        {@4,$6.dst}
+(W)     sync.nop (1)                            null                              {$9.src}
+(W)     sync.nop (1)                            null                              {$7.src}
+        send.slm (32)             r114    r102   null:0  0x00520000  0x04200900   {I@1,$10}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r9.1<4>:ub    r117<4>:ub                        {@4,$7.dst}
+(W)     sync.nop (1)                            null                              {$10.src}
+        send.slm (32)             r118    r102   null:0  0x005A0000  0x04200900   {I@1,$11}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r3.2<4>:ub    r106<4>:ub                        {@4,$8.dst}
+(W)     sync.nop (1)                            null                              {$11.src}
+        send.slm (32)             r107    r102   null:0  0x00430000  0x04200900   {I@1,$12}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r5.2<4>:ub    r110<4>:ub                        {@4,$9.dst}
+(W)     sync.nop (1)                            null                              {$12.src}
+        send.slm (32)             r111    r102   null:0  0x004B0000  0x04200900   {I@1,$13}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r7.2<4>:ub    r114<4>:ub                        {@4,$10.dst}
+(W)     sync.nop (1)                            null                              {$13.src}
+        send.slm (32)             r115    r102   null:0  0x00530000  0x04200900   {I@1,$14}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r9.2<4>:ub    r118<4>:ub                        {@4,$11.dst}
+(W)     sync.nop (1)                            null                              {$14.src}
+        send.slm (32)             r119    r102   null:0  0x005B0000  0x04200900   {I@1,$15}  // wr:2+0, rd:2; load.slm.d8u32.a32.?
+        mov (32)                  r3.3<4>:ub    r107<4>:ub                        {@4,$12.dst}
+        mov (32)                  r5.3<4>:ub    r111<4>:ub                        {@4,$13.dst}
+        mov (32)                  r7.3<4>:ub    r115<4>:ub                        {@4,$14.dst}
+        mov (32)                  r9.3<4>:ub    r119<4>:ub                        {@4,$15.dst}
+(W)     sync.nop (1)                            null                              {$3.dst}
+(W)     sync.nop (1)                            null                              {$13.dst}
+(W)     dpas.8x8 (16)             r11<0>:d      r11<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {@1,$15}
+(W)     dpas.8x8 (16)             r19<0>:d      r19<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$0}
+(W)     dpas.8x8 (16)             r27<0>:d      r27<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$1}
+(W)     dpas.8x8 (16)             r35<0>:d      r35<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$2}
+(W)     dpas.8x8 (16)             r43<0>:d      r43<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$3}
+(W)     dpas.8x8 (16)             r51<0>:d      r51<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$4}
+(W)     dpas.8x8 (16)             r59<0>:d      r59<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$5}
+(W)     dpas.8x8 (16)             r67<0>:d      r67<0;0,0>:d      r3<0;0,0>:b       r75<0;0,0>:b {$15}
+
+L4:
+        while (32)                            L3

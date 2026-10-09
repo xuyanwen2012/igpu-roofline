@@ -1,0 +1,71 @@
+isa/raw/roofline/matrix_fp16_fp32_8x16x16_c8_gmem.compute.GEN_Assembly.txt
+(loop lines 59-127 of the listing)
+L0:
+        cmp (32)       (ge)f0.0   null          r79               r2.1<0>         {I@2}
+(f0.0)  break (32)                            jip:L1              uip:L1
+        add (32)                  r119:d        r108<0>:d         r79:d           {Compacted}
+        add (32)                  r79:d         r79:d             1:d
+        mul (16)                  acc0          r119              r116<0>:uw      {I@2}
+        mach (16)                 r121          r119              r116<0>         {Compacted}
+        mul (16|M16)              acc0          r120              r116<0>:uw      {I@4}
+        mach (16|M16)             r122          r120              r116<0>         {Compacted}
+        mul (32)                  r123:d        r121:d            r2<0>:uw        {I@1}
+        mul (32)                  r75:d         r121:d            r2.1<0>:uw      {$0.src}
+        add (32)                  r123.1<2>:uw  r123.1<2>:uw      r75<2>:uw       {I@1}
+        add (32)                  r125:d        r119:d            -r123:d         {Compacted,I@1}
+        add (32)                  r3:d          r125:d            -r2<0>:d        {I@1}
+        cmp (32)       (ge)f0.0   null          r125              r2<0>
+(f0.0)  sel (32)                  r5            r3                r125            {I@2}
+        add (32)                  r7:d          r5:d              -r2<0>:d        {I@1}
+        cmp (32)       (ge)f0.0   null          r5                r2<0>
+(f0.0)  sel (32)                  r9            r7                r5              {I@2}
+        shl (32)                  r89:d         r9:d              0x00000008      {I@1}
+        add3 (32)                 r109:d        r83:d             r85:d             r89<1>:d {A@1}
+(W)     sync.nop (1)                            null                              {$1.src}
+        shl (32)                  r111:d        r109:d            0x00000001      {A@1}
+        add3 (32)                 r113:d        r109:d            r109:d            128:w
+        add3 (32)                 r117:d        r109:d            r109:d            256:w {$2.src}
+        add3 (32)                 r119:d        r109:d            r109:d            384:w
+        add3 (32)                 r93:d         r109:d            r109:d            32:w {$3.src}
+        add3 (32)                 r97:d         r109:d            r109:d            160:w {$4.src}
+        add3 (32)                 r101:d        r109:d            r109:d            288:w {$5.src}
+        add3 (32)                 r105:d        r109:d            r109:d            416:w {$6.src}
+(W)     sync.nop (1)                            null                              {$7.src}
+        send.ugm (32)             r91     r111   null:0  0x01000000  0x64200B00   {ExBSO,I@7,$1}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        send.ugm (32)             r95     r113   null:0  0x01000000  0x64200B00   {ExBSO,I@7,$8}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        send.ugm (32)             r99     r117   null:0  0x01000000  0x64200B00   {ExBSO,I@6,$2}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        send.ugm (32)             r103    r119   null:0  0x01000000  0x64200B00   {ExBSO,I@5,$9}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+(W)     sync.nop (1)                            null                              {$1.src}
+(W)     sync.nop (1)                            null                              {$8.src}
+        send.ugm (32)             r112    r93    null:0  0x01000000  0x64200B00   {ExBSO,I@4,$3}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        send.ugm (32)             r114    r97    null:0  0x01000000  0x64200B00   {ExBSO,I@3,$4}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+(W)     sync.nop (1)                            null                              {$2.src}
+(W)     sync.nop (1)                            null                              {$9.src}
+        send.ugm (32)             r118    r101   null:0  0x01000000  0x64200B00   {ExBSO,I@2,$5}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        send.ugm (32)             r120    r105   null:0  0x01000000  0x64200B00   {ExBSO,I@1,$6}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]
+        mov (32)                  r3<2>:uw      r91<2>:uw                         {$1.dst}
+        add (32)                  r91:d         r89:d             r87:d           {Compacted}
+        mov (32)                  r5<2>:uw      r95<2>:uw                         {$8.dst}
+        mov (32)                  r7<2>:uw      r99<2>:uw                         {$2.dst}
+        mov (32)                  r9<2>:uw      r103<2>:uw                        {$9.dst}
+        mov (32)                  r3.1<2>:uw    r112<2>:uw                        {@5,$3.dst}
+        send.ugm (32)             r75     r91    null:0  0x00000000  0x64200500   {ExBSO,I@5,$10}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0]
+(W)     sync.nop (1)                            null                              {$10.src}
+        send.ugm (32)             r77     r91    null:0  0x00080000  0x64200500   {ExBSO,$7}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0][A+0x80]
+        mov (32)                  r5.1<2>:uw    r114<2>:uw                        {@4,$4.dst}
+        mov (32)                  r7.1<2>:uw    r118<2>:uw                        {@4,$5.dst}
+        mov (32)                  r9.1<2>:uw    r120<2>:uw                        {@4,$6.dst}
+(W)     sync.nop (1)                            null                              {$10.dst}
+(W)     sync.nop (1)                            null                              {$7.dst}
+(W)     sync.nop (1)                            null                              {I@1}
+(W)     dpas.8x8 (16)             r11<0>:f      r11<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$11}
+(W)     dpas.8x8 (16)             r19<0>:f      r19<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$12}
+(W)     dpas.8x8 (16)             r27<0>:f      r27<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$13}
+(W)     dpas.8x8 (16)             r35<0>:f      r35<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$14}
+(W)     dpas.8x8 (16)             r43<0>:f      r43<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$15}
+(W)     dpas.8x8 (16)             r51<0>:f      r51<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$0}
+(W)     dpas.8x8 (16)             r59<0>:f      r59<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$1}
+(W)     dpas.8x8 (16)             r67<0>:f      r67<0;0,0>:f      r3<0;0,0>:hf      r75<0;0,0>:hf {$0}
+
+L1:
+        while (32)                            L0

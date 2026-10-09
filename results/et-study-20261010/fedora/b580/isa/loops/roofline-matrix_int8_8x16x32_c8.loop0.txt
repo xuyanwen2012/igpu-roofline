@@ -1,0 +1,18 @@
+isa/raw/roofline/matrix_int8_8x16x32_c8.compute.GEN_Assembly.txt
+(loop lines 94-109 of the listing)
+L0:
+        cmp (32)       (ge)f0.0   null          r78               r2<0>           {I@1}
+(f0.0)  break (32)                            jip:L1              uip:L1
+(W)     sync.nop (1)                            null                              {$0.dst}
+(W)     dpas.8x8 (16)             r11<0>:d      r11<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {@4,$1}
+(W)     dpas.8x8 (16)             r19<0>:d      r19<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$2}
+(W)     dpas.8x8 (16)             r27<0>:d      r27<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$3}
+(W)     dpas.8x8 (16)             r35<0>:d      r35<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$4}
+(W)     dpas.8x8 (16)             r43<0>:d      r43<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$5}
+(W)     dpas.8x8 (16)             r51<0>:d      r51<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$6}
+(W)     dpas.8x8 (16)             r59<0>:d      r59<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$7}
+(W)     dpas.8x8 (16)             r67<0>:d      r67<0;0,0>:d      r3<0;0,0>:b       r103<0;0,0>:b {$0}
+        add (32)                  r78:d         r78:d             1:d
+
+L1:
+        while (32)                            L0

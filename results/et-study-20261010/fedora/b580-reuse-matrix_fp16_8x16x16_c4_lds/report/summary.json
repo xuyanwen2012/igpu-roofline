@@ -1,0 +1,79 @@
+{
+  "confirmation_diagnostics": [],
+  "repeat_spread_limit": 0.05,
+  "device": "Intel(R) Arc(tm) B580 Graphics (BMG G21)",
+  "serial": "b580-reuse-matrix_fp16_8x16x16_c4_lds",
+  "plans": [
+    "fast"
+  ],
+  "roof_basis": "short-run",
+  "sentinel": {
+    "config": "alu_fp32_v4_c16 wg256 groups512",
+    "unit": "TFLOP/s",
+    "median": 11.680694232944619,
+    "degraded_below": 9.928590098002926,
+    "timeline": [
+      {
+        "utc": "2026-10-09T18:24:11.107077+00:00",
+        "label": "matrix_feed_start",
+        "value": 11.680389958395716,
+        "degraded": false
+      },
+      {
+        "utc": "2026-10-09T18:24:13.927153+00:00",
+        "label": "matrix_feed_end",
+        "value": 11.680694232944619,
+        "degraded": false
+      },
+      {
+        "utc": "2026-10-09T18:24:15.481133+00:00",
+        "label": "confirm_end",
+        "value": 11.680694232944619,
+        "degraded": false
+      }
+    ]
+  },
+  "stale_rows_excluded": 0,
+  "excluded_rows": {
+    "sweep-matrix-feed/matrix_fp16_8x16x16_c4_lds_e50d4c495438.json": [
+      "short",
+      "fixed_cost"
+    ]
+  },
+  "validation_scope": "pre_and_post",
+  "missing_reasons": [
+    "No current confirmed roofs",
+    "Sustained roofs require three distinct stable batches per current confirmed configuration and duration"
+  ],
+  "clock_state": {
+    "domains": {
+      "/sys/class/drm/card0/device/tile0/gt0/freq0": {
+        "governor": "xe",
+        "min": "1200000000",
+        "max": "2850000000",
+        "cur": "2650000000",
+        "hw_max": "2850000000"
+      },
+      "/sys/class/drm/card0/device/tile0/gt1/freq0": {
+        "governor": "xe",
+        "min": "1200000000",
+        "max": "1500000000",
+        "cur": "1200000000",
+        "hw_max": "1500000000"
+      }
+    },
+    "pinned_domains": [],
+    "captured_utc": "2026-10-09T18:24:10.931434+00:00"
+  },
+  "short_run": {},
+  "sustained": {},
+  "ridges": {
+    "short_run": {},
+    "roofs": {}
+  },
+  "physical_dram_bandwidth": null,
+  "physical_cache_bandwidth": null,
+  "matrix_feed_by_reuse": [],
+  "git_commit": "d0efe1c1a4467ac80c99538fd195045bad70d000",
+  "runner_sha256": "784e6acafa0a54e5d42031183e65860acc1cdd60794b9a4d023ef2a94afbd1d4"
+}

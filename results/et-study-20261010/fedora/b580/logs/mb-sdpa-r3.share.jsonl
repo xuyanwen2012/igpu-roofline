@@ -1,0 +1,3 @@
+{"utc": "2026-10-09T18:21:15Z", "foreign_pct": 0.0, "own_pct": 0.0, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "48000"}
+{"utc": "2026-10-09T18:21:18Z", "foreign_pct": 0.0, "own_pct": 163.52, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "50000"}
+{"utc": "2026-10-09T18:21:20Z", "foreign_pct": 0.0, "own_pct": 120.5, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "50000"}

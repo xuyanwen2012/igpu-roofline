@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "gpu": "Intel(R) Arc(tm) B580 Graphics (BMG G21)",
+  "driver_version": 109060099,
+  "serial": "b580-reuse-matrix_fp16_8x16x16_c4_lds",
+  "runner_sha256": "784e6acafa0a54e5d42031183e65860acc1cdd60794b9a4d023ef2a94afbd1d4",
+  "configurations": []
+}

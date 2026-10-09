@@ -1,0 +1,25 @@
+; Version: 1.3
+       %half = OpTypeFloat 16
+       %uint = OpTypeInt 32 0
+      %float = OpTypeFloat 32
+         %69 = OpTypeCooperativeMatrixKHR %float %uint_3 %uint_8 %uint_16 %uint_2
+        %int = OpTypeInt 32 1
+         %90 = OpTypeCooperativeMatrixKHR %half %uint_3 %uint_16 %uint_16 %uint_1
+        %123 = OpTypeCooperativeMatrixKHR %half %uint_3 %uint_8 %uint_16 %uint_0
+        %161 = OpTypeCooperativeMatrixKHR %half %uint_3 %uint_8 %uint_16 %uint_2
+       %1080 = OpCooperativeMatrixMulAddKHR %69 %466 %1065 %75
+       %1441 = OpCooperativeMatrixMulAddKHR %69 %2100 %1065 %75
+       %1464 = OpCooperativeMatrixMulAddKHR %69 %2051 %1455 %1080
+       %1476 = OpCooperativeMatrixMulAddKHR %69 %2114 %1455 %1441
+       %1502 = OpCooperativeMatrixMulAddKHR %69 %2066 %1493 %1464
+       %1514 = OpCooperativeMatrixMulAddKHR %69 %2128 %1493 %1476
+       %1540 = OpCooperativeMatrixMulAddKHR %69 %2081 %1531 %1502
+       %1552 = OpCooperativeMatrixMulAddKHR %69 %2142 %1531 %1514
+       %1216 = OpCooperativeMatrixMulAddKHR %69 %1169 %1200 %2205
+       %1792 = OpCooperativeMatrixMulAddKHR %69 %1780 %1200 %2207
+       %1850 = OpCooperativeMatrixMulAddKHR %69 %1811 %1841 %1216
+       %1862 = OpCooperativeMatrixMulAddKHR %69 %1824 %1841 %1792
+       %1926 = OpCooperativeMatrixMulAddKHR %69 %1887 %1917 %1850
+       %1938 = OpCooperativeMatrixMulAddKHR %69 %1900 %1917 %1862
+       %2002 = OpCooperativeMatrixMulAddKHR %69 %1963 %1993 %1926
+       %2014 = OpCooperativeMatrixMulAddKHR %69 %1976 %1993 %1938

@@ -1,0 +1,17 @@
+Plan 'fast' on local GPU (b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds); results in /mnt/linux-share/hmz-campaigns/roofline-study/b580/igpu-roofline/results/et-study-20261010/fedora/b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds
+1 configurations before confirmation; sustained: no
+3 matrix shapes are not compiled; see matrix-coverage.json
+  offline ISA skipped: no public offline compiler for this GPU
+=== b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds matrix_feed (1 configurations)
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe alu_fp32_v4_c16 PASS 5.9980 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe matrix_feed_start 11.681 TFLOP/s
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds sweep-matrix-feed matrix_fp16_fp32_8x16x16_c2_lds PASS 5.9959 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe alu_fp32_v4_c16 PASS 5.9980 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe matrix_feed_end 11.681 TFLOP/s
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe confirm_start REUSE probe/alu_fp32_v4_c16_20542d48c4fe.jsonl
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds confirm matrix_fp16_fp32_8x16x16_c2_lds PASS 5.0281 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds confirm matrix_fp16_fp32_8x16x16_c2_lds PASS 5.8633 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds confirm matrix_fp16_fp32_8x16x16_c2_lds PASS 5.8692 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe alu_fp32_v4_c16 PASS 5.9981 ms
+b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds probe confirm_end 11.681 TFLOP/s
+Report: /mnt/linux-share/hmz-campaigns/roofline-study/b580/igpu-roofline/results/et-study-20261010/fedora/b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds/report/REPORT.md

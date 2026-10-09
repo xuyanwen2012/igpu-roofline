@@ -1,0 +1,4 @@
+{"utc": "2026-10-09T18:22:09Z", "foreign_pct": 0.0, "own_pct": 105.52, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "47000"}
+{"utc": "2026-10-09T18:22:11Z", "foreign_pct": 0.0, "own_pct": 157.7, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "48000"}
+{"utc": "2026-10-09T18:22:14Z", "foreign_pct": 0.0, "own_pct": 164.8, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "2850", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "48000"}
+{"utc": "2026-10-09T18:22:16Z", "foreign_pct": 0.0, "own_pct": 116.97, "foreign_clients": 27, "top_foreign": "", "act_freq_mhz": "0", "throttle": "0", "throttle_reasons": "none", "pkg_temp_mc": "46000"}

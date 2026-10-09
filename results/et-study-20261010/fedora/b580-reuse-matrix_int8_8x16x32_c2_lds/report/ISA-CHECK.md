@@ -1,0 +1,9 @@
+# Intel(R) Arc(tm) B580 Graphics (BMG G21) SPIR-V / driver / ISA check
+
+1. **SPIR-V ledger**: exact static counts asserted at build time for every variant.
+2. **Driver statistics** (`VK_KHR_pipeline_executable_properties`): registers, spills, instruction counts.
+3. **ISA**: text returned by the driver when it offers one; otherwise an offline vendor compiler (malioc for Mali, RGA for AMD RDNA as an approximation). All static, not runtime counters.
+
+| roof | variant | SPIR-V ledger | driver statistics | ISA |
+|---|---|---|---|---|
+| matrix_int8_feed_shared | matrix_int8_8x16x32_c2_lds | coopmat_muladd=2, control_barrier=1, load_StorageBuffer=2, store_Workgroup=2 | Spills=0; GRF registers=0; Push constant registers=0; Max live registers=100 | — |

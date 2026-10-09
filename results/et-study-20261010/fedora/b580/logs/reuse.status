@@ -1,0 +1,6 @@
+2026-10-09T18:22:46Z RUNNING pid 1902168 busy_pct=0
+2026-10-09T18:23:40Z matrix_int8_8x16x32_c2_lds rc=0
+2026-10-09T18:23:58Z matrix_fp16_fp32_8x16x16_c2_lds rc=0
+2026-10-09T18:24:09Z matrix_fp16_8x16x16_c2_lds rc=0
+2026-10-09T18:24:18Z matrix_fp16_8x16x16_c4_lds rc=0
+2026-10-09T18:24:18Z DONE

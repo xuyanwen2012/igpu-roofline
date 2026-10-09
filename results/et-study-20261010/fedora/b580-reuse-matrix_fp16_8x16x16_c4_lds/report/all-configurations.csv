@@ -1,0 +1,5 @@
+source,accepted,exclusion_reasons,validation_scope,name,family,median_seconds,min_seconds,cv,n,float_ops,integer_ops,logical_global_bytes,logical_shared_bytes
+probe/alu_fp32_v4_c16_464dcb2c1fc4.json,True,,pre_and_post,alu_fp32_v4_c16,alu,0.005998229020225525,0.005997656103572846,3.8795582180979894e-05,21,70061654016,0,37748736,0
+probe/alu_fp32_v4_c16_e2c83d5dcb18.json,True,,pre_and_post,alu_fp32_v4_c16,alu,0.00599807277022934,0.005997604020240784,3.9086599012185765e-05,21,70061654016,0,37748736,0
+probe/alu_fp32_v4_c16_f63c8aa3e2c2.json,True,,pre_and_post,alu_fp32_v4_c16,alu,0.00599807277022934,0.005997499853576661,4.831398423672113e-05,21,70061654016,0,37748736,0
+sweep-matrix-feed/matrix_fp16_8x16x16_c4_lds_e50d4c495438.json,True,short;fixed_cost,pre_and_post,matrix_fp16_8x16x16_c4_lds,matrix,0.00018947916204071046,0.00018901041205215456,0.0019768276807053667,21,17179869184,0,79691776,855638016

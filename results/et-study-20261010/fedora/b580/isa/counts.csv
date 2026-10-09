@@ -1,0 +1,42 @@
+listing,shader,simd,instructions,loops,spills,fills,sends,scope,scope_instructions,dpas,slm_loads,slm_stores,ugm_loads,ugm_stores,sampler_sends,typed_image_sends,gateway_sends,sync,other_sends
+et-4w,0x5bdc65597a0407a3,16,960,1,0,0,203,whole shader,1181,16,d16u32 x64; d32 x32; d32x2 x20,d32 x32; d32x4 x4,? x1; d32x4 x2,0,2,load x4; store x20,11,252,0
+et-4w,0x5bdc65597a0407a3,16,960,1,0,0,203,loop 0 (lines 166-480),310,8,d16u32 x32; d32 x16,d32x4 x2,d32x4 x1,0,1,load x2,1,70,0
+et-8da4w,0xc8b2c055c8674582,16,1370,1,0,0,214,whole shader,1625,16,? x4; d32 x66; d32x2 x12; d32x4 x8,d32 x43; d32x4 x2,? x2; d32 x16; d32x2 x17; d32x4 x3,0,5,store x12,12,289,0
+et-8da4w,0xc8b2c055c8674582,16,1370,1,0,0,214,loop 0 (lines 557-1116),545,16,d32 x65; d32x4 x8,d32 x17,d32x2 x1; d32x4 x2,0,2,0,2,196,0
+et-8da4w,0xc8b2c055c8674582,16,1043,2,0,0,185,whole shader,1282,16,? x4; d32 x66; d32x2 x12; d32x4 x8,d32 x43; d32x4 x2,? x2; d32 x1; d32x2 x3; d32x4 x3,0,5,store x12,12,264,0
+et-8da4w,0xc8b2c055c8674582,16,1043,2,0,0,185,loop 0 (lines 222-772),536,16,d32 x65; d32x4 x8,d32 x17,d32x2 x1; d32x4 x2,0,2,0,2,187,0
+et-sdpa,0xf43100294b76e437,16,1095,1,0,0,253,whole shader,1439,32,? x1; d32 x96; d32x4 x6,d32 x12; d32x4 x6,? x3; d32 x64; d32x4 x32,d32 x8,0,0,12,378,0
+et-sdpa,0xf43100294b76e437,16,1095,1,0,0,253,loop 0 (lines 124-1281),1139,32,? x1; d32 x80; d32x4 x4,d32 x10; d32x4 x4,d32 x64; d32x4 x32,0,0,0,8,340,0
+et-sdpa,0xf43100294b76e437,16,1094,1,0,0,253,whole shader,1438,32,? x1; d32 x96; d32x4 x6,d32 x12; d32x4 x6,? x3; d32 x64; d32x4 x32,d32 x8,0,0,12,378,0
+et-sdpa,0xf43100294b76e437,16,1094,1,0,0,253,loop 0 (lines 124-1281),1139,32,? x1; d32 x80; d32x4 x4,d32 x10; d32x4 x4,d32 x64; d32x4 x32,0,0,0,8,340,0
+et-sdpa,0xe488d372d851404c,16,927,1,0,0,171,whole shader,1091,16,? x1; d32 x64; d32x4 x4,d32 x12; d32x4 x6,? x3; d32 x32; d32x4 x16,d32 x8,0,0,12,198,0
+et-sdpa,0xe488d372d851404c,16,927,1,0,0,171,loop 0 (lines 191-948),741,16,? x1; d32 x48; d32x4 x3,d32 x10; d32x4 x4,d32x4 x16,0,0,0,8,165,0
+roofline,matrix_fp16_8x16x16_c2_lds,32,216,1,0,0,115,whole shader,346,2,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x4,0,0,1,131,0
+roofline,matrix_fp16_8x16x16_c2_lds,32,216,1,0,0,115,loop 0 (lines 299-345),44,2,d16u32 x8; d32 x2,0,0,0,0,0,0,14,0
+roofline,matrix_fp16_8x16x16_c4_lds,32,226,1,0,0,119,whole shader,359,4,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x8,0,0,1,134,0
+roofline,matrix_fp16_8x16x16_c4_lds,32,226,1,0,0,119,loop 0 (lines 303-349),44,4,d16u32 x8; d32 x2,0,0,0,0,0,0,12,0
+roofline,matrix_fp16_8x16x16_c8,32,79,1,0,0,27,whole shader,111,8,0,0,d16u32 x8; d32 x2,d32 x16,0,0,1,32,0
+roofline,matrix_fp16_8x16x16_c8,32,79,1,0,0,27,loop 0 (lines 55-71),14,8,0,0,0,0,0,0,0,2,0
+roofline,matrix_fp16_8x16x16_c8_lds,32,246,1,0,0,127,whole shader,394,8,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x16,0,0,1,149,0
+roofline,matrix_fp16_8x16x16_c8_lds,32,246,1,0,0,127,loop 0 (lines 308-363),53,8,d16u32 x8; d32 x2,0,0,0,0,0,0,17,0
+roofline,matrix_fp16_fp32_8x16x16_c2_lds,32,232,1,0,0,119,whole shader,357,2,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x8,0,0,1,126,0
+roofline,matrix_fp16_fp32_8x16x16_c2_lds,32,232,1,0,0,119,loop 0 (lines 302-346),42,2,d16u32 x8; d32 x2,0,0,0,0,0,0,12,0
+roofline,matrix_fp16_fp32_8x16x16_c4_lds,32,258,1,0,0,127,whole shader,387,4,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x16,0,0,1,130,0
+roofline,matrix_fp16_fp32_8x16x16_c4_lds,32,258,1,0,0,127,loop 0 (lines 307-358),49,4,d16u32 x8; d32 x2,0,0,0,0,0,0,17,0
+roofline,matrix_fp16_fp32_8x16x16_c8,32,143,1,0,0,43,whole shader,158,8,0,0,d16u32 x8; d32 x2,d32 x32,0,0,1,15,0
+roofline,matrix_fp16_fp32_8x16x16_c8,32,143,1,0,0,43,loop 0 (lines 71-87),14,8,0,0,0,0,0,0,0,2,0
+roofline,matrix_fp16_fp32_8x16x16_c8_gmem,32,181,1,0,0,43,whole shader,199,8,0,0,d16u32 x8; d32 x2,d32 x32,0,0,1,18,0
+roofline,matrix_fp16_fp32_8x16x16_c8_gmem,32,181,1,0,0,43,loop 0 (lines 59-127),66,8,0,0,d16u32 x8; d32 x2,0,0,0,0,10,0
+roofline,matrix_fp16_fp32_8x16x16_c8_lds,32,310,1,0,0,143,whole shader,398,8,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x32,0,0,1,89,0
+roofline,matrix_fp16_fp32_8x16x16_c8_lds,32,310,1,0,0,143,loop 0 (lines 277-330),51,8,d16u32 x8; d32 x2,0,0,0,0,0,0,15,0
+roofline,matrix_int8_8x16x32_c2_lds,32,199,2,0,0,95,whole shader,291,2,d32 x2; d8u32 x16,d8u32 x34,d8u32 x34,d32 x8,0,0,1,93,0
+roofline,matrix_int8_8x16x32_c2_lds,32,199,2,0,0,95,loop 0 (lines 172-182),8,0,0,d8u32 x1,d8u32 x1,0,0,0,0,0,0
+roofline,matrix_int8_8x16x32_c2_lds,32,199,2,0,0,95,loop 1 (lines 203-278),73,2,d32 x2; d8u32 x16,0,0,0,0,0,0,27,0
+roofline,matrix_int8_8x16x32_c4_lds,32,225,2,0,0,103,whole shader,326,4,d32 x2; d8u32 x16,d8u32 x34,d8u32 x34,d32 x16,0,0,1,102,0
+roofline,matrix_int8_8x16x32_c4_lds,32,225,2,0,0,103,loop 0 (lines 173-183),8,0,0,d8u32 x1,d8u32 x1,0,0,0,0,0,0
+roofline,matrix_int8_8x16x32_c4_lds,32,225,2,0,0,103,loop 1 (lines 212-295),81,4,d32 x2; d8u32 x16,0,0,0,0,0,0,33,0
+roofline,matrix_int8_8x16x32_c8,32,158,1,0,0,51,whole shader,180,8,0,0,d32 x2; d8u32 x16,d32 x32,0,0,1,22,0
+roofline,matrix_int8_8x16x32_c8,32,158,1,0,0,51,loop 0 (lines 94-109),13,8,0,0,0,0,0,0,0,1,0
+roofline,matrix_int8_8x16x32_c8_lds,32,277,2,0,0,119,whole shader,340,8,d32 x2; d8u32 x16,d8u32 x34,d8u32 x34,d32 x32,0,0,1,64,0
+roofline,matrix_int8_8x16x32_c8_lds,32,277,2,0,0,119,loop 0 (lines 140-151),9,0,0,d8u32 x1,d8u32 x1,0,0,0,0,1,0
+roofline,matrix_int8_8x16x32_c8_lds,32,277,2,0,0,119,loop 1 (lines 196-274),76,8,d32 x2; d8u32 x16,0,0,0,0,0,0,24,0

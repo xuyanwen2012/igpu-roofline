@@ -1,0 +1,1 @@
+python3 tools/isa_counts.py isa/counts.csv et-4w=isa/raw/et-4w.cs.log et-8da4w=isa/raw/et-8da4w.cs.log et-sdpa=isa/raw/et-sdpa.cs.log $(for f in isa/raw/roofline/*.GEN_Assembly.txt; do echo roofline=$f; done)
