@@ -2,10 +2,9 @@
 
 ## State
 
-2026-10-09, after review round 1: parts A to D are done and nothing is running on the device. The reviewer's
-four checks passed. One item waits for the owner (section "Decision needed from the owner" at the end): the
-individual timed runs behind each linear kernel median were never written by the tool (the attention runs were). Nothing is re-measured
-or recomputed while it is pending. The review artifact is `EXPERIMENT.md`.
+2026-10-09 19:10 UTC: closed. Parts A to D are done, nothing is running on the device, nothing is pending.
+The one open item (single-run timings of the linear suite) was decided by the owner at 19:05 UTC: the
+per-process medians are the raw level (last section). The review artifact is `EXPERIMENT.md`.
 
 Device: Intel Arc Pro B70 (BMG G31), card 0 of two; driver ANV, Mesa 26.2.3 (109060099); kernel 7.2.9-200.fc44.
 Clock policy as found, nothing changed: GT `min_freq` 1200, `max_freq` 2800 MHz, profile `[base] power_saving`.
@@ -167,23 +166,12 @@ Hypotheses for a third round (none of these experiments was run):
   of a foreign client was seen in any run, and the sentinel did not move.
 - Correctness was not re-run here: the tuning campaign's gate on this build stands (cited).
 
-## Decision needed from the owner
+## Owner decision, 2026-10-09 19:05 UTC (task file): option 1
 
-**The five timed runs behind each linear kernel median do not exist as data.** For the linear suite
-`test_llama_microbench` keeps them in memory and writes only `kernel_median_us` per case; its log has no per-run
-line and the final build has no switch to print them. They were never on disk, so they cannot be recovered.
-The attention suite is not affected: its five timed runs per case are in `raw/sdpa-r{1,2,3}.log` on the
-`[sdpa-runs]` lines, and the reviewer recomputed the three attention rows from them (corrected in review round
-2: an earlier version of this section wrongly said the attention runs were missing too). What can be
-recomputed for the linear rows: every number of `efficiency.csv` from the three per-process medians of each
-case. What cannot: each process's own median from its five runs.
-
-- Option 1, no cost: accept the per-process medians as the raw level of the linear rows (three processes per case,
-  spread at most 3.9 %, in-model trace within -14 to +6 %).
-- Option 2, about 8 minutes of the card and no build: repeat the linear suite in 5 more processes, so every
-  linear case has 8 process-level medians; still no single-run timings.
-- Option 3, a build (forbidden to this study by rule 4, so the owner's to order): a microbenchmark that prints
-  the linear per-run timings, from the same commit, then one repetition of the linear suite; about 30 minutes of build and 10 of
-  the card, and the binary would no longer be the one the tuning campaign timed.
-
-Until an answer is appended to the task file nothing is measured, built or recomputed.
+Single-run timings of the linear suite are not written by this binary: `test_llama_microbench` writes one
+`kernel_median_us` per case and process (the median of its 5 timed runs) and no per-run line. By the owner's
+decision these per-process medians are the raw level of the linear rows: three processes per case, as measured,
+no further run and no build. Spread of the three process medians, (max - min) / median, over the 24 linear
+cases: 0.0 to 3.9 %, median 0.25 %; 23 cases are under 2 %. **One case exceeds 3 %: 3B 8da4w wq_wo, 3.9 %**
+(316.5 to 329.5 us; its row reads 117.3 TOP/s, 32.6 % of the register roof, and between 113 and 118 TOP/s over
+that range). The attention suite does write its runs (`raw/sdpa-r{1,2,3}.log`, `[sdpa-runs]` lines).

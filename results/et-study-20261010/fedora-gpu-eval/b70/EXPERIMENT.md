@@ -73,9 +73,11 @@ changed, no candidate was screened.
 Confirmation, duration, sentinel: confirmation repeats 3 per roof (plan `fast`), 21 samples of about 6 ms each;
 sustained 120 s batches for three roofs agree with the short runs within 0.04 %; sentinel 34 readings between
 18.349 and 18.351 TFLOP/s, none degraded. One confirmation candidate failed (`matrix_fp16_fp32_feed_dram`, 4 chains,
-`repeat_unstable`); that roof is confirmed by its 2-chain candidate and is not used. Missing evidence, recorded
-once in `STUDY.md` for the owner: for the linear suite the tool writes no per-run timings, only the per-process
-median (the attention suite's five runs per case are in `raw/sdpa-r*.log`, `[sdpa-runs]` lines). September raw rows for the comparison: `cited/sept-fleet-fast-20260926/` (on disk, recovered
+`repeat_unstable`); that roof is confirmed by its 2-chain candidate and is not used. Single-run timings of the
+linear suite are not written by this binary, only the per-process median; by the owner's decision of 2026-10-09
+19:05 UTC (task file, option 1) the three per-process medians are the raw level of the linear rows. Their spread
+over the 24 linear cases is 0.0 to 3.9 %, median 0.25 %; one case exceeds 3 %: 3B 8da4w wq_wo, 3.9 %. (The
+attention suite's five runs per case are in `raw/sdpa-r*.log`, `[sdpa-runs]` lines.) September raw rows for the comparison: `cited/sept-fleet-fast-20260926/` (on disk, recovered
 from the device host; not committed).
 
 ## Evidence before the screen
