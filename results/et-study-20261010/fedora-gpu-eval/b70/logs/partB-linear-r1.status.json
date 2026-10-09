@@ -1,0 +1,21 @@
+{
+ "command": [
+  "timeout",
+  "3600",
+  "/home/doremy/et-study-20261010/stage/test_llama_microbench",
+  "--linear",
+  "--regime=prefill",
+  "--storage=texture3d",
+  "--skip-correctness",
+  "--json-out=/home/doremy/et-study-20261010/raw/linear-r1.json"
+ ],
+ "guard_pid": 637186,
+ "started_utc": "2026-10-09T18:15:40Z",
+ "state": "finished",
+ "polls": 48,
+ "job_pid": 637187,
+ "foreign": [],
+ "rc": 1,
+ "job_rc": 1,
+ "ended_utc": "2026-10-09T18:17:18Z"
+}

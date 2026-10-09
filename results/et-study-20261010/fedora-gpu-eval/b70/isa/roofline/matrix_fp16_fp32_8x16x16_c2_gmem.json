@@ -1,0 +1,167 @@
+{
+  "rc": 0,
+  "shader": "matrix_fp16_fp32_8x16x16_c2_gmem",
+  "stderr": "Device: Intel(R) Graphics (BMG G31) (Vulkan 1.4)\nFeatures: cooperativeMatrix=1 shaderFloat16=1 shaderInt8=1 16bitStorage=1 8bitStorage=1 vulkanMemoryModel=1 subgroupSizeControl=1\nSubgroup size: 32 (size control: 1)\nBUFFER bytes=256 type=3 flags=7\nBUFFER bytes=512 type=3 flags=7\nBUFFER bytes=16 type=3 flags=7\nBUFFER bytes=16384 type=3 flags=7\n",
+  "inspector_sha256": "e4b28a2cbe92abd2dc20c68457db299389f962c2fe061cd00cff9aaed5d89371",
+  "records": [
+    {
+      "config": {
+        "chains": 2,
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=8",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float",
+          "-DCHAINS=2",
+          "-DFEED=2",
+          "build/shaders/matrix_fp16_fp32_8x16x16_c2_gmem.comp",
+          "-o",
+          "build/shaders/matrix_fp16_fp32_8x16x16_c2_gmem.spv"
+        ],
+        "dtype": "fp16_fp32",
+        "family": "matrix",
+        "feed": "global",
+        "groups": 16,
+        "k": 16,
+        "loops": 128,
+        "m": 8,
+        "matrix_n": 16,
+        "n": 1024,
+        "name": "matrix_fp16_fp32_8x16x16_c2_gmem",
+        "runner_sha256": "810e098c8abb2dfb3c94655414272cb7206d8cd3e32e9f106b6c3be57b191497",
+        "samples": 21,
+        "schema_version": 2,
+        "shader": "shaders/matrix_fp16_fp32_8x16x16_c2_gmem.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 4,
+          "coopmat_muladd": 2,
+          "dot": 0,
+          "fma": 0,
+          "load_Input": 6,
+          "load_PushConstant": 2,
+          "volatile": 0
+        },
+        "spirv_sha256": "0cb86f7c7908a2ef9fe6826e8553a2157c692b1ee8c7d47878b52f6c13939579",
+        "stride": 1,
+        "subgroup": 32,
+        "wg": 32,
+        "width": 1
+      },
+      "executables": [
+        {
+          "description": "SIMD32 compute shader",
+          "name": "compute",
+          "representations": [
+            {
+              "bytes": 9940,
+              "description": "Final NIR before going into the back-end compiler",
+              "name": "Final NIR",
+              "text": "shader: MESA_SHADER_COMPUTE\nsource_blake3: {0xcd471840, 0x196d5cbd, 0x3417f820, 0xbb64579e, 0x32f9b8e0, 0xb4de7002, 0xa3e74fc4, 0x80f4d02d}\nspec[0] = 0x00000020\nspec[1] = 0x00000400\nspec[2] = 0x00000001\nworkgroup_size: 32, 1, 1\nnum_ssbos: 3\nsystem_values_read: 0x00000000'00000000'00018000'00000182\napi_subgroup_size: 32\nmax_subgroup_size: 32\nmin_subgroup_size: 32\nbit_sizes_int: 0x31\nseparate_shader: true\nflrp_lowered: true\nwrites_memory: true\nuniforms: 16\ndecl_var push_const INTERP_MODE_NONE none block #0\ndecl_var ssbo INTERP_MODE_NONE restrict readonly writeonly block#2 #1 (~0, 0, 0)\ndecl_var ssbo INTERP_MODE_NONE restrict readonly writeonly block#2 #3 (~0, 0, 1)\ndecl_var ssbo INTERP_MODE_NONE restrict readonly writeonly block#5 #4 (~0, 0, 3)\ndecl_function main () (entrypoint)\n\nimpl main {\n    con block b0:         // preds:\n    con 32    %1343 = load_const (0xdeaddead = -6.264321e+18 = -559030611 = 3735936685)\n    con 32       %0 = load_const (0x00000000)\n    con 32    %1345 = @resource_intel (%1343 (0xdeaddead), %0 (0x0), %0 (0x0), %0 (0x0)) (desc_set=0, binding=0, resource_intel=0, resource_block_intel=-1)\n    con 32    %2175 = load_const (0x00000001)\n    con 32    %1423 = @resource_intel (%1343 (0xdeaddead), %2175 (0x1), %0 (0x0), %0 (0x0)) (desc_set=0, binding=1, resource_intel=0, resource_block_intel=-1)\n    con 32x3  %2393 = @load_inline_data_intel (%0 (0x0)) (base=8, range=12)\n    con 32x3    %24 = @load_workgroup_id\n    con 32      %25 = iadd %24.x, %2393.x\n    con 32    %2383 = @load_simd_width_intel\n    con 32    %2400 = load_const (0x4f7ffffe = 4.294967e+09)\n    con 32    %2398 = u2f32 %2383 // exact\n    con 32    %2399 = frcp %2398 // exact\n    con 32    %2401 = fmul %2399, %2400 (4.294967e+09) // exact\n    con 32    %2402 = f2u32 %2401 // exact\n    con 32    %2460 = imul %2383, %2402\n    con 32    %2461 = ineg %2460\n    con 32    %2405 = umul_high %2402, %2461\n    con 32    %2406 = iadd %2402, %2405\n    con 32    %2462 = load_const (0x0000001f = 31)\n    con 32    %2463 = iadd %2462 (0x1f), %2383\n    con 32    %2407 = umul_high %2463, %2406\n    con 32    %2408 = imul %2407, %2383\n    con 32    %2458 = ineg %2408\n    con 32    %2459 = iadd %2463, %2458\n    con 1     %2410 = uge %2459, %2383\n    con 32    %2456 = b2i32 %2410\n    con 32    %2454 = ineg %2383\n    con 32    %2455 = iadd %2459, %2454\n    con 32    %2415 = bcsel %2410, %2455, %2459\n    con 1     %2416 = uge %2415, %2383\n    con 32    %2452 = b2i32 %2416\n    con 32    %2494 = iadd3 %2407, %2456, %2452\n    con 32      %27 = imul %25, %2494\n    con 32      %28 = @load_subgroup_id\n    con 32      %29 = iadd %27, %28\n    con 32    %2394 = @load_inline_data_intel (%0 (0x0)) (base=4, range=4)\n    con 32      %41 = imul %29, %2394\n    con 32    %2395 = @load_inline_data_intel (%0 (0x0)) (base=0, range=4)\n    con 32    %2420 = u2f32 %2395 // exact\n    con 32    %2421 = frcp %2420 // exact\n    con 32    %2423 = fmul %2421, %2400 (4.294967e+09) // exact\n    con 32    %2424 = f2u32 %2423 // exact\n    con 32    %2450 = imul %2395, %2424\n    con 32    %2451 = ineg %2450\n    con 32    %2427 = umul_high %2424, %2451\n    con 32    %2428 = iadd %2424, %2427\n    div 32     %167 = @load_subgroup_invocation\n    con 32    %2307 = load_const (0x00000005)\n    con 32     %192 = load_const (0x00000004)\n    div 32     %193 = ushr %167, %192 (0x4)\n    div 32    %2308 = ishl %193, %2307 (0x5)\n    con 32     %194 = load_const (0x0000000f = 15)\n    div 32     %195 = iand %167, %194 (0xf)\n    con 32    %2277 = load_const (0x000001a0 = 416)\n    con 32x4  %2201 = load_const (0x00000000, 0x00000000, 0x00000000, 0x00000000) = (0.000000, 0.000000, 0.000000, 0.000000)\n    con 32x4  %2202 = load_const (0x3d800000, 0x3d800000, 0x3d800000, 0x3d800000) = (0.062500, 0.062500, 0.062500, 0.062500) = (1031798784, 1031798784, 1031798784, 1031798784)\n    con 32    %2382 = load_const (0x00000020 = 32)\n    con 32      %33 = load_const (0x00000008)\n    con 32    %2446 = ineg %2395\n    con 32    %1356 = load_const (0x00000002)\n    div 32    %2049 = ishl %167, %1356 (0x2)\n    con 32    %2310 = load_const (0x00000080 = 128)\n    con 32    %2293 = load_const (0x000000a0 = 160)\n    con 32    %2289 = load_const (0x00000100 = 256)\n    con 32    %2285 = load_const (0x00000120 = 288)\n    con 32    %2281 = load_const (0x00000180 = 384)\n                      // succs: b1\n    con loop {\n        con block b1:         // preds: b0 b4\n        div 32x4  %2375 = phi b0: %2202 (0x3d800000, 0x3d800000, 0x3d800000, 0x3d800000), b4: %260\n        div 32x4  %2374 = phi b0: %2201 (0x0, 0x0, 0x0, 0x0), b4: %256\n        con 32      %38 = phi b0: %0 (0x0), b4: %49\n        con 1       %40 = uge %38, %2394\n                          // succs: b2 b3\n        if %40 {\n            con block b2:// preds: b1\n            break\n            // succs: b5\n        } else {\n            con block b3:  // preds: b1, succs: b4\n        }\n        con block b4:         // preds: b3\n        con 32      %42 = iadd %41, %38\n        con 32    %2429 = umul_high %42, %2428\n        con 32    %2430 = imul %2429, %2395\n        con 32    %2448 = ineg %2430\n        con 32    %2449 = iadd %42, %2448\n        con 32    %2447 = iadd %2449, %2446\n        con 1     %2432 = uge %2449, %2395\n        con 32    %2434 = bcsel %2432, %2447, %2449\n        con 32    %2445 = iadd %2434, %2446\n        con 1     %2435 = uge %2434, %2395\n        con 32    %2437 = bcsel %2435, %2445, %2434\n        con 32    %2082 = ishl %2437, %33 (0x8)\n        div 32    %1359 = iadd.nuw %2082, %2049\n        div 32    %2476 = @load_ssbo_intel (%1345, %1359) (access=none, base=0, align_mul=4, align_offset=0)\n        div 32    %2477 = @load_ssbo_intel (%1345, %1359) (access=none, base=128, align_mul=4, align_offset=0)\n        div 32    %2493 = iadd3 %2308, %195, %2082\n        div 32    %2304 = ishl %2493, %2175 (0x1)\n        div 16    %2478 = @load_ssbo_intel (%1423, %2304) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2492 = iadd3 %2493, %2493, %2382 (0x20)\n        div 16    %2479 = @load_ssbo_intel (%1423, %2492) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2466 = pack_32_2x16_split %2478, %2479\n        div 32    %2491 = iadd3 %2493, %2493, %2310 (0x80)\n        div 16    %2480 = @load_ssbo_intel (%1423, %2491) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2490 = iadd3 %2493, %2493, %2293 (0xa0)\n        div 16    %2481 = @load_ssbo_intel (%1423, %2490) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2469 = pack_32_2x16_split %2480, %2481\n        div 32    %2489 = iadd3 %2493, %2493, %2289 (0x100)\n        div 16    %2482 = @load_ssbo_intel (%1423, %2489) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2488 = iadd3 %2493, %2493, %2285 (0x120)\n        div 16    %2483 = @load_ssbo_intel (%1423, %2488) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2472 = pack_32_2x16_split %2482, %2483\n        div 32    %2487 = iadd3 %2493, %2493, %2281 (0x180)\n        div 16    %2484 = @load_ssbo_intel (%1423, %2487) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2486 = iadd3 %2493, %2493, %2277 (0x1a0)\n        div 16    %2485 = @load_ssbo_intel (%1423, %2486) (access=none, base=0, align_mul=2, align_offset=0)\n        div 32    %2475 = pack_32_2x16_split %2484, %2485\n        div 32x4  %2378 = vec4 %2466, %2469, %2472, %2475\n        div 32x2  %2376 = vec2 %2476, %2477\n        div 32x4   %256 = @dpas_intel (%2374, %2378, %2376) (dest_base_type=2, src_base_type=3, saturate=0, systolic_depth=8, repeat_count=8)\n        div 32x4   %260 = @dpas_intel (%2375, %2378, %2376) (dest_base_type=2, src_base_type=3, saturate=0, systolic_depth=8, repeat_count=8)\n        con 32      %49 = iadd %38, %2175 (0x1)\n                          // succs: b1\n    }\n    con block b5:         // preds: b2\n    con 32    %1703 = @resource_intel (%1343 (0xdeaddead), %1356 (0x2), %0 (0x0), %0 (0x0)) (desc_set=0, binding=3, resource_intel=0, resource_block_intel=-1)\n    con 32      %50 = ishl %29, %33 (0x8)\n    div 32    %1996 = iadd %167, %50\n    div 32     %279 = mov %2374.x\n    div 32    %1997 = ishl %1996, %1356 (0x2)\n                      @store_ssbo_intel (%279, %1703, %1997) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %283 = mov %2374.y\n    div 32    %2272 = iadd %1997, %2310 (0x80)\n                      @store_ssbo_intel (%283, %1703, %2272) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %289 = mov %2374.z\n    div 32    %2268 = iadd %1997, %2289 (0x100)\n                      @store_ssbo_intel (%289, %1703, %2268) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %295 = mov %2374.w\n    div 32    %2264 = iadd %1997, %2281 (0x180)\n                      @store_ssbo_intel (%295, %1703, %2264) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %314 = mov %2375.x\n    con 32    %1981 = load_const (0x00000200 = 512)\n    div 32    %1982 = iadd %1997, %1981 (0x200)\n                      @store_ssbo_intel (%314, %1703, %1982) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %318 = mov %2375.y\n    con 32    %2346 = load_const (0x00000280 = 640)\n    div 32    %2347 = iadd %2346 (0x280), %1997\n                      @store_ssbo_intel (%318, %1703, %2347) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %324 = mov %2375.z\n    con 32    %2344 = load_const (0x00000300 = 768)\n    div 32    %2345 = iadd %2344 (0x300), %1997\n                      @store_ssbo_intel (%324, %1703, %2345) (access=none, base=0, align_mul=4, align_offset=0)\n    div 32     %330 = mov %2375.w\n    con 32    %2342 = load_const (0x00000380 = 896)\n    div 32    %2343 = iadd %2342 (0x380), %1997\n                      @store_ssbo_intel (%330, %1703, %2343) (access=none, base=0, align_mul=4, align_offset=0)\n                      // succs: b6\n    block b6:\n}\n\n"
+            },
+            {
+              "bytes": 47,
+              "description": "Map of push constant data provided to the shader",
+              "name": "Shader push map",
+              "text": "Inline promoted dwords: 0, 1, 146, 147, 148, \n"
+            },
+            {
+              "bytes": 10383,
+              "description": "Final GEN assembly for the generated shader binary",
+              "name": "GEN Assembly",
+              "text": "(W)     mov (16)                  r125          r0.1<0>                           {Compacted}\n(W)     mov (16)                  r35:f         r2<0>\n        mov (32)                  r15           0x00000000                        {Compacted}\n        mov (32)                  r17           0x00000000                        {Compacted}\n        mov (32)                  r19           0x00000000                        {Compacted}\n        mov (32)                  r21           0x00000000                        {Compacted}\n        mov (32)                  r23           0x00000000                        {Compacted}\n        mov (32)                  r25           0x3d800000\n        mov (32)                  r27           0x3d800000\n        mov (32)                  r29           0x3d800000\n        mov (32)                  r31           0x3d800000\n(W)     add (16)                  r33:d         r125<0>:d         r2.2<0>:d       {Compacted,I@7}\n(W)     math.inv (16)             r36:f         r35<0>:f          null            {F@1}\n(W)     mov (8)                   r45:uw        0x76543210:v\n(W)     mul (16)                  r34:d         r33<0>:d          r2.2<0>:uw      {I@2}\n(W)     mul (16)                  r126:d        r33<0>:d          r2.3<0>:uw\n(W)     add (8)                   r45.8:uw      r45:uw            8:uw            {I@3}\n(W)     mul (16)                  r37:f         r36<0>:f          0x4f7ffffe:f    {M@1}\n(W)     add (16)                  r34.1<2>:uw   r34.1<2>:uw       r126<2>:uw      {I@2}\n(W)     add (16)                  r45.16:uw     r45:uw            16:uw           {I@2}\n(W)     mov (16)                  r38           r37<0>:f                          {F@1}\n        mov (32)                  r43           r45:uw                            {I@2}\n(W)     mul (16)                  r39:d         r2<0>:d           r38<0>:uw       {I@2}\n(W)     mul (16)                  r127:d        r2<0>:d           r38.1<0>:uw\n        shr (32)                  r46           r43               0x00000004      {I@3}\n        and (32)                  r50           r43               0x0000000f\n        shl (32)                  r52:d         r43:d             0x00000002\n(W)     add (16)                  r39.1<2>:uw   r39.1<2>:uw       r127<2>:uw      {I@4}\n        shl (32)                  r48:d         r46:d             0x00000005      {I@4}\n(W)     mov (16)                  r40:d         -r39<0>:d                         {Compacted,I@2}\n(W)     mul (16)                  acc0          r38<0>            r40<0>:uw       {I@1}\n(W)     mach (16)                 r41           r38<0>            r40<0>          {Compacted}\n(W)     add (16)                  r42:d         r38<0>:d          r41<0>:d        {Compacted,I@1}\n\nL0:\n        cmp (32)       (ge)f0.0   null          r15               r2.1<0>         {I@2}\n(f0.0)  break (32)                            jip:L1              uip:L1\n        add (32)                  r54:d         r34<0>:d          r15:d           {Compacted}\n        add (32)                  r15:d         r15:d             1:d\n        mul (16)                  acc0          r54               r42<0>:uw       {I@2}\n        mach (16)                 r56           r54               r42<0>          {Compacted}\n        mul (16|M16)              acc0          r55               r42<0>:uw       {I@4}\n        mach (16|M16)             r57           r55               r42<0>          {Compacted}\n        mul (32)                  r58:d         r56:d             r2<0>:uw        {I@1}\n        mul (32)                  r11:d         r56:d             r2.1<0>:uw      {$0.src}\n        add (32)                  r58.1<2>:uw   r58.1<2>:uw       r11<2>:uw       {I@1}\n        add (32)                  r60:d         r54:d             -r58:d          {Compacted,I@1}\n        add (32)                  r62:d         r60:d             -r2<0>:d        {I@1}\n        cmp (32)       (ge)f0.0   null          r60               r2<0>\n(f0.0)  sel (32)                  r64           r62               r60             {I@2}\n        add (32)                  r66:d         r64:d             -r2<0>:d        {I@1}\n        cmp (32)       (ge)f0.0   null          r64               r2<0>\n(f0.0)  sel (32)                  r68           r66               r64             {I@2}\n        shl (32)                  r70:d         r68:d             0x00000008      {I@1}\n        add (32)                  r72:d         r70:d             r52:d           {Compacted,@1,$1.src}\n        add3 (32)                 r74:d         r48:d             r50:d             r70<1>:d\n        send.ugm (32)             r11     r72    null:0  0x00000000  0x64200500   {ExBSO,I@2,$2}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0]\n(W)     sync.nop (1)                            null                              {$2.src}\n        send.ugm (32)             r13     r72    null:0  0x00080000  0x64200500   {ExBSO,$1}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0][A+0x80]\n        shl (32)                  r76:d         r74:d             0x00000001      {@1,$3.src}\n        add3 (32)                 r80:d         r74:d             r74:d             32:w {$4.src}\n        add3 (32)                 r84:d         r74:d             r74:d             128:w {$5.src}\n        add3 (32)                 r88:d         r74:d             r74:d             160:w {$6.src}\n        add3 (32)                 r92:d         r74:d             r74:d             256:w {$7.src}\n        add3 (32)                 r96:d         r74:d             r74:d             288:w {$8.src}\n        add3 (32)                 r100:d        r74:d             r74:d             384:w {$9.src}\n        add3 (32)                 r104:d        r74:d             r74:d             416:w {$10.src}\n        send.ugm (32)             r78     r76    null:0  0x01000000  0x64200B00   {ExBSO,I@7,$3}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r82     r80    null:0  0x01000000  0x64200B00   {ExBSO,I@7,$4}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r86     r84    null:0  0x01000000  0x64200B00   {ExBSO,I@6,$5}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r90     r88    null:0  0x01000000  0x64200B00   {ExBSO,I@5,$6}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r94     r92    null:0  0x01000000  0x64200B00   {ExBSO,I@4,$7}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r98     r96    null:0  0x01000000  0x64200B00   {ExBSO,I@3,$8}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r102    r100   null:0  0x01000000  0x64200B00   {ExBSO,I@2,$9}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        send.ugm (32)             r106    r104   null:0  0x01000000  0x64200B00   {ExBSO,I@1,$10}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n        mov (32)                  r3<2>:uw      r78<2>:uw                         {$3.dst}\n        mov (32)                  r5<2>:uw      r86<2>:uw                         {$5.dst}\n        mov (32)                  r7<2>:uw      r94<2>:uw                         {$7.dst}\n        mov (32)                  r9<2>:uw      r102<2>:uw                        {$9.dst}\n        mov (32)                  r3.1<2>:uw    r82<2>:uw                         {@4,$4.dst}\n        mov (32)                  r5.1<2>:uw    r90<2>:uw                         {@4,$6.dst}\n        mov (32)                  r7.1<2>:uw    r98<2>:uw                         {@4,$8.dst}\n        mov (32)                  r9.1<2>:uw    r106<2>:uw                        {@4,$10.dst}\n(W)     sync.nop (1)                            null                              {$2.dst}\n(W)     sync.nop (1)                            null                              {$1.dst}\n(W)     sync.nop (1)                            null                              {I@1}\n(W)     dpas.8x8 (16)             r17<0>:f      r17<0;0,0>:f      r3<0;0,0>:hf      r11<0;0,0>:hf {$11}\n(W)     dpas.8x8 (16)             r25<0>:f      r25<0;0,0>:f      r3<0;0,0>:hf      r11<0;0,0>:hf {$0}\n\nL1:\n        while (32)                            L0\n(W)     shl (16)                  r107:d        r33<0>:d          0x00000008\n(W)     mov (16)                  r127          r0                                {Compacted}\n        add (32)                  r108:d        r107<0>:d         r43:d           {Compacted,I@2}\n        shl (32)                  r110:d        r108:d            0x00000002      {I@1}\n(W)     sync.nop (1)                            null                              {$11.dst}\n        send.ugm (32)             null    r110   r17:2   0x02000080  0x64000504   {ExBSO,I@1,$12}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        add (32)                  r112:d        r110:d            128:d           {$12.src}\n        add (32)                  r114:d        r110:d            256:d\n        add (32)                  r116:d        r110:d            384:d\n        add (32)                  r118:d        r110:d            512:d\n        add (32)                  r120:d        r110:d            640:d\n        add (32)                  r122:d        r110:d            768:d\n        add (32)                  r124:d        r110:d            896:d\n        send.ugm (32)             null    r112   r19:2   0x02000080  0x64000504   {ExBSO,I@7,$13}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r114   r21:2   0x02000080  0x64000504   {ExBSO,I@6,$14}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r116   r23:2   0x02000080  0x64000504   {ExBSO,I@5,$15}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r118   r25:2   0x02000080  0x64000504   {ExBSO,I@4,$0}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r120   r27:2   0x02000080  0x64000504   {ExBSO,I@3,$1}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r122   r29:2   0x02000080  0x64000504   {ExBSO,I@2,$2}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n        send.ugm (32)             null    r124   r31:2   0x02000080  0x64000504   {ExBSO,I@1,$3}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n(W)     send.gtwy (32)            null    r127   null:0  0x00000000  0x02000000   {EOT,I@7}  // wr:1+0, rd:0; open (32)\n"
+            }
+          ],
+          "statistics": [
+            {
+              "description": "Number of GEN instructions in the final generated shader executable.",
+              "name": "Instructions",
+              "value": 103
+            },
+            {
+              "description": "Code size in bytes",
+              "name": "Code size",
+              "value": 1600
+            },
+            {
+              "description": "Number of instructions in the final generated shader executable which access external units such as the constant cache or the sampler.",
+              "name": "SENDs",
+              "value": 19
+            },
+            {
+              "description": "Number of loops (not unrolled) in the final generated shader executable.",
+              "name": "Loops",
+              "value": 1
+            },
+            {
+              "description": "Estimate of the number of EU cycles required to execute the final generated executable. This is an estimate only and may vary greatly from actual run-time performance.",
+              "name": "Cycles",
+              "value": 13170
+            },
+            {
+              "description": "Number of scratch spill operations. This gives a rough estimate of the cost incurred due to spilling temporary values to memory. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Spills",
+              "value": 0
+            },
+            {
+              "description": "Number of scratch fill operations. This gives a rough estimate of the cost incurred due to spilling temporary values to memory. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Fills",
+              "value": 0
+            },
+            {
+              "description": "Number of bytes of scratch memory required by the generated shader executable. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Scratch Memory Size",
+              "value": 0
+            },
+            {
+              "description": "Number of GRF registers required by the shader.",
+              "name": "GRF registers",
+              "value": 0
+            },
+            {
+              "description": "Number of push constants ranges provided to the shader.",
+              "name": "Push constant ranges",
+              "value": 0
+            },
+            {
+              "description": "Number of GRF registers in the payload registers dedicated to constants.",
+              "name": "Push constant registers",
+              "value": 0
+            },
+            {
+              "description": "Largest SIMD dispatch width.",
+              "name": "Max dispatch width",
+              "value": 32
+            },
+            {
+              "description": "Maximum number of registers used across the entire shader.",
+              "name": "Max live registers",
+              "value": 100
+            },
+            {
+              "description": "Number of bytes of workgroup shared memory used by this shader including any padding.",
+              "name": "Workgroup Memory Size",
+              "value": 0
+            },
+            {
+              "description": "Non SSA regs after NIR translation to BRW.",
+              "name": "Non SSA regs after NIR",
+              "value": 10
+            },
+            {
+              "description": "Hash generated from shader source or vkd3d-proton provided.",
+              "name": "Source hash",
+              "value": 1832222593672222784
+            }
+          ],
+          "subgroup_size": 32
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+810e098c8abb2dfb3c94655414272cb7206d8cd3e32e9f106b6c3be57b191497  build/host/roofline
+810e098c8abb2dfb3c94655414272cb7206d8cd3e32e9f106b6c3be57b191497  build/host/roofline_sustained
+e4b28a2cbe92abd2dc20c68457db299389f962c2fe061cd00cff9aaed5d89371  build/host/inspect
+03307d6b4d607bfee5d933b3aceb5bf8bcef8bc964ca4ef817c29bbd517386f1  build/shader-manifest.json
+# rebuilt on 2026-10-09 with gcc 16.2.1-2 from identical sources (not used for measuring):
+3a92d76ef8981cb061778df116abe33e761bcc01769f7d57ee390a08bd6b7fb3  build/host-rebuilt-20261009/roofline
+bf2b742d3b943450831926ca1a4aa682972672e6a061493624ed73a6c09f9701  build/host-rebuilt-20261009/inspect

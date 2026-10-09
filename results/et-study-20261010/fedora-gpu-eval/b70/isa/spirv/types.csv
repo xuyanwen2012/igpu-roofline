@@ -1,0 +1,6 @@
+kernel,coopmat_types,muladd_count,muladd_signatures,in_type,acc_type,mma_shape
+sarc_dev_b580_sdpa_fused_d128_t16x128s16m8g8oj_buffer_buffer_half,fp16 8x16 use0; fp16 8x16 use2; fp32 8x16 use2; fp16 16x16 use1,32,A[fp16 8x16 use0] B[fp16 16x16 use1] C[fp32 8x16 use2] -> fp32 8x16 use2 (x32),fp16,fp32,8x16x16
+sarc_dev_b580_sdpa_fused_d64_t16x64s16m8g4roj_buffer_buffer_half,fp16 8x16 use0; fp16 8x16 use2; fp32 8x16 use2; fp16 16x16 use1,16,A[fp16 8x16 use0] B[fp16 16x16 use1] C[fp32 8x16 use2] -> fp32 8x16 use2 (x16),fp16,fp32,8x16x16
+sarc_dev_linear_dq8ca_coopmat_zpg_xe2bt_t128x128k64g84s16m8_texture3d_texture2d_half,fp32 8x16 use2; fp16 8x16 use2; int32 8x16 use2; int8 8x32 use0; int8 32x16 use1,8,A[int8 8x32 use0] B[int8 32x16 use1] C[int32 8x16 use2] -> int32 8x16 use2 (x8),int8,int32,8x16x32
+sarc_linear_q4gsw_coopmat_sweep_t128x128k16g82s16m8flib_texture3d_texture2d_half,fp16 8x16 use2; fp16 8x16 use0; fp16 16x16 use1,16,A[fp16 8x16 use0] B[fp16 16x16 use1] C[fp16 8x16 use2] -> fp16 8x16 use2 (x16),fp16,fp16,8x16x16
+sarc_linear_q4gsw_coopmat_sweep_t128x128k32g84s16m8flw_texture3d_texture2d_half,fp16 8x16 use2; fp16 8x16 use0; fp16 16x16 use1,16,A[fp16 8x16 use0] B[fp16 16x16 use1] C[fp16 8x16 use2] -> fp16 8x16 use2 (x16),fp16,fp16,8x16x16

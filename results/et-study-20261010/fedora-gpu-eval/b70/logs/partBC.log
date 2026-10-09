@@ -1,0 +1,25 @@
+2026-10-09T18:15:40Z start partB-linear-r1 try 1 pkg_temp_mC=68000
+2026-10-09T18:17:18Z end partB-linear-r1 try 1 rc=1 pkg_temp_mC=66000
+2026-10-09T18:17:18Z start partB-sdpa-r1 try 1 pkg_temp_mC=66000
+2026-10-09T18:17:30Z end partB-sdpa-r1 try 1 rc=0 pkg_temp_mC=65000
+2026-10-09T18:17:30Z start partB-linear-r2 try 1 pkg_temp_mC=65000
+2026-10-09T18:19:10Z end partB-linear-r2 try 1 rc=1 pkg_temp_mC=67000
+2026-10-09T18:19:10Z start partB-sdpa-r2 try 1 pkg_temp_mC=67000
+2026-10-09T18:19:23Z end partB-sdpa-r2 try 1 rc=0 pkg_temp_mC=65000
+2026-10-09T18:19:23Z start partB-linear-r3 try 1 pkg_temp_mC=65000
+2026-10-09T18:21:02Z end partB-linear-r3 try 1 rc=1 pkg_temp_mC=67000
+2026-10-09T18:21:02Z start partB-sdpa-r3 try 1 pkg_temp_mC=67000
+2026-10-09T18:21:13Z end partB-sdpa-r3 try 1 rc=0 pkg_temp_mC=65000
+2026-10-09T18:21:13Z part B done
+2026-10-09T18:21:13Z start partC-4w-8b try 1 pkg_temp_mC=65000
+2026-10-09T18:21:38Z end partC-4w-8b try 1 rc=1 pkg_temp_mC=64000
+2026-10-09T18:21:38Z start partC-8da4w-8b try 1 pkg_temp_mC=64000
+2026-10-09T18:22:01Z end partC-8da4w-8b try 1 rc=1 pkg_temp_mC=66000
+2026-10-09T18:22:01Z start partC-4w-1b try 1 pkg_temp_mC=66000
+2026-10-09T18:22:16Z end partC-4w-1b try 1 rc=1 pkg_temp_mC=67000
+2026-10-09T18:22:16Z start partC-sdpa-1b try 1 pkg_temp_mC=67000
+2026-10-09T18:22:20Z end partC-sdpa-1b try 1 rc=0 pkg_temp_mC=64000
+2026-10-09T18:22:20Z start partC-sdpa-8b try 1 pkg_temp_mC=64000
+2026-10-09T18:22:26Z end partC-sdpa-8b try 1 rc=0 pkg_temp_mC=64000
+2026-10-09T18:22:26Z part C dumps done
+2026-10-09T18:22:26Z partBC done

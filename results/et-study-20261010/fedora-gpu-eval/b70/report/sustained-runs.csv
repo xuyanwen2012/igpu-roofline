@@ -1,0 +1,4 @@
+metric,source,samples,unit,first60_rate,last60_rate,last60_cv,steady_last60,gpu_duty_fraction,gpu_temp_start_c,gpu_temp_max_c,gpu_freq_min,gpu_freq_max
+alu_fp16,sustain-0/alu_fp16_v4_c1_6afc28db9657.json,18746,TFLOP/s,42.86875438695138,42.86875438695138,0.0021524114553278253,True,0.9378438375014139,,,,
+matrix_fp16_fp32,sustain-0/matrix_fp16_fp32_8x16x16_c8_282af3a0d29a.json,18879,TFLOP/s,179.9387838763285,179.9387838763285,3.4239375248778294e-05,True,0.943016899070612,,,,
+global_read,sustain-0/mem_read_v4_cf6d4d62dea5.json,19365,GB/s,603.7279354543994,603.7007693816005,0.0021390065661575385,True,0.9339866609360138,,,,

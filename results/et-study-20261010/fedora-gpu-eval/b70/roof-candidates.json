@@ -1,0 +1,578 @@
+{
+  "quality": {
+    "max_median_se": 0.03,
+    "max_fixed_fraction": 0.1,
+    "max_drift": 0.05
+  },
+  "selected": {
+    "cache_read_effective": [
+      {
+        "name": "mem_read_v4",
+        "rate": 9978632374782.363,
+        "raw": "sweep-cache/mem_read_v4_a6f5665b2424.jsonl"
+      },
+      {
+        "name": "mem_read_v4",
+        "rate": 9963147983998.494,
+        "raw": "sweep-cache/mem_read_v4_09bbec75bfff.jsonl"
+      }
+    ],
+    "memory_fp32_0": [
+      {
+        "name": "mem_read_v4",
+        "rate": 603700769381.6005,
+        "raw": "sweep-memory/mem_read_v4_bef03d3c17ce.jsonl"
+      },
+      {
+        "name": "mem_read_v4",
+        "rate": 598917038853.6187,
+        "raw": "sweep-memory/mem_read_v4_e71d66e7e285.jsonl"
+      }
+    ],
+    "memory_fp32_1": [
+      {
+        "name": "mem_write_v4",
+        "rate": 511527083255.0198,
+        "raw": "sweep-memory/mem_write_v4_bd27f26d260d.jsonl"
+      },
+      {
+        "name": "mem_write_v4",
+        "rate": 407614628132.1968,
+        "raw": "sweep-memory/mem_write_v4_a6b4119463d6.jsonl"
+      }
+    ],
+    "memory_fp32_2": [
+      {
+        "name": "mem_copy_v4",
+        "rate": 533960100945.79443,
+        "raw": "sweep-memory/mem_copy_v4_bd8eef6020de.jsonl"
+      },
+      {
+        "name": "mem_copy_v4",
+        "rate": 505356342106.3985,
+        "raw": "sweep-memory/mem_copy_v4_7a9b3a25078a.jsonl"
+      }
+    ],
+    "memory_fp32_5": [
+      {
+        "name": "mem_triad_v4",
+        "rate": 479083579090.9308,
+        "raw": "sweep-memory/mem_triad_v4_673c81353755.jsonl"
+      }
+    ],
+    "alu_fp32": [
+      {
+        "name": "alu_fp32_v2_c16",
+        "rate": 20300123187179.047,
+        "raw": "sweep-compute/alu_fp32_v2_c16_7f7856fe6ee3.jsonl"
+      },
+      {
+        "name": "alu_fp32_v2_c16",
+        "rate": 20271582267365.445,
+        "raw": "sweep-compute/alu_fp32_v2_c16_097f93d7c3ba.jsonl"
+      }
+    ],
+    "alu_fp16": [
+      {
+        "name": "alu_fp16_v4_c1",
+        "rate": 42868397945451.93,
+        "raw": "sweep-compute/alu_fp16_v4_c1_f7cf8321c722.jsonl"
+      },
+      {
+        "name": "alu_fp16_v4_c1",
+        "rate": 42366667779807.83,
+        "raw": "sweep-compute/alu_fp16_v4_c1_dba05b25b71b.jsonl"
+      }
+    ],
+    "dot_int8": [
+      {
+        "name": "dot8_c4",
+        "rate": 50365823340524.93,
+        "raw": "sweep-compute/dot8_c4_9d7ef8af24a3.jsonl"
+      },
+      {
+        "name": "dot8_c4",
+        "rate": 50252448670414.68,
+        "raw": "sweep-compute/dot8_c4_1b95e74dbcb2.jsonl"
+      }
+    ],
+    "matrix_fp16": [
+      {
+        "name": "matrix_fp16_8x16x16_c4",
+        "rate": 173325953410668.6,
+        "raw": "sweep-compute/matrix_fp16_8x16x16_c4_bd9592572c81.jsonl"
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c8",
+        "rate": 169006855359400.12,
+        "raw": "sweep-compute/matrix_fp16_8x16x16_c8_87cf5167f0eb.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32": [
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c4",
+        "rate": 179885913951494.12,
+        "raw": "sweep-compute/matrix_fp16_fp32_8x16x16_c4_3a5e6ee49003.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c8",
+        "rate": 179868538294339.6,
+        "raw": "sweep-compute/matrix_fp16_fp32_8x16x16_c8_b7edafb8a254.jsonl"
+      }
+    ],
+    "matrix_int8": [
+      {
+        "name": "matrix_int8_8x16x32_c8",
+        "rate": 359865274332975.56,
+        "raw": "sweep-compute/matrix_int8_8x16x32_c8_d6eadde03862.jsonl"
+      },
+      {
+        "name": "matrix_int8_8x16x32_c4",
+        "rate": 359786724133904.06,
+        "raw": "sweep-compute/matrix_int8_8x16x32_c4_9a20758fb908.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_cache": [
+      {
+        "name": "matrix_fp16_8x16x16_c8_gmem",
+        "rate": 161157016970953.06,
+        "raw": "sweep-matrix-feed/matrix_fp16_8x16x16_c8_gmem_19b5dcfc0fe1.jsonl"
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c4_gmem",
+        "rate": 108204436698113.64,
+        "raw": "sweep-matrix-feed/matrix_fp16_8x16x16_c4_gmem_946a6baa6a88.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_dram": [
+      {
+        "name": "matrix_fp16_8x16x16_c1_gmem",
+        "rate": 598404855712.2809,
+        "raw": "sweep-matrix-feed/matrix_fp16_8x16x16_c1_gmem_09f8bc1cfb5c.jsonl"
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c2_gmem",
+        "rate": 591126539318.3408,
+        "raw": "sweep-matrix-feed/matrix_fp16_8x16x16_c2_gmem_7767cdb87717.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_shared": [
+      {
+        "name": "matrix_fp16_8x16x16_c8_lds",
+        "rate": 168454465457044.88,
+        "raw": "sweep-matrix-feed/matrix_fp16_8x16x16_c8_lds_ba0b06f7e6dc.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_shared": [
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c8_lds",
+        "rate": 166763837252938.53,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c8_lds_6b708f39b199.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c4_lds",
+        "rate": 155491817903477.1,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c4_lds_c0dcc67d66f4.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_cache": [
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c8_gmem",
+        "rate": 153738850279130.62,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c8_gmem_155eb70bcd83.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c4_gmem",
+        "rate": 101787816455075.06,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c4_gmem_963ad3f7a9a3.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_dram": [
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c4_gmem",
+        "rate": 610858708502.856,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c4_gmem_197667a4adee.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_8x16x16_c2_gmem",
+        "rate": 593809798571.173,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_8x16x16_c2_gmem_6fd04aab4e50.jsonl"
+      }
+    ],
+    "matrix_int8_feed_shared": [
+      {
+        "name": "matrix_int8_8x16x32_c8_lds",
+        "rate": 323185825768097.56,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c8_lds_424ad78bbce6.jsonl"
+      },
+      {
+        "name": "matrix_int8_8x16x32_c4_lds",
+        "rate": 210479592226873.28,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c4_lds_0ff31e8b2b01.jsonl"
+      }
+    ],
+    "matrix_int8_feed_cache": [
+      {
+        "name": "matrix_int8_8x16x32_c8_gmem",
+        "rate": 279211986375964.88,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c8_gmem_cc9823c3f27a.jsonl"
+      },
+      {
+        "name": "matrix_int8_8x16x32_c4_gmem",
+        "rate": 144077837578614.72,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c4_gmem_73010c26ba1d.jsonl"
+      }
+    ],
+    "matrix_int8_feed_dram": [
+      {
+        "name": "matrix_int8_8x16x32_c2_gmem",
+        "rate": 610471423488.3284,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c2_gmem_806e5ff40e82.jsonl"
+      },
+      {
+        "name": "matrix_int8_8x16x32_c4_gmem",
+        "rate": 609738653548.105,
+        "raw": "sweep-matrix-feed/matrix_int8_8x16x32_c4_gmem_84c0f028ff97.jsonl"
+      }
+    ],
+    "texture_rgba16f_buffer_cache": [
+      {
+        "name": "texture_rgba16f_buffer",
+        "rate": 2272539883484.225,
+        "raw": "sweep-texture/texture_rgba16f_buffer_eea5660bbf0a.jsonl"
+      }
+    ],
+    "texture_rgba16f_buffer_dram": [
+      {
+        "name": "texture_rgba16f_buffer",
+        "rate": 564113360344.0781,
+        "raw": "sweep-texture/texture_rgba16f_buffer_83b27fdc5a20.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex2d_cache": [
+      {
+        "name": "texture_rgba16f_tex2d",
+        "rate": 2014629331010.5713,
+        "raw": "sweep-texture/texture_rgba16f_tex2d_26d1c106e7ea.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex2d_dram": [
+      {
+        "name": "texture_rgba16f_tex2d",
+        "rate": 535894581221.47815,
+        "raw": "sweep-texture/texture_rgba16f_tex2d_0ef88fcaf1d2.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex3d_cache": [
+      {
+        "name": "texture_rgba16f_tex3d",
+        "rate": 1970567665529.168,
+        "raw": "sweep-texture/texture_rgba16f_tex3d_7db3c88b3393.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex3d_dram": [
+      {
+        "name": "texture_rgba16f_tex3d",
+        "rate": 558442120751.9318,
+        "raw": "sweep-texture/texture_rgba16f_tex3d_0a2bf60cecee.jsonl"
+      }
+    ],
+    "texture_rgba32f_buffer_cache": [
+      {
+        "name": "texture_rgba32f_buffer",
+        "rate": 2283899202069.101,
+        "raw": "sweep-texture/texture_rgba32f_buffer_b8e5ac115ffa.jsonl"
+      }
+    ],
+    "texture_rgba32f_buffer_dram": [
+      {
+        "name": "texture_rgba32f_buffer",
+        "rate": 567244455856.2343,
+        "raw": "sweep-texture/texture_rgba32f_buffer_130d3267e539.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex2d_cache": [
+      {
+        "name": "texture_rgba32f_tex2d",
+        "rate": 2060079610755.9744,
+        "raw": "sweep-texture/texture_rgba32f_tex2d_d966d1328fd2.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex2d_dram": [
+      {
+        "name": "texture_rgba32f_tex2d",
+        "rate": 723494339343.3282,
+        "raw": "sweep-texture/texture_rgba32f_tex2d_535017f905e1.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex3d_cache": [
+      {
+        "name": "texture_rgba32f_tex3d",
+        "rate": 1993315052891.7742,
+        "raw": "sweep-texture/texture_rgba32f_tex3d_5ddf294a5f29.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex3d_dram": [
+      {
+        "name": "texture_rgba32f_tex3d",
+        "rate": 766049656146.8396,
+        "raw": "sweep-texture/texture_rgba32f_tex3d_6987d49a25ad.jsonl"
+      }
+    ],
+    "shared_fp32_0": [
+      {
+        "name": "sharedbw_fp32_v2_op0",
+        "rate": 10018560541985.66,
+        "raw": "sweep-shared/sharedbw_fp32_v2_op0_f5406da576b5.jsonl"
+      },
+      {
+        "name": "sharedbw_fp32_v4_op0",
+        "rate": 6335293340053.646,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op0_69061cbf1718.jsonl"
+      }
+    ],
+    "shared_fp32_2": [
+      {
+        "name": "sharedbw_fp32_v4_op2",
+        "rate": 10500759044616.506,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op2_9ea9c39410a2.jsonl"
+      },
+      {
+        "name": "sharedbw_fp32_v4_op2",
+        "rate": 7237006737282.894,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op2_d14b7938f9d1.jsonl"
+      }
+    ],
+    "shared_fp16_2": [
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 6455740479248.564,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op2_2c13dd5ac885.jsonl"
+      },
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 6176413392712.494,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op2_39651e168a85.jsonl"
+      }
+    ],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 3331045516044.955,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op0_be05a60d5da4.jsonl"
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 2553353819622.1284,
+        "raw": "sweep-shared/sharedbw_fp16_v2_op0_acc32_2fac15ea493d.jsonl"
+      }
+    ]
+  },
+  "gated_but_faster": {
+    "matrix_fp16": [],
+    "matrix_fp16_feed_shared": [],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 3738922514139.43,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 4431933618099.115,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 5132634585387.513,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ]
+  },
+  "excluded": {
+    "matrix_fp16": [
+      {
+        "name": "matrix_fp16_8x16x16_c4",
+        "rate": 141689646213859.06,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c8",
+        "rate": 153277647019453.47,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "matrix_fp16_feed_shared": [
+      {
+        "name": "matrix_fp16_8x16x16_c1_lds",
+        "rate": 35698430344790.46,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c2_lds",
+        "rate": 70753645728413.52,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "matrix_fp16_8x16x16_c4_lds",
+        "rate": 134854250362168.38,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 3738922514139.43,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 397423931572.86255,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 366662385946.68604,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 367190337546.3213,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 4431933618099.115,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 888298883332.1152,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 1876714016461.6917,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 688120494493.9884,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 686631814371.0056,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 713320041952.3219,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 1456913917740.1582,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 5132634585387.513,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 763220242841.2677,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 662569900520.1696,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 671568348061.1869,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 1600104625541.9226,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ]
+  },
+  "roofs_without_quality_candidate": []
+}

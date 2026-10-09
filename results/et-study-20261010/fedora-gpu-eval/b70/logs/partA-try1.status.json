@@ -1,0 +1,19 @@
+{
+ "command": [
+  "/home/doremy/hmz-sarc-xe2/.artifacts/venv/bin/python",
+  "-u",
+  "campaign.py",
+  "/home/doremy/et-study-20261010/results/fedora-gpu-eval",
+  "fedora-gpu-eval",
+  "b70"
+ ],
+ "guard_pid": 621163,
+ "started_utc": "2026-10-09T17:50:37Z",
+ "state": "finished",
+ "polls": 680,
+ "job_pid": 621164,
+ "foreign": [],
+ "rc": 0,
+ "job_rc": 0,
+ "ended_utc": "2026-10-09T18:13:51Z"
+}

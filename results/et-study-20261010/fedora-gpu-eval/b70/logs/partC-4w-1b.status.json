@@ -1,0 +1,22 @@
+{
+ "command": [
+  "timeout",
+  "3600",
+  "/home/doremy/et-study-20261010/stage/test_llama_microbench",
+  "--linear",
+  "--regime=prefill",
+  "--storage=texture3d",
+  "--skip-correctness",
+  "--scheme=4w",
+  "--model=llama-3.2-1b"
+ ],
+ "guard_pid": 637783,
+ "started_utc": "2026-10-09T18:22:01Z",
+ "state": "finished",
+ "polls": 8,
+ "job_pid": 637784,
+ "foreign": [],
+ "rc": 1,
+ "job_rc": 1,
+ "ended_utc": "2026-10-09T18:22:16Z"
+}
