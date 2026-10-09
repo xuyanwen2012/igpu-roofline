@@ -2,7 +2,7 @@
 
 ## State
 
-2026-10-09 18:40 UTC: finished, nothing is running. Parts A to D done; no decision is needed from the owner.
+2026-10-09 18:32 UTC: finished, nothing is running, branch pushed. Parts A to D done; no decision is needed from the owner.
 
 Intel Arc B580 (BMG G21), ANV Mesa 26.2.3, clocks as found (GT 1200 to 2850 MHz, not pinned, `power_saving`
 profile), one sitting 17:49 to 18:25 UTC. Roofline tool unmodified (code `f87e89a`, runner `784e6acafa0a`);
