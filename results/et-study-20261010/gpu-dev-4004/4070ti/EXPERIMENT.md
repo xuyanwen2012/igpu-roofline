@@ -165,3 +165,7 @@ texture3d; the campaign's own runs show the same marker. It is not a correctness
 - Review round 3: recapture and all numbers confirmed; the original deletion stays an open rule violation. One
   question to the owner (accept the recapture as replacement evidence, or not) is recorded in `STUDY.md`,
   "Decision needed from the owner", 19:05 UTC. Waiting; no measurement or review is repeated meanwhile.
+- Owner decision (task file, dated 2026-10-09 19:05 UTC): option A, the retained recapture is accepted as
+  replacement evidence; the first capture's blob size and entropy columns stay unverifiable; the rule 7 breach
+  stays on record; the dev-zone rule of the tuning campaigns does not apply to this study. Study closed, nothing
+  re-run.

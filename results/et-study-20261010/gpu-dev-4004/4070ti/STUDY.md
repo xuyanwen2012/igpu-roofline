@@ -2,7 +2,9 @@
 
 ## State
 
-- 2026-10-09 19:05 UTC: **waiting for the owner** (one question, next section): review round 3 confirmed the
+- 2026-10-09 19:00 UTC: **CLOSED.** Owner decision: option A (next section). Nothing is running on the device;
+  nothing was re-run after the decision.
+- Before that: **waiting for the owner** (one question, next section): review round 3 confirmed the
   recapture and every number, and holds that the deletion of the original blobs is an unresolved rule violation
   only the owner can accept. Nothing is running; nothing will be run or re-reviewed while this is pending.
 - 2026-10-09 18:55 UTC: review round 2 found one failed check (rule 7: the pipeline-statistics script deleted its
@@ -18,8 +20,14 @@
 
 ## Decision needed from the owner
 
-**Recorded once, 2026-10-09 19:05 UTC. Status: waiting. The study is NOT closed until this is answered.**
-While it is pending nothing is measured, recomputed or reviewed again.
+**Answered: option A (owner decision appended to the task file, dated 2026-10-09 19:05 UTC, read 19:00 UTC by
+the device host's clock). The study is closed.** The retained recapture is accepted as the evidence for part C's
+statement that the cache blob is not readable; the first capture's size and entropy columns stay unverifiable;
+the breach of rule 7 stays on record; nothing was re-run. Scope: the tuning campaigns' dev-zone rule does not
+apply to this study; everything under this results root is covered by the task's deliverables and rule 3.
+
+The question as it was recorded (the times written in this file's State section for 18:45 to 19:05 were
+estimates and run a few minutes ahead of the clock):
 
 Rule 7 (never delete results) was broken once: the first pipeline-statistics capture (`isa/raw/`, 18:23 UTC)
 deleted its 15 pipeline cache blobs after recording each blob's size and byte entropy. The blobs cannot be
