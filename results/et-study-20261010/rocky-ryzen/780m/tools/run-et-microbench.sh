@@ -3,7 +3,8 @@
 # Part B/C of et-study-20261010 on the 780M: timing of the final configuration's linear and fused
 # attention kernels, then one RADV shader dump per scheme. Read-only on the ExecuTorch build; all
 # output goes to <outdir>. Holds the campaign (gpu-lab) lock for the whole script. No clock change,
-# no monitor process: the GPU clock is read once before and after each invocation only.
+# no monitor process: the GPU clock is read once before and after each invocation only; the same line
+# records whether a foreign monitor (nvtop, radeontop, amdgpu_top) is present.
 set -u
 B=$1; O=$2
 U=00000000-c400-0000-0000-000000000000
@@ -11,7 +12,7 @@ mkdir -p "$O" && cd "$O" || exit 1
 exec 9>>"$HOME/.cache/gpu-lab/lock-$U"
 flock -n 9 || { echo "campaign lock busy" > status.txt; exit 75; }
 export ET_VK_SARC_UNVERIFIED=1 ET_VK_SARC_DEV_PROFILE=780m-final
-clk() { echo "$(date -u +%FT%TZ) $1 sclk=$(grep '\*' /sys/class/drm/card*/device/pp_dpm_sclk | tr -d '\n') busy=$(cat /sys/class/drm/card*/device/gpu_busy_percent) load=$(cut -d' ' -f1-3 /proc/loadavg)" >> clock.txt; }
+clk() { echo "$(date -u +%FT%TZ) $1 sclk=$(grep '\*' /sys/class/drm/card*/device/pp_dpm_sclk | tr -d '\n') busy=$(cat /sys/class/drm/card*/device/gpu_busy_percent) load=$(cut -d' ' -f1-3 /proc/loadavg) monitors=$(pgrep -x -d, 'nvtop|radeontop|amdgpu_top' || echo none)" >> clock.txt; }
 { date -u +%FT%TZ; uname -r; vulkaninfo --summary 2>/dev/null | grep -E "deviceName|driverInfo|apiVersion" | head -3; sha256sum "$B"; env | grep ET_VK; } > env.txt
 echo "running linear" > status.txt
 # r0 is a warm-up invocation (kept, not used); r1..r5 are the timed repeats (each: 3 warm + 5 timed runs per case).

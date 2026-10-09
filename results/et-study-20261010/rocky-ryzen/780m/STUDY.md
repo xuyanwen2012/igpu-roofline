@@ -2,20 +2,13 @@
 
 ## State
 
-- 2026-10-09 18:35 UTC: NOTHING of this study is running on the device. Waiting for the GPU to be free
-  (see "Decision needed from the owner"); the device is checked at most every 20 minutes.
-- Part A ran 17:49 to 18:12 UTC (fast plan, tool 84361ac unmodified, finished; 36 of 36 roofs confirmed,
-  sentinel healthy in all 35 readings). A foreign `nvtop` attached to the GPU at 18:03:05 UTC. Measured
-  after that moment: the last 11 confirmation rows (all of the texture family), two sentinel readings and the
-  three 120 s sustained runs. Every sweep and every confirmation repeat of the matrix, fed-matrix, shared,
-  memory, FMA and dot roofs ended before it. Rule 5: the run is repeated once when the GPU is free.
-- Part B/C timing run: started 18:17 UTC, met the `nvtop`, stopped by me after 1 minute; its output is filed
-  as superseded on the device host and is used for nothing.
-- Done without the GPU so far: accumulator types of the nine dispatched kernels from their SPIR-V
-  (`isa/spirv-types.csv`), ISA counts of the roofline matrix shaders from the driver disassembly that part A
-  captured (`isa/roofline/`), the table generator (`tools/make_efficiency.py`).
+- 2026-10-09 19:06 UTC: RUNNING on the device: the part B/C timing run (`tools/run-et-microbench.sh`, detached,
+  campaign lock held, status in `status.txt` of its output folder on the device host). Next: the repeat of
+  part A. The owner ended the foreign `nvtop` at 19:05 UTC (decision in the task file, option a).
+- First part A run (17:49 to 18:12 UTC): kept for comparison, see "Decision" below for what in it was
+  measured with the `nvtop` attached.
 
-## Decision needed from the owner (written once, 2026-10-09 18:35 UTC)
+## Decision asked 2026-10-09 18:35 UTC, answered 19:05 UTC: option (a), the owner ended the `nvtop` (kept as written)
 
 An interactive `nvtop` (pid 415275, an ssh session opened 18:03:05 UTC from another machine, not started by
 this study) is attached to the 780M and was still there at 18:33 UTC, 30 minutes on. Rule 5 and the tuning
