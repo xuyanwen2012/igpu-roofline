@@ -13,6 +13,8 @@ et-sdpa,0xe488d372d851404c,16,927,1,0,0,171,whole shader,1091,16,? x1; d32 x64; 
 et-sdpa,0xe488d372d851404c,16,927,1,0,0,171,loop 0 (lines 191-948),741,16,? x1; d32 x48; d32x4 x3,d32 x10; d32x4 x4,d32x4 x16,0,0,0,8,165,0
 roofline,matrix_fp16_8x16x16_c2_lds,32,216,1,0,0,115,whole shader,346,2,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x4,0,0,1,131,0
 roofline,matrix_fp16_8x16x16_c2_lds,32,216,1,0,0,115,loop 0 (lines 299-345),44,2,d16u32 x8; d32 x2,0,0,0,0,0,0,14,0
+roofline,matrix_fp16_8x16x16_c4,32,59,1,0,0,19,whole shader,78,4,0,0,d16u32 x8; d32 x2,d32 x8,0,0,1,19,0
+roofline,matrix_fp16_8x16x16_c4,32,59,1,0,0,19,loop 0 (lines 47-59),10,4,0,0,0,0,0,0,0,2,0
 roofline,matrix_fp16_8x16x16_c4_lds,32,226,1,0,0,119,whole shader,359,4,d16u32 x8; d32 x2,d16u32 x50,d16u32 x50,d32 x8,0,0,1,134,0
 roofline,matrix_fp16_8x16x16_c4_lds,32,226,1,0,0,119,loop 0 (lines 303-349),44,4,d16u32 x8; d32 x2,0,0,0,0,0,0,12,0
 roofline,matrix_fp16_8x16x16_c8,32,79,1,0,0,27,whole shader,111,8,0,0,d16u32 x8; d32 x2,d32 x16,0,0,1,32,0

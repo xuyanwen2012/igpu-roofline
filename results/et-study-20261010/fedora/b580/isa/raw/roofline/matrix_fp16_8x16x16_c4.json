@@ -1,0 +1,159 @@
+{
+  "rc": 0,
+  "shader": "matrix_fp16_8x16x16_c4",
+  "stderr": "Device: Intel(R) Arc(tm) B580 Graphics (BMG G21) (Vulkan 1.4)\nFeatures: cooperativeMatrix=1 shaderFloat16=1 shaderInt8=1 16bitStorage=1 8bitStorage=1 vulkanMemoryModel=1 subgroupSizeControl=1\nSubgroup size: 32 (size control: 1)\nBUFFER bytes=256 type=3 flags=7\nBUFFER bytes=512 type=3 flags=7\nBUFFER bytes=16 type=3 flags=7\nBUFFER bytes=16384 type=3 flags=7\n",
+  "inspector_sha256": "0a456d70a668ada777327106e17b84b006344876f304ed7463916fed95f1284e",
+  "records": [
+    {
+      "config": {
+        "chains": 4,
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=8",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float16_t",
+          "-DCHAINS=4",
+          "build/shaders/matrix_fp16_8x16x16_c4.comp",
+          "-o",
+          "build/shaders/matrix_fp16_8x16x16_c4.spv"
+        ],
+        "dtype": "fp16",
+        "family": "matrix",
+        "groups": 16,
+        "k": 16,
+        "loops": 128,
+        "m": 8,
+        "matrix_n": 16,
+        "n": 1024,
+        "name": "matrix_fp16_8x16x16_c4",
+        "runner_sha256": "784e6acafa0a54e5d42031183e65860acc1cdd60794b9a4d023ef2a94afbd1d4",
+        "samples": 21,
+        "schema_version": 2,
+        "shader": "shaders/matrix_fp16_8x16x16_c4.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 2,
+          "coopmat_muladd": 4,
+          "dot": 0,
+          "fma": 0,
+          "load_Input": 3,
+          "load_PushConstant": 1,
+          "volatile": 0
+        },
+        "spirv_sha256": "1255dc37568ab11301fa75ad65730e52d6c73a2e30cd6acbc057947e3c1be539",
+        "stride": 1,
+        "subgroup": 32,
+        "wg": 32,
+        "width": 1
+      },
+      "executables": [
+        {
+          "description": "SIMD32 compute shader",
+          "name": "compute",
+          "representations": [
+            {
+              "bytes": 44,
+              "description": "Map of push constant data provided to the shader",
+              "name": "Shader push map",
+              "text": "Inline promoted dwords: 1, 146, 147, 148, \n"
+            },
+            {
+              "bytes": 7857,
+              "description": "Final GEN assembly for the generated shader binary",
+              "name": "GEN Assembly",
+              "text": "(W)     mov (16)                  r62           r0.1<0>                           {Compacted}\n        mov (32)                  r63           0x00000000                        {Compacted}\n        mov (32)                  r11           0x00000000                        {Compacted}\n        mov (32)                  r13           0x00000000                        {Compacted}\n        mov (32)                  r15           0x2c002c00\n        mov (32)                  r17           0x2c002c00\n        mov (32)                  r19           0x30003000\n        mov (32)                  r21           0x30003000\n        mov (32)                  r23           0x32003200\n        mov (32)                  r25           0x32003200\n(W)     mov (8)                   r29:uw        0x76543210:v\n(W)     add (8)                   r29.8:uw      r29:uw            8:uw            {I@1}\n(W)     add (16)                  r29.16:uw     r29:uw            16:uw           {I@1}\n        mov (32)                  r27           r29:uw                            {I@1}\n        shl (32)                  r30:d         r27:d             0x00000002      {I@1}\n        shr (32)                  r32           r27               0x00000004\n        and (32)                  r36           r27               0x0000000f\n        send.ugm (32)             r58     r30    null:0  0x00000000  0x64200500   {ExBSO,I@3,$0}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0]\n        send.ugm (32)             r60     r30    null:0  0x00080000  0x64200500   {ExBSO,$0}  // wr:2+0, rd:2; load.ugm.d32.a32.bti[0][A+0x80]\n        shl (32)                  r34:d         r32:d             0x00000005      {I@2}\n        add (32)                  r38:d         r34:d             r36:d           {Compacted,I@1}\n        shl (32)                  r40:d         r38:d             0x00000001      {I@1}\n        send.ugm (32)             r42     r40    null:0  0x01000000  0x64200B00   {ExBSO,I@1,$1}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1]\n(W)     sync.nop (1)                            null                              {$1.src}\n        send.ugm (32)             r44     r40    null:0  0x01020000  0x64200B00   {ExBSO,$2}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x20]\n(W)     sync.nop (1)                            null                              {$2.src}\n        send.ugm (32)             r46     r40    null:0  0x01080000  0x64200B00   {ExBSO,$3}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x80]\n(W)     sync.nop (1)                            null                              {$3.src}\n        send.ugm (32)             r48     r40    null:0  0x010A0000  0x64200B00   {ExBSO,$4}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0xa0]\n(W)     sync.nop (1)                            null                              {$4.src}\n        send.ugm (32)             r50     r40    null:0  0x01100000  0x64200B00   {ExBSO,$5}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x100]\n(W)     sync.nop (1)                            null                              {$5.src}\n        send.ugm (32)             r52     r40    null:0  0x01120000  0x64200B00   {ExBSO,$6}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x120]\n(W)     sync.nop (1)                            null                              {$6.src}\n        send.ugm (32)             r54     r40    null:0  0x01180000  0x64200B00   {ExBSO,$7}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x180]\n(W)     sync.nop (1)                            null                              {$7.src}\n        send.ugm (32)             r56     r40    null:0  0x011A0000  0x64200B00   {ExBSO,$8}  // wr:2+0, rd:2; load.ugm.d16u32.a32.bti[1][A+0x1a0]\n        mov (32)                  r3<2>:uw      r42<2>:uw                         {$1.dst}\n        mov (32)                  r5<2>:uw      r46<2>:uw                         {$3.dst}\n        mov (32)                  r7<2>:uw      r50<2>:uw                         {$5.dst}\n        mov (32)                  r9<2>:uw      r54<2>:uw                         {$7.dst}\n        mov (32)                  r3.1<2>:uw    r44<2>:uw                         {@4,$2.dst}\n        mov (32)                  r5.1<2>:uw    r48<2>:uw                         {@4,$4.dst}\n        mov (32)                  r7.1<2>:uw    r52<2>:uw                         {@4,$6.dst}\n        mov (32)                  r9.1<2>:uw    r56<2>:uw                         {@4,$8.dst}\n\nL0:\n        cmp (32)       (ge)f0.0   null          r63               r2<0>           {I@2}\n(f0.0)  break (32)                            jip:L1              uip:L1\n(W)     sync.nop (1)                            null                              {$0.dst}\n(W)     sync.nop (1)                            null                              {I@3}\n(W)     dpas.8x8 (16)             r11<0>:hf     r11<0;0,0>:hf     r3<0;0,0>:hf      r58<0;0,0>:hf {$9}\n(W)     dpas.8x8 (16)             r15<0>:hf     r15<0;0,0>:hf     r3<0;0,0>:hf      r58<0;0,0>:hf {$10}\n(W)     dpas.8x8 (16)             r19<0>:hf     r19<0;0,0>:hf     r3<0;0,0>:hf      r58<0;0,0>:hf {$11}\n(W)     dpas.8x8 (16)             r23<0>:hf     r23<0;0,0>:hf     r3<0;0,0>:hf      r58<0;0,0>:hf {$0}\n        add (32)                  r63:d         r63:d             1:d\n\nL1:\n        while (32)                            L0\n(W)     add (16)                  r59:d         r62<0>:d          r2.1<0>:d       {Compacted,$0.dst}\n(W)     mov (16)                  r127          r0                                {Compacted}\n(W)     shl (16)                  r60:d         r59<0>:d          0x0000000a      {I@2}\n        add (32)                  r61:d         r60<0>:d          r30:d           {Compacted,I@1}\n(W)     sync.nop (1)                            null                              {$9.dst}\n        send.ugm (32)             null    r61    r11:2   0x02000080  0x64000504   {ExBSO,I@1,$12}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2]\n(W)     sync.nop (1)                            null                              {$12.src}\n        send.ugm (32)             null    r61    r13:2   0x02080080  0x64000504   {ExBSO,$13}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x80]\n(W)     sync.nop (1)                            null                              {$13.src}\n(W)     sync.nop (1)                            null                              {$10.dst}\n        send.ugm (32)             null    r61    r15:2   0x02100080  0x64000504   {ExBSO,$14}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x100]\n(W)     sync.nop (1)                            null                              {$14.src}\n        send.ugm (32)             null    r61    r17:2   0x02180080  0x64000504   {ExBSO,$15}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x180]\n(W)     sync.nop (1)                            null                              {$15.src}\n(W)     sync.nop (1)                            null                              {$11.dst}\n        send.ugm (32)             null    r61    r19:2   0x02200080  0x64000504   {ExBSO,$0}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x200]\n(W)     sync.nop (1)                            null                              {$0.src}\n        send.ugm (32)             null    r61    r21:2   0x02280080  0x64000504   {ExBSO,$1}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x280]\n(W)     sync.nop (1)                            null                              {$1.src}\n        send.ugm (32)             null    r61    r23:2   0x02300080  0x64000504   {ExBSO,$2}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x300]\n(W)     sync.nop (1)                            null                              {$2.src}\n        send.ugm (32)             null    r61    r25:2   0x02380080  0x64000504   {ExBSO,$3}  // wr:2+2, rd:0; store.ugm.d32.a32.bti[2][A+0x380]\n(W)     send.gtwy (32)            null    r127   null:0  0x00000000  0x02000000   {EOT,I@3}  // wr:1+0, rd:0; open (32)\n"
+            }
+          ],
+          "statistics": [
+            {
+              "description": "Number of GEN instructions in the final generated shader executable.",
+              "name": "Instructions",
+              "value": 59
+            },
+            {
+              "description": "Code size in bytes",
+              "name": "Code size",
+              "value": 1184
+            },
+            {
+              "description": "Number of instructions in the final generated shader executable which access external units such as the constant cache or the sampler.",
+              "name": "SENDs",
+              "value": 19
+            },
+            {
+              "description": "Number of loops (not unrolled) in the final generated shader executable.",
+              "name": "Loops",
+              "value": 1
+            },
+            {
+              "description": "Estimate of the number of EU cycles required to execute the final generated executable. This is an estimate only and may vary greatly from actual run-time performance.",
+              "name": "Cycles",
+              "value": 2778
+            },
+            {
+              "description": "Number of scratch spill operations. This gives a rough estimate of the cost incurred due to spilling temporary values to memory. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Spills",
+              "value": 0
+            },
+            {
+              "description": "Number of scratch fill operations. This gives a rough estimate of the cost incurred due to spilling temporary values to memory. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Fills",
+              "value": 0
+            },
+            {
+              "description": "Number of bytes of scratch memory required by the generated shader executable. If this is non-zero, you may want to adjust your shader to reduce register pressure.",
+              "name": "Scratch Memory Size",
+              "value": 0
+            },
+            {
+              "description": "Number of GRF registers required by the shader.",
+              "name": "GRF registers",
+              "value": 0
+            },
+            {
+              "description": "Number of push constants ranges provided to the shader.",
+              "name": "Push constant ranges",
+              "value": 0
+            },
+            {
+              "description": "Number of GRF registers in the payload registers dedicated to constants.",
+              "name": "Push constant registers",
+              "value": 0
+            },
+            {
+              "description": "Largest SIMD dispatch width.",
+              "name": "Max dispatch width",
+              "value": 32
+            },
+            {
+              "description": "Maximum number of registers used across the entire shader.",
+              "name": "Max live registers",
+              "value": 68
+            },
+            {
+              "description": "Number of bytes of workgroup shared memory used by this shader including any padding.",
+              "name": "Workgroup Memory Size",
+              "value": 0
+            },
+            {
+              "description": "Non SSA regs after NIR translation to BRW.",
+              "name": "Non SSA regs after NIR",
+              "value": 10
+            },
+            {
+              "description": "Hash generated from shader source or vkd3d-proton provided.",
+              "name": "Source hash",
+              "value": 3145474461078614076
+            }
+          ],
+          "subgroup_size": 32
+        }
+      ]
+    }
+  ]
+}

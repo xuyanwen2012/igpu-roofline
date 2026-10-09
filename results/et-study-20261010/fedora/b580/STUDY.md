@@ -2,7 +2,8 @@
 
 ## State
 
-2026-10-09 18:32 UTC: finished, nothing is running, branch pushed. Parts A to D done; no decision is needed from the owner.
+2026-10-09: finished, nothing is running, branch pushed (review corrections of the same day applied: three
+statements, no new measurement). Parts A to D done; no decision is needed from the owner.
 
 Intel Arc B580 (BMG G21), ANV Mesa 26.2.3, clocks as found (GT 1200 to 2850 MHz, not pinned, `power_saving`
 profile), one sitting 17:49 to 18:25 UTC. Roofline tool unmodified (code `f87e89a`, runner `784e6acafa0a`);
@@ -51,8 +52,10 @@ SPIR-V, `isa/spirv-types.csv`). Kernel reuse: 4w 16.0, 8da4w 21.33 operations pe
   trace gives the same within 2.5 points per shape (in the CSV notes).
 - 4w at its reuse: no matching roof. Context only, other accumulator type: fp16 -> fp32 shared-fed is 53.5 at
   10.7 and 101.9 TFLOP/s at 21.3 operations per loaded byte; the kernel, at 16.0, runs 33.8 to 47.2.
-- 8da4w reads 75 to 103 % of the shared-fed roof at its own reuse. Four shapes above 100 % mean that this row is
-  not a ceiling for the kernel, and part C shows why (access width).
+- 8da4w reads 75 to 103 % of the shared-fed roof at its own reuse. Three shapes read above 100 %: 8B `wq_wo`
+  103.4 % and 1B `w1_w3` 101.8 % clearly, 3B `wq_wo` 100.1 % only within the repeat spreads (not evidence by
+  itself). The two clear ones mean that this row is not a ceiling for the kernel, and part C shows why (access
+  width).
 - Fused attention (`sarc_dev_b580_sdpa_fused_d64_t16x64s16m8g4roj` / `d128_t16x128s16m8g8oj`, fp32 accumulator;
   the name is from the profile's definition, the run does not print it): 0.726 / 1.133 / 1.463 ms per layer,
   24.4 / 24.2 / 25.0 TFLOP/s over the blocks it executes = **21.1 / 20.9 / 21.6 %** of the fp16 -> fp32 register
@@ -67,7 +70,8 @@ One `dpas` (repeat count 8) is one 8-row multiply-add.
 | | SIMD | spills : fills | dpas per loop | tile arithmetic | shared-memory loads per loop | other sends per loop | instructions per dpas (with sync) |
 |---|---|---|---:|---|---|---|---:|
 | 4w kernel (K step 16) | 16 | 0 : 0 | 8 | 4 x 2 = 8 | 48: 32 x 16-bit (B), 16 x 32-bit (A) | 2 shared stores, 1 sampler, 2 image loads, 1 global load, 1 barrier | 39 |
-| roofline fp16 register (CHAINS 8) | 32 | 0 : 0 | 8 | 8 | 0 | 0 | 1.8 |
+| roofline fp16 register, the confirmed roof's shader (CHAINS 4) | 32 | 0 : 0 | 4 | 4 | 0 | 0 | 2.5 |
+| roofline fp16 register, CHAINS 8 (additional context, not the roof's configuration) | 32 | 0 : 0 | 8 | 8 | 0 | 0 | 1.8 |
 | roofline fp16 shared-fed (CHAINS 8) | 32 | 0 : 0 | 8 | 8 | 10: 8 x 16-bit (B), 2 x 32-bit (A) | 0 | 6.6 |
 | 8da4w kernel (group, K = 128) | 16 | 0 : 0 | 16 | 4 x 1 x 4 = 16 | 73: 65 x 32-bit, 8 x (4 x 32-bit) | 17 shared stores, 2 sampler, 3 global loads, 2 barriers | 34 |
 | roofline int8 register (CHAINS 8) | 32 | 0 : 0 | 8 | 8 | 0 | 0 | 1.6 |
@@ -82,7 +86,7 @@ One `dpas` (repeat count 8) is one 8-row multiply-add.
    8da4w kernel does the opposite of the roofline shader: it loads B as wide 32-bit messages (2 per tile) where
    the roofline shader uses 16 byte gathers, which is why it reaches and passes that fed row.
    The staging around the products (stores, sampler, image, barrier, sync) is 34 to 39 instructions per `dpas`
-   in the kernels against 1.6 to 1.8 in the register roof.
+   in the kernels against 1.6 (int8, CHAINS 8) and 2.5 (fp16, CHAINS 4) in the shaders of the register roofs.
 
 ## D. Where the gap is: 8da4w (the lower scheme), 8B weighted
 
@@ -93,7 +97,10 @@ One `dpas` (repeat count 8) is one 8-row multiply-add.
 | fed from shared memory at the kernel's reuse (CHAINS 2) | 72.81 | 64.7 % | 31.5 % |
 | kernel, 8B weighted (3B 69.64, 1B 69.88) | 66.07 | 9.3 % (3B 4.3 %, 1B 4.0 %) | 28.6 % |
 
-0.892 x 0.353 x 0.907 = 0.286. **Two thirds of the distance is reuse**: the kernel issues 4 multiply-adds per
+0.892 x 0.353 x 0.907 = 0.286. Two different denominators: the reuse step loses 64.7 % *of the fed roof before it*; measured against the
+whole distance from the register roof to the kernel (231.37 - 66.07 = 165.31 TOP/s) the steps are 15.1 %
+(feed), **80.8 % (reuse)** and 4.1 % (kernel against the fed row at its reuse). **Four fifths of the distance is
+reuse**: the kernel issues 4 multiply-adds per
 5 loaded fragments because each subgroup keeps an int32 and an fp32 accumulator set. Against a feed at that
 reuse the kernel loses 4 to 9 % (weighted), so better staging of the same structure cannot gain more than that
 by this measure, with the caveat of part C that the row is byte-fed and SIMD32. Phase timing from the tuning
@@ -110,7 +117,7 @@ Hypotheses for a third round (none tested here):
    in September; both accumulator sets already take 64 of 128 registers. Cheapest experiment: compile only
    (`INTEL_DEBUG=cs`, no timing) a 32 x 32 subgroup-tile variant whose fp32 totals leave the registers between
    groups; 0 spills decides whether a timed screen is worth running.
-2. **The fed row is not the ceiling at this reuse.** For: four shapes exceed it; the roofline shader loads B by
+2. **The fed row is not the ceiling at this reuse.** For: two shapes clearly exceed it (103.4 and 101.8 %; a third, 100.1 %, is within the repeat spread); the roofline shader loads B by
    bytes at SIMD32, the kernel by 32-bit words at SIMD16. Against: none measured; the size of the effect is
    unknown. Cheapest experiment: one focused roofline run of a shared-fed int8 variant with a 32-bit shared
    array and required subgroup 16 (a new tool variant, about one minute of device time).

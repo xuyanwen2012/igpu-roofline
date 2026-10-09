@@ -70,7 +70,7 @@ afterwards. This is a measurement and inspection study: no kernel was changed, n
 | Matrix, 8da4w | `matrix_int8` 231.37 TOP/s (3 repeats, 0.0 %) | sint8 x sint8 -> sint32, shape 8x16x32 | same subgroup mismatch |
 | Matrix, attention | `matrix_fp16_fp32` 115.68 TFLOP/s (3 repeats, 0.0 %) | fp16 x fp16 -> fp32, 8x16x16 | same subgroup mismatch |
 | Operand feed, 4w | fed shared (CHAINS 8) `matrix_fp16_feed_shared` 109.76 (0.0 %). **At the kernel's reuse: no matching roof** | | fp16 -> fp16 shared-fed rows at CHAINS 2 and 4 fail the tool's gates (`short; fixed_cost`) in part A and in the focused repeats. Context only (other accumulator): fp16 -> fp32 CHAINS 2 53.51 (confirmed in `../b580-reuse-matrix_fp16_fp32_8x16x16_c2_lds`), CHAINS 4 101.92 (confirmed in part A) |
-| Operand feed, 8da4w | fed shared (CHAINS 8) `matrix_int8_feed_shared` 206.36 (0.2 %); at the kernel's reuse: int8 shared-fed CHAINS 2 (21.33 ops per loaded byte, equal to the kernel's) 72.81 TOP/s, 3 repeats, spread 0.4 % (`../b580-reuse-matrix_int8_8x16x32_c2_lds`; part A single sweep row 72.87) | type, shape, source and ops per loaded byte match | **access width does not match**: the roofline shader loads each B tile with 16 byte-wide shared-memory messages (`d8u32`), the kernel with 2 messages of four 32-bit words (`d32x4`); and SIMD32 against SIMD16. Four shapes read 100.1 to 103.4 % of this row: it is not a ceiling for this kernel |
+| Operand feed, 8da4w | fed shared (CHAINS 8) `matrix_int8_feed_shared` 206.36 (0.2 %); at the kernel's reuse: int8 shared-fed CHAINS 2 (21.33 ops per loaded byte, equal to the kernel's) 72.81 TOP/s, 3 repeats, spread 0.4 % (`../b580-reuse-matrix_int8_8x16x32_c2_lds`; part A single sweep row 72.87) | type, shape, source and ops per loaded byte match | **access width does not match**: the roofline shader loads each B tile with 16 byte-wide shared-memory messages (`d8u32`), the kernel with 2 messages of four 32-bit words (`d32x4`); and SIMD32 against SIMD16. Three shapes read above 100 % of this row (8B `wq_wo` 103.4 %, 1B `w1_w3` 101.8 %; 3B `wq_wo` 100.1 % is within the repeat spreads and is no evidence alone): it is not a ceiling for this kernel |
 | Operand feed, attention | no matching roof | | K and V tiles come from storage buffers, e from shared memory; mixed reuse |
 | Bandwidth | not used for a percentage | | byte model of weights / activations not built in this study |
 
@@ -94,7 +94,11 @@ three batches, so short-run roofs are used).
     8 of 4 x 32 bit), 17 shared stores, 2 sampler, 3 global loads, 2 barriers, 196 sync.
   - Fused attention: SIMD16, 927 (head_dim 64) and 1095 (head_dim 128) instructions, 0:0 spills:fills, 16 and
     32 dpas in the block loop.
-  - Roofline register roofs: SIMD32, 0 spills, 8 dpas in a 13- or 14-instruction loop with no send.
+  - Roofline register roofs, the shaders of the confirmed configurations: fp16 `matrix_fp16_8x16x16_c4` (CHAINS 4,
+    source `confirm/matrix_fp16_8x16x16_c4_75142c8f06d1.json`): SIMD32, 0:0 spills:fills, 4 dpas in a
+    10-instruction loop with no send (2.5 instructions per dpas); fp16 -> fp32 and int8 (CHAINS 8): SIMD32, 0
+    spills, 8 dpas in a 14- and a 13-instruction loop. The fp16 CHAINS 8 register shader (8 dpas in 14
+    instructions) is in `isa/` as additional context only; it is not the roof's configuration.
     Shared-fed: SIMD32, per A/B pair 2 x 32-bit loads for A and 8 x 16-bit (fp16) or 16 x 8-bit (int8) gathers
     for B.
 - Occupancy estimate and limiting resource: not estimated (no hardware counter capture in this study).
