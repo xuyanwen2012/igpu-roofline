@@ -1,0 +1,20 @@
+2026-10-09T18:15:24Z start linear-r1 temp=50
+2026-10-09T18:16:32Z end linear-r1 rc=0
+2026-10-09T18:16:38Z start sdpa-r1
+2026-10-09T18:16:39Z end sdpa-r1 rc=0
+2026-10-09T18:16:44Z start linear-r2 temp=47
+2026-10-09T18:17:51Z end linear-r2 rc=0
+2026-10-09T18:17:56Z start sdpa-r2
+2026-10-09T18:17:57Z end sdpa-r2 rc=0
+2026-10-09T18:18:03Z start linear-r3 temp=46
+2026-10-09T18:19:11Z end linear-r3 rc=0
+2026-10-09T18:19:16Z start sdpa-r3
+2026-10-09T18:19:17Z end sdpa-r3 rc=0
+2026-10-09T18:19:17Z start linear-r4 temp=48
+2026-10-09T18:20:24Z end linear-r4 rc=0
+2026-10-09T18:20:29Z start sdpa-r4
+2026-10-09T18:20:30Z end sdpa-r4 rc=0
+2026-10-09T18:20:30Z start linear-r5 temp=49
+2026-10-09T18:21:38Z end linear-r5 rc=0
+2026-10-09T18:21:43Z start sdpa-r5
+2026-10-09T18:21:44Z end sdpa-r5 rc=0

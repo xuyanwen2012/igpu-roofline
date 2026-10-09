@@ -1,0 +1,113 @@
+# sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half
+type,%61,float 16x16 Acc
+type,%95,half 16x16 B
+type,%129,half 16x16 A
+type,%181,half 16x16 Acc
+muladd,count=64,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[float 16x16 Acc],from=[]
+other,count=12,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=64,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=12,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=12,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=16,OpFDiv,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpMatrixTimesScalar,result=[float 16x16 Acc],from=[float 16x16 Acc]
+other,count=16,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,muladd_total=64
+# sarc_dev_4070ti_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half
+type,%59,float 16x16 Acc
+type,%94,half 16x16 B
+type,%128,half 16x16 A
+type,%180,half 16x16 Acc
+muladd,count=32,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[float 16x16 Acc],from=[]
+other,count=12,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=16,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=12,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=12,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=16,OpFDiv,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpMatrixTimesScalar,result=[float 16x16 Acc],from=[float 16x16 Acc]
+other,count=16,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,sarc_dev_4070ti_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,muladd_total=32
+# sarc_linear_dq8ca_coopmat_zpgtr_t128x128k64g44s32mk32ra_buffer_texture2d_half
+type,%116,float 16x16 Acc
+type,%127,int 16x16 Acc
+type,%740,char 16x32 A
+type,%776,char 32x16 B
+type,%1072,half 16x16 Acc
+muladd,count=8,result=[int 16x16 Acc],A=[char 16x32 A],B=[char 32x16 B],C=[int 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=1,OpConstantComposite,result=[int 16x16 Acc],from=[]
+other,count=6,OpConvertSToF,result=[float 16x16 Acc],from=[int 16x16 Acc]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[char 16x32 A],from=[]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[char 32x16 B],from=[]
+other,count=6,OpCooperativeMatrixLoadKHR,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[int 16x16 Acc],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=4,OpFAdd,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=12,OpFMul,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpFSub,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpPhi,result=[int 16x16 Acc],from=[int 16x16 Acc | int 16x16 Acc]
+summary,sarc_linear_dq8ca_coopmat_zpgtr_t128x128k64g44s32mk32ra_buffer_texture2d_half,muladd_total=8
+# sarc_linear_dq8ca_coopmat_zpgtr_t128x128k64g44s32mk32ra_texture3d_texture2d_half
+type,%116,float 16x16 Acc
+type,%127,int 16x16 Acc
+type,%740,char 16x32 A
+type,%776,char 32x16 B
+type,%1054,half 16x16 Acc
+muladd,count=8,result=[int 16x16 Acc],A=[char 16x32 A],B=[char 32x16 B],C=[int 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=1,OpConstantComposite,result=[int 16x16 Acc],from=[]
+other,count=6,OpConvertSToF,result=[float 16x16 Acc],from=[int 16x16 Acc]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[char 16x32 A],from=[]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[char 32x16 B],from=[]
+other,count=6,OpCooperativeMatrixLoadKHR,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[int 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=4,OpFAdd,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=2,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=12,OpFMul,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=4,OpFSub,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=10,OpLoad,result=[float 16x16 Acc],from=[]
+other,count=4,OpPhi,result=[int 16x16 Acc],from=[int 16x16 Acc | int 16x16 Acc]
+other,count=1,OpTypeArray,result=[float 16x16 Acc],from=[]
+summary,sarc_linear_dq8ca_coopmat_zpgtr_t128x128k64g44s32mk32ra_texture3d_texture2d_half,muladd_total=8
+# sarc_linear_q4gsw_coopmat_t128x128k16g24s32ga_texture3d_texture2d_half
+type,%177,half 16x16 Acc
+type,%188,float 16x16 Acc
+type,%532,half 16x16 A
+type,%573,half 16x16 B
+muladd,count=16,result=[half 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[half 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=1,OpConstantComposite,result=[half 16x16 Acc],from=[]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=8,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=16,OpFAdd,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=16,OpFConvert,result=[float 16x16 Acc],from=[half 16x16 Acc]
+other,count=8,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=36,OpLoad,result=[half 16x16 Acc],from=[]
+other,count=16,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=1,OpTypeArray,result=[half 16x16 Acc],from=[]
+summary,sarc_linear_q4gsw_coopmat_t128x128k16g24s32ga_texture3d_texture2d_half,muladd_total=16
+# sarc_linear_q4gsw_coopmat_t256x128k16g42s32ga_texture3d_texture2d_half
+type,%179,half 16x16 Acc
+type,%190,float 16x16 Acc
+type,%533,half 16x16 A
+type,%574,half 16x16 B
+muladd,count=32,result=[half 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[half 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=1,OpConstantComposite,result=[half 16x16 Acc],from=[]
+other,count=16,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=4,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=2,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=32,OpFAdd,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=32,OpFConvert,result=[float 16x16 Acc],from=[half 16x16 Acc]
+other,count=16,OpFConvert,result=[half 16x16 Acc],from=[float 16x16 Acc]
+other,count=66,OpLoad,result=[half 16x16 Acc],from=[]
+other,count=32,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+other,count=1,OpTypeArray,result=[half 16x16 Acc],from=[]
+summary,sarc_linear_q4gsw_coopmat_t256x128k16g42s32ga_texture3d_texture2d_half,muladd_total=32

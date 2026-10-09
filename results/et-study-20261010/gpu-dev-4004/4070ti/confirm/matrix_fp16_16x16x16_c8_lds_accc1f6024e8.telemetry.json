@@ -1,0 +1,26 @@
+[
+  {
+    "utc": "2026-10-09T18:00:44.442415+00:00",
+    "temperatures_c": {
+      "nvidia:gpu": "52"
+    },
+    "gpu_freq": {
+      "nvidia-smi:sm": "2790000000",
+      "nvidia-smi:mem": "10501000000"
+    },
+    "gpu_busy_percent": "33",
+    "text": "nvidia:gpu 52\ngpu_busy_percent 33\nloadavg 0.35 0.39 0.24 1/353 1248970"
+  },
+  {
+    "utc": "2026-10-09T18:00:46.062107+00:00",
+    "temperatures_c": {
+      "nvidia:gpu": "58"
+    },
+    "gpu_freq": {
+      "nvidia-smi:sm": "2775000000",
+      "nvidia-smi:mem": "10501000000"
+    },
+    "gpu_busy_percent": "98",
+    "text": "nvidia:gpu 58\ngpu_busy_percent 98\nloadavg 0.40 0.40 0.25 2/373 1249005"
+  }
+]

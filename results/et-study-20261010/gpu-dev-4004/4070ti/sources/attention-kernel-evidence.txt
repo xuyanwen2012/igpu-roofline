@@ -1,0 +1,10 @@
+# Which fused attention kernel the final configuration dispatches (read-only evidence of the tuning campaign).
+# 1. strings found in the warm ETDump traces of gate s4-c1 (candidate arm), count of occurrences per file:
+1b-4w-cand.etdp d64=     32 sarc_dev_4070ti_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half  d128=
+1b-8da4w-cand.etdp d64=     32 sarc_dev_4070ti_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half  d128=
+3b-4w-cand.etdp d64= d128=     56 sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half 
+3b-8da4w-cand.etdp d64= d128=     56 sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half 
+8b-4w-cand.etdp d64= d128=     64 sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half 
+8b-8da4w-cand.etdp d64= d128=     64 sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half 
+# 2. kernel lines of the reference-error probe on topic3 (results/4070ti/probe/fused1-topic3/sdpa-error-candidate.txt):
+     12 pairing=ok

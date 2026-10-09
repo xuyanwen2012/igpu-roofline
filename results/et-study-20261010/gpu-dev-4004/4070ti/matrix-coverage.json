@@ -1,0 +1,304 @@
+{
+  "device_shapes": [
+    {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "k": 16,
+      "m": 16,
+      "n": 16,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "k": 16,
+      "m": 16,
+      "n": 8,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "k": 8,
+      "m": 16,
+      "n": 8,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 1,
+      "k": 16,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 1,
+      "k": 16,
+      "m": 16,
+      "n": 8,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 1,
+      "k": 8,
+      "m": 16,
+      "n": 8,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 7,
+      "b": 7,
+      "c": 9,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 9,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 3,
+      "b": 3,
+      "c": 5,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 5,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 7,
+      "b": 7,
+      "c": 9,
+      "k": 32,
+      "m": 16,
+      "n": 8,
+      "result": 9,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 3,
+      "b": 3,
+      "c": 5,
+      "k": 32,
+      "m": 16,
+      "n": 8,
+      "result": 5,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000141000,
+      "b": 1000141000,
+      "c": 1,
+      "k": 16,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491003,
+      "b": 1000491003,
+      "c": 0,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491003,
+      "b": 1000491003,
+      "c": 1,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491002,
+      "b": 1000491002,
+      "c": 0,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491002,
+      "b": 1000491002,
+      "c": 1,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    }
+  ],
+  "not_compiled": [
+    {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "k": 16,
+      "m": 16,
+      "n": 8,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 0,
+      "k": 8,
+      "m": 16,
+      "n": 8,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 1,
+      "k": 16,
+      "m": 16,
+      "n": 8,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 0,
+      "b": 0,
+      "c": 1,
+      "k": 8,
+      "m": 16,
+      "n": 8,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 7,
+      "b": 7,
+      "c": 9,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 9,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 7,
+      "b": 7,
+      "c": 9,
+      "k": 32,
+      "m": 16,
+      "n": 8,
+      "result": 9,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 3,
+      "b": 3,
+      "c": 5,
+      "k": 32,
+      "m": 16,
+      "n": 8,
+      "result": 5,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000141000,
+      "b": 1000141000,
+      "c": 1,
+      "k": 16,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491003,
+      "b": 1000491003,
+      "c": 0,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491003,
+      "b": 1000491003,
+      "c": 1,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491002,
+      "b": 1000491002,
+      "c": 0,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 0,
+      "saturating": 0,
+      "scope": 3
+    },
+    {
+      "a": 1000491002,
+      "b": 1000491002,
+      "c": 1,
+      "k": 32,
+      "m": 16,
+      "n": 16,
+      "result": 1,
+      "saturating": 0,
+      "scope": 3
+    }
+  ],
+  "note": "Only fp16, fp16->fp32 and int8 (s8 x s8 -> s32) variants are built; other type combinations are listed here."
+}

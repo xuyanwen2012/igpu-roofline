@@ -1,0 +1,18 @@
+2026-10-09T17:49:43Z
+7.0.0-38-generic
+name, driver_version, pstate, temperature.gpu, power.draw [W], power.limit [W], clocks.current.graphics [MHz], clocks_event_reasons.active
+NVIDIA GeForce RTX 4070 Ti SUPER, 615.71.09, P8, 37, 8.27 W, 285.00 W, 210 MHz, 0x0000000000000001
+	apiVersion         = 1.4.351
+	deviceName         = NVIDIA GeForce RTX 4070 Ti SUPER
+	driverInfo         = 615.71.09
+	deviceUUID         = 81a511a2-de7e-c3c8-f641-3562c315ffa7
+	apiVersion         = 1.4.335
+	deviceName         = llvmpipe (LLVM 21.1.8, 256 bits)
+	driverInfo         = Mesa 26.0.8-1ubuntu0.3 (LLVM 21.1.8)
+	deviceUUID         = 6d657361-3236-2e30-2e38-2d3175627500
+activating
+7326bd778e81796c321ae0906afb0e1519f043fe
+0
+b1180c72e9c5397049a001cb2a71a64644ed17d63814467395dd153fbc39bad7  /home/doremy/et-study-20261010/igpu-roofline/build/host/roofline
+3df2644710f48c7b1e481ce686a7e80d0f7c808dc7744a6ae9def8a10304fc1b  /home/doremy/et-study-20261010/igpu-roofline/build/host/inspect
+03307d6b4d607bfee5d933b3aceb5bf8bcef8bc964ca4ef817c29bbd517386f1  /home/doremy/et-study-20261010/igpu-roofline/build/shader-manifest.json

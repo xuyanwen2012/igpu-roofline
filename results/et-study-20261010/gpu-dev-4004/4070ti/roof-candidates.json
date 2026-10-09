@@ -1,0 +1,769 @@
+{
+  "quality": {
+    "max_median_se": 0.03,
+    "max_fixed_fraction": 0.1,
+    "max_drift": 0.05
+  },
+  "selected": {
+    "memory_fp32_0": [
+      {
+        "name": "mem_read_v4",
+        "rate": 711973366041.7031,
+        "raw": "sweep-memory/mem_read_v4_bf375acd8d02.jsonl"
+      },
+      {
+        "name": "mem_read_v4",
+        "rate": 657148726778.2549,
+        "raw": "sweep-memory/mem_read_v4_f1854bcd9b6f.jsonl"
+      }
+    ],
+    "memory_fp32_2": [
+      {
+        "name": "mem_copy_v4",
+        "rate": 646085974244.6959,
+        "raw": "sweep-memory/mem_copy_v4_25199fabe27c.jsonl"
+      },
+      {
+        "name": "mem_copy_v4",
+        "rate": 617302216054.8336,
+        "raw": "sweep-memory/mem_copy_v4_a6ac19be6c24.jsonl"
+      }
+    ],
+    "memory_fp32_1": [
+      {
+        "name": "mem_write_v4",
+        "rate": 642047545425.3218,
+        "raw": "sweep-memory/mem_write_v4_ba94376023cb.jsonl"
+      },
+      {
+        "name": "mem_write_v4",
+        "rate": 607857559884.8884,
+        "raw": "sweep-memory/mem_write_v4_a727ee906b36.jsonl"
+      }
+    ],
+    "memory_fp32_5": [
+      {
+        "name": "mem_triad_v4",
+        "rate": 632148870331.9062,
+        "raw": "sweep-memory/mem_triad_v4_c5d4e9e3cbeb.jsonl"
+      }
+    ],
+    "alu_fp32": [
+      {
+        "name": "alu_fp32_v1_c8",
+        "rate": 44421367184288.77,
+        "raw": "sweep-compute/alu_fp32_v1_c8_b4d7db847512.jsonl"
+      },
+      {
+        "name": "alu_fp32_v1_c8",
+        "rate": 44414168750704.07,
+        "raw": "sweep-compute/alu_fp32_v1_c8_eea30fec03ba.jsonl"
+      }
+    ],
+    "dot_int8": [
+      {
+        "name": "dot8_c8",
+        "rate": 78046467849921.84,
+        "raw": "sweep-compute/dot8_c8_50661ca2f8f0.jsonl"
+      },
+      {
+        "name": "dot8_c8",
+        "rate": 77608890340136.05,
+        "raw": "sweep-compute/dot8_c8_b4efb87d9cdb.jsonl"
+      }
+    ],
+    "alu_fp16": [
+      {
+        "name": "alu_fp16_v1_c2",
+        "rate": 44974878559633.51,
+        "raw": "sweep-compute/alu_fp16_v1_c2_944cdee88e7f.jsonl"
+      },
+      {
+        "name": "alu_fp16_v1_c2",
+        "rate": 44784722677275.914,
+        "raw": "sweep-compute/alu_fp16_v1_c2_a2cecd5aae1c.jsonl"
+      }
+    ],
+    "matrix_fp16": [
+      {
+        "name": "matrix_fp16_16x16x16_c8",
+        "rate": 182952326623067.47,
+        "raw": "sweep-compute/matrix_fp16_16x16x16_c8_baf919f2d730.jsonl"
+      },
+      {
+        "name": "matrix_fp16_16x16x16_c4",
+        "rate": 182656720595818.44,
+        "raw": "sweep-compute/matrix_fp16_16x16x16_c4_55bbdbc9771c.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c4",
+        "rate": 92808472667750.7,
+        "raw": "sweep-compute/matrix_fp16_fp32_16x16x16_c4_d86d900f0ae8.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c8",
+        "rate": 92775081257420.33,
+        "raw": "sweep-compute/matrix_fp16_fp32_16x16x16_c8_b92d7f84ed9e.jsonl"
+      }
+    ],
+    "matrix_int8": [
+      {
+        "name": "matrix_int8_16x16x32_c4",
+        "rate": 371142092424913.4,
+        "raw": "sweep-compute/matrix_int8_16x16x32_c4_9a8135e5da88.jsonl"
+      },
+      {
+        "name": "matrix_int8_16x16x32_c8",
+        "rate": 371023436074637.2,
+        "raw": "sweep-compute/matrix_int8_16x16x32_c8_6b30aaeda799.jsonl"
+      }
+    ],
+    "shared_fp32_2": [
+      {
+        "name": "sharedbw_fp32_v4_op2",
+        "rate": 19162678228448.16,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op2_216a3c494873.jsonl"
+      },
+      {
+        "name": "sharedbw_fp32_v4_op2",
+        "rate": 19075493937590.492,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op2_97491c69309f.jsonl"
+      }
+    ],
+    "shared_fp32_0": [
+      {
+        "name": "sharedbw_fp32_v2_op0",
+        "rate": 21072400015699.203,
+        "raw": "sweep-shared/sharedbw_fp32_v2_op0_81a9311a7851.jsonl"
+      },
+      {
+        "name": "sharedbw_fp32_v4_op0",
+        "rate": 20151868836463.086,
+        "raw": "sweep-shared/sharedbw_fp32_v4_op0_dcc2a0b8e2e9.jsonl"
+      }
+    ],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 1349728174571.981,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op0_acc32_79cdff47996a.jsonl"
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 710747951358.6791,
+        "raw": "sweep-shared/sharedbw_fp16_v2_op0_acc32_32a73e037a37.jsonl"
+      }
+    ],
+    "shared_fp16_2": [
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 11830237288135.592,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op2_1d02f6c51125.jsonl"
+      },
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 10214108448070.71,
+        "raw": "sweep-shared/sharedbw_fp16_v4_op2_e8551948d6b5.jsonl"
+      }
+    ],
+    "matrix_int8_feed_cache": [
+      {
+        "name": "matrix_int8_16x16x32_c8_gmem",
+        "rate": 280071037502121.16,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c8_gmem_f7fee1adb30a.jsonl"
+      },
+      {
+        "name": "matrix_int8_16x16x32_c4_gmem",
+        "rate": 187020787735771.56,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c4_gmem_f098260b7ca7.jsonl"
+      }
+    ],
+    "matrix_int8_feed_shared": [
+      {
+        "name": "matrix_int8_16x16x32_c4_lds",
+        "rate": 367793460142695.94,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c4_lds_2650dc9a46b7.jsonl"
+      },
+      {
+        "name": "matrix_int8_16x16x32_c8_lds",
+        "rate": 367633299617123.44,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c8_lds_1ef51edfc9de.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_shared": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c1_lds",
+        "rate": 92180774757666.95,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c1_lds_479a2f0c296f.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c2_lds",
+        "rate": 92176103931623.92,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_lds_a280ba39791d.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_dram": [
+      {
+        "name": "matrix_fp16_16x16x16_c1_gmem",
+        "rate": 650231977770.7299,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c1_gmem_76726d14f1ad.jsonl"
+      },
+      {
+        "name": "matrix_fp16_16x16x16_c2_gmem",
+        "rate": 646449888142.1318,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c2_gmem_76a52d724ea4.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_cache": [
+      {
+        "name": "matrix_fp16_16x16x16_c8_gmem",
+        "rate": 159538478819666.28,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c8_gmem_0b382c0e3ed8.jsonl"
+      },
+      {
+        "name": "matrix_fp16_16x16x16_c4_gmem",
+        "rate": 108641485326331.66,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c4_gmem_57ec35d3b027.jsonl"
+      }
+    ],
+    "matrix_fp16_feed_shared": [
+      {
+        "name": "matrix_fp16_16x16x16_c8_lds",
+        "rate": 177852801192595.94,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c8_lds_b10c21ad47a2.jsonl"
+      },
+      {
+        "name": "matrix_fp16_16x16x16_c4_lds",
+        "rate": 173247262499349.38,
+        "raw": "sweep-matrix-feed/matrix_fp16_16x16x16_c4_lds_fcc0ceacdcfa.jsonl"
+      }
+    ],
+    "matrix_int8_feed_dram": [
+      {
+        "name": "matrix_int8_16x16x32_c4_gmem",
+        "rate": 702695542733.8552,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c4_gmem_7962ec32f797.jsonl"
+      },
+      {
+        "name": "matrix_int8_16x16x32_c2_gmem",
+        "rate": 699005701387.63,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c2_gmem_f392416580b9.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_dram": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "rate": 669585010502.7306,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_gmem_63a1863c0984.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c1_gmem",
+        "rate": 655844754818.779,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c1_gmem_aa535678ac99.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_cache": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c8_gmem",
+        "rate": 89595556860964.98,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c8_gmem_513831436f29.jsonl"
+      },
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c4_gmem",
+        "rate": 86783049430147.45,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c4_gmem_2d19922b3eb6.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex2d_cache": [
+      {
+        "name": "texture_rgba32f_tex2d",
+        "rate": 1613380455827.995,
+        "raw": "sweep-texture/texture_rgba32f_tex2d_14cffed71159.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex3d_cache": [
+      {
+        "name": "texture_rgba16f_tex3d",
+        "rate": 1626449541528.8057,
+        "raw": "sweep-texture/texture_rgba16f_tex3d_be6916a905fb.jsonl"
+      }
+    ],
+    "texture_rgba32f_buffer_dram": [
+      {
+        "name": "texture_rgba32f_buffer",
+        "rate": 634679579255.7628,
+        "raw": "sweep-texture/texture_rgba32f_buffer_5322d23a9aba.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex3d_dram": [
+      {
+        "name": "texture_rgba16f_tex3d",
+        "rate": 629756304853.6143,
+        "raw": "sweep-texture/texture_rgba16f_tex3d_a4fc809cf3c4.jsonl"
+      }
+    ],
+    "texture_rgba16f_buffer_cache": [
+      {
+        "name": "texture_rgba16f_buffer",
+        "rate": 1670760714914.6914,
+        "raw": "sweep-texture/texture_rgba16f_buffer_add690601e50.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex3d_cache": [
+      {
+        "name": "texture_rgba32f_tex3d",
+        "rate": 1647892630041.6282,
+        "raw": "sweep-texture/texture_rgba32f_tex3d_5b376c28d7d5.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex2d_dram": [
+      {
+        "name": "texture_rgba32f_tex2d",
+        "rate": 493657477480.19916,
+        "raw": "sweep-texture/texture_rgba32f_tex2d_51f62a74fc00.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex2d_cache": [
+      {
+        "name": "texture_rgba16f_tex2d",
+        "rate": 1569624027408.6643,
+        "raw": "sweep-texture/texture_rgba16f_tex2d_38e6359c2ddd.jsonl"
+      }
+    ],
+    "texture_rgba16f_buffer_dram": [
+      {
+        "name": "texture_rgba16f_buffer",
+        "rate": 636255622918.9718,
+        "raw": "sweep-texture/texture_rgba16f_buffer_47eb045389ac.jsonl"
+      }
+    ],
+    "texture_rgba16f_tex2d_dram": [
+      {
+        "name": "texture_rgba16f_tex2d",
+        "rate": 509197245276.3553,
+        "raw": "sweep-texture/texture_rgba16f_tex2d_7d0e292771d6.jsonl"
+      }
+    ],
+    "texture_rgba32f_tex3d_dram": [
+      {
+        "name": "texture_rgba32f_tex3d",
+        "rate": 630685745189.5132,
+        "raw": "sweep-texture/texture_rgba32f_tex3d_954542e725f5.jsonl"
+      }
+    ],
+    "texture_rgba32f_buffer_cache": [
+      {
+        "name": "texture_rgba32f_buffer",
+        "rate": 1677092738239.87,
+        "raw": "sweep-texture/texture_rgba32f_buffer_523808e04ef7.jsonl"
+      }
+    ],
+    "cache_read_effective": [
+      {
+        "name": "mem_read_v4",
+        "rate": 7168632947545.665,
+        "raw": "sweep-cache/mem_read_v4_80cab368d631.jsonl"
+      },
+      {
+        "name": "mem_read_v4",
+        "rate": 6834879158789.869,
+        "raw": "sweep-cache/mem_read_v4_8a9e921c2886.jsonl"
+      }
+    ]
+  },
+  "gated_but_faster": {
+    "alu_fp16": [],
+    "shared_fp16_2": [],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 6915196133709.222,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 7093557350565.428,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 3809901952277.657,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 3816524989135.1587,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 12068129399217.916,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 6892944983818.77,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 6715069221744.23,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 8514584399297.718,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 7275744821872.411,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 13127552795031.057,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 6912412238325.281,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 2316621395348.837,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 10978537084398.977,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 2288941176470.5884,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 3157274604267.0337,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 8993770212765.957,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 3137838577291.3813,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 4869978768577.494,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "matrix_fp16_feed_shared": [],
+    "matrix_fp16_fp32_feed_dram": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c4_gmem",
+        "rate": 2605903004934.579,
+        "why": [
+          "noisy_median"
+        ]
+      }
+    ]
+  },
+  "excluded": {
+    "alu_fp16": [
+      {
+        "name": "alu_fp16_v4_c16",
+        "rate": 40956314434219.8,
+        "why": [
+          "noisy_median"
+        ]
+      }
+    ],
+    "shared_fp16_2": [
+      {
+        "name": "sharedbw_fp16_v2_op2",
+        "rate": 4931181236752.035,
+        "why": [
+          "short"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op2",
+        "rate": 5058313253012.048,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 10018833487140.766,
+        "why": [
+          "short"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op2",
+        "rate": 7906591337099.811,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "shared_fp16_0": [
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 6915196133709.222,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 7093557350565.428,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 3809901952277.657,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 3816524989135.1587,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 12068129399217.916,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 6892944983818.77,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 6715069221744.23,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0_acc32",
+        "rate": 8514584399297.718,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 7275744821872.411,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 13127552795031.057,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0_acc32",
+        "rate": 6912412238325.281,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 2316621395348.837,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 10978537084398.977,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 2288941176470.5884,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 3157274604267.0337,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 8993770212765.957,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 3137838577291.3813,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 4869978768577.494,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v4_op0",
+        "rate": 1169092762487.2578,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "sharedbw_fp16_v2_op0",
+        "rate": 705286887567.2614,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "matrix_fp16_feed_shared": [
+      {
+        "name": "matrix_fp16_16x16x16_c2_lds",
+        "rate": 161125723889555.8,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      },
+      {
+        "name": "matrix_fp16_16x16x16_c1_lds",
+        "rate": 139519467775467.77,
+        "why": [
+          "short",
+          "fixed_cost"
+        ]
+      }
+    ],
+    "matrix_fp16_fp32_feed_dram": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c4_gmem",
+        "rate": 2605903004934.579,
+        "why": [
+          "noisy_median"
+        ]
+      }
+    ]
+  },
+  "roofs_without_quality_candidate": []
+}

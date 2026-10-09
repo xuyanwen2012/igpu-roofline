@@ -1,0 +1,5 @@
+device: NVIDIA GeForce RTX 4070 Ti SUPER driver 0x99d1c240
+cache: 13303 bytes -> /home/doremy/et-study-20261010/isa/raw/roofline_matrix_fp16_fp32_16x16x16_c2_lds.cache.bin
+rc=0 args=32 1 1
+f2e6690289b4d3543ef3785db63e176fecb7d8328f64e0f6269e10cb666cddbf
+cache_blob_bytes=13303 entropy_bits_per_byte=7.969

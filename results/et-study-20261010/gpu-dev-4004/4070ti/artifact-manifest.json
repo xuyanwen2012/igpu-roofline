@@ -1,0 +1,22 @@
+{
+  "runner/src/calibration.h": "d598c25f59aa9a4fccfc60c4d082779ddf2a8101d2b265057b8f1da82698155a",
+  "runner/src/context.h": "4f83dc21c883c241dc01c7341951d2877ad205ed10cd25048cab29f33bf3b30f",
+  "runner/src/inspect.cpp": "57595e2a180f5c5d8f73377f343654de49e2847febb8efd2b8bb3b545926e6e2",
+  "runner/src/inspection_context.h": "82d273bac0961fa5a535a346e16ee6c4fa2f122783ddd9414978a0e437f7bd5a",
+  "runner/src/roofline.cpp": "4b88aa584918dcdcca461cad398bd60cfe6c00da94edf9e03205aba2ca62b2c1",
+  "shaders/alu.comp": "2167db362be69cae798f5d64c36d0258163daba206ca1800049f81b07fa60991",
+  "shaders/dot8.comp": "90c9e4eda37ae01aebe714897c3b560a9c464cb202a3a9cfd9ad2c3d628b3af1",
+  "shaders/ert.comp": "eabb237f5c3ae242cf344a08aa98524ca13c6b4876163657439063520feb3ffc",
+  "shaders/matrix.comp": "507a7f352afd3291a4fb462568c0ac221a22e768a4ded8f4785d8faeff308e7a",
+  "shaders/memory.comp": "3c89a878c3cb3c9c1ca4371a7aa2234386f18bc5c75d08b947c18174a92bef52",
+  "shaders/pchase.comp": "7d1a1c6d9059728988914928b606d2a0429aac37da8d80228428e71fce84a635",
+  "shaders/shared_bw.comp": "5aa6cf29a7e46b78225b73452565678ad7b1fc2b462c3bd3c7a042d2cbd2ea5d",
+  "shaders/shared_crosslane.comp": "e125edb0f9b299b66a7535533110b0afd12db4ffb5ced48791d2e6f0490138b1",
+  "shaders/texture.comp": "53e80f3e02e2ee68b0964544a926fb75f8c53c3b5fd456136385ab7dcaf323fa",
+  "build/host/roofline": "b1180c72e9c5397049a001cb2a71a64644ed17d63814467395dd153fbc39bad7",
+  "build/shader-manifest.json": "03307d6b4d607bfee5d933b3aceb5bf8bcef8bc964ca4ef817c29bbd517386f1",
+  "git_commit": "7326bd778e81796c321ae0906afb0e1519f043fe",
+  "runner_sha256": "b1180c72e9c5397049a001cb2a71a64644ed17d63814467395dd153fbc39bad7",
+  "sustained_runner_sha256": "b1180c72e9c5397049a001cb2a71a64644ed17d63814467395dd153fbc39bad7",
+  "runner_history": []
+}

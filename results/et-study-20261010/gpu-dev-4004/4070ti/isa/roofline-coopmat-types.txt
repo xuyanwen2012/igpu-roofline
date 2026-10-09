@@ -1,0 +1,110 @@
+# matrix_fp16_16x16x16_c4_lds
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%84,half 16x16 Acc
+muladd,count=4,result=[half 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[half 16x16 Acc]
+other,count=4,OpConstantComposite,result=[half 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=4,OpPhi,result=[half 16x16 Acc],from=[half 16x16 Acc | half 16x16 Acc]
+summary,matrix_fp16_16x16x16_c4_lds,muladd_total=4
+# matrix_fp16_16x16x16_c8_lds
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%84,half 16x16 Acc
+muladd,count=8,result=[half 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[half 16x16 Acc]
+other,count=8,OpConstantComposite,result=[half 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=8,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=8,OpPhi,result=[half 16x16 Acc],from=[half 16x16 Acc | half 16x16 Acc]
+summary,matrix_fp16_16x16x16_c8_lds,muladd_total=8
+# matrix_fp16_16x16x16_c8
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%35,half 16x16 Acc
+muladd,count=8,result=[half 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[half 16x16 Acc]
+other,count=8,OpConstantComposite,result=[half 16x16 Acc],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=8,OpCooperativeMatrixStoreKHR,result=[],from=[half 16x16 Acc]
+other,count=8,OpPhi,result=[half 16x16 Acc],from=[half 16x16 Acc | half 16x16 Acc]
+summary,matrix_fp16_16x16x16_c8,muladd_total=8
+# matrix_fp16_fp32_16x16x16_c1_lds
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%85,float 16x16 Acc
+muladd,count=1,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=1,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=1,OpCooperativeMatrixStoreKHR,result=[],from=[float 16x16 Acc]
+other,count=1,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,matrix_fp16_fp32_16x16x16_c1_lds,muladd_total=1
+# matrix_fp16_fp32_16x16x16_c2_lds
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%85,float 16x16 Acc
+muladd,count=2,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=2,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=2,OpCooperativeMatrixStoreKHR,result=[],from=[float 16x16 Acc]
+other,count=2,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,matrix_fp16_fp32_16x16x16_c2_lds,muladd_total=2
+# matrix_fp16_fp32_16x16x16_c4_lds
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%85,float 16x16 Acc
+muladd,count=4,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=4,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[float 16x16 Acc]
+other,count=4,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,matrix_fp16_fp32_16x16x16_c4_lds,muladd_total=4
+# matrix_fp16_fp32_16x16x16_c4
+type,%13,half 16x16 A
+type,%25,half 16x16 B
+type,%36,float 16x16 Acc
+muladd,count=4,result=[float 16x16 Acc],A=[half 16x16 A],B=[half 16x16 B],C=[float 16x16 Acc]
+other,count=4,OpConstantComposite,result=[float 16x16 Acc],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[half 16x16 A],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[half 16x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[float 16x16 Acc]
+other,count=4,OpPhi,result=[float 16x16 Acc],from=[float 16x16 Acc | float 16x16 Acc]
+summary,matrix_fp16_fp32_16x16x16_c4,muladd_total=4
+# matrix_int8_16x16x32_c2_lds
+type,%14,char 16x32 A
+type,%26,char 32x16 B
+type,%85,int 16x16 Acc
+muladd,count=2,result=[int 16x16 Acc],A=[char 16x32 A],B=[char 32x16 B],C=[int 16x16 Acc]
+other,count=2,OpConstantComposite,result=[int 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[char 16x32 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[char 32x16 B],from=[]
+other,count=2,OpCooperativeMatrixStoreKHR,result=[],from=[int 16x16 Acc]
+other,count=2,OpPhi,result=[int 16x16 Acc],from=[int 16x16 Acc | int 16x16 Acc]
+summary,matrix_int8_16x16x32_c2_lds,muladd_total=2
+# matrix_int8_16x16x32_c4_lds
+type,%14,char 16x32 A
+type,%26,char 32x16 B
+type,%85,int 16x16 Acc
+muladd,count=4,result=[int 16x16 Acc],A=[char 16x32 A],B=[char 32x16 B],C=[int 16x16 Acc]
+other,count=4,OpConstantComposite,result=[int 16x16 Acc],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[char 16x32 A],from=[]
+other,count=2,OpCooperativeMatrixLoadKHR,result=[char 32x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[int 16x16 Acc]
+other,count=4,OpPhi,result=[int 16x16 Acc],from=[int 16x16 Acc | int 16x16 Acc]
+summary,matrix_int8_16x16x32_c4_lds,muladd_total=4
+# matrix_int8_16x16x32_c4
+type,%14,char 16x32 A
+type,%26,char 32x16 B
+type,%36,int 16x16 Acc
+muladd,count=4,result=[int 16x16 Acc],A=[char 16x32 A],B=[char 32x16 B],C=[int 16x16 Acc]
+other,count=4,OpConstantComposite,result=[int 16x16 Acc],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[char 16x32 A],from=[]
+other,count=1,OpCooperativeMatrixLoadKHR,result=[char 32x16 B],from=[]
+other,count=4,OpCooperativeMatrixStoreKHR,result=[],from=[int 16x16 Acc]
+other,count=4,OpPhi,result=[int 16x16 Acc],from=[int 16x16 Acc | int 16x16 Acc]
+summary,matrix_int8_16x16x32_c4,muladd_total=4
