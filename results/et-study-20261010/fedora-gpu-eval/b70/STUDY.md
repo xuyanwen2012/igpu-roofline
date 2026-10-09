@@ -173,5 +173,5 @@ Single-run timings of the linear suite are not written by this binary: `test_lla
 decision these per-process medians are the raw level of the linear rows: three processes per case, as measured,
 no further run and no build. Spread of the three process medians, (max - min) / median, over the 24 linear
 cases: 0.0 to 3.9 %, median 0.25 %; 23 cases are under 2 %. **One case exceeds 3 %: 3B 8da4w wq_wo, 3.9 %**
-(316.5 to 329.5 us; its row reads 117.3 TOP/s, 32.6 % of the register roof, and between 113 and 118 TOP/s over
+(316.5 to 329.5 us; its row reads 117.3 TOP/s, 32.6 % of the register roof, and 117.3 to 122.1 TOP/s over
 that range). The attention suite does write its runs (`raw/sdpa-r{1,2,3}.log`, `[sdpa-runs]` lines).
