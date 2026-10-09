@@ -71,13 +71,13 @@ candidate say so. Summary for a reader: `STUDY.md`.
 | Matrix, 4w | `matrix_fp16` 182.95 TFLOP/s, `confirm/matrix_fp16_16x16x16_c8_*`, 3 repeats 0.05 % | fp16 x fp16 -> fp16 in every multiply-add of both kernels (SPIR-V), 16 x 16 x 16, subgroup 32 | the kernel also converts and adds each group's sum in fp32 (outside the multiply-add); the roof shader does not |
 | Matrix, 8da4w | `matrix_int8` 369.24 TOP/s, `confirm/matrix_int8_16x16x32_c4_*`, 0.52 % | int8 x int8 -> int32, 16 x 16 x 32, subgroup 32 | none known |
 | Matrix, fused attention | `matrix_fp16_fp32` 92.80 TFLOP/s, `confirm/matrix_fp16_fp32_16x16x16_c4_*`, 0.53 % | fp16 x fp16 -> fp32 in every multiply-add, 16 x 16 x 16, subgroup 32 | none known |
-| Operand feed, 4w | `matrix_fp16_feed_shared` 177.94 (64 flop/B, 0.04 %); at reuse: `matrix_fp16_16x16x16_c4_lds` 173.55 (32 flop/B, 3 confirmation repeats, 0.7 %) | operands loaded from shared memory with `coopMatLoad`, as the kernel does | kernel reuse is 25.6 (`g42`) and 21.3 (`g24`) flop/B; no fp16 row below 32 in the `fast` plan |
+| Operand feed, 4w | `matrix_fp16_feed_shared` 177.94 (64 flop/B, 0.04 %); at reuse: `matrix_fp16_16x16x16_c4_lds` 173.55 (32 flop/B, 2 of 3 confirmation repeats admitted, one excluded as short, 0.1 %) | operands loaded from shared memory with `coopMatLoad`, as the kernel does | kernel reuse is 25.6 (`g42`) and 21.3 (`g24`) flop/B; the fp16 rows below 32 are excluded by the tool (short, fixed cost) |
 | Operand feed, 8da4w | `matrix_int8_feed_shared` 367.69 (64 op/B, 0.04 %); at reuse: `matrix_int8_16x16x32_c2_lds` 367.06 (32 op/B) | as above; kernel reuse is exactly 32 op/B | **the 32 op/B row is a single sweep row, not confirmed**; flagged in every 8da4w row |
 | Operand feed, attention | `matrix_fp16_fp32_feed_shared` 92.19; at reuse: `c4_lds` 92.15 (**sweep row, not confirmed**, d64) and `c2_lds` 92.65 (confirmed, d128) | nearest available | **not a matched source**: K and V are loaded from global buffers; context only |
 | Bandwidth | context only: `texture_rgba32f_tex2d_cache` 1613.7 GB/s, `cache_read_effective` 7129.1, `global_read` 713.5 (all confirmed) | 16 B texel fetches of a cache-resident 2D texture; 16 B buffer loads | the kernel's weight texture is an integer one and each texel is fetched four times; logical bytes, not measured DRAM traffic |
 
-Confirmation spread, duration, sentinel and device conditions: every roof above has 3 repeats within 0.7 %
-except the two flagged rows; sentinel 34 probes, none degraded (25.40 to 25.66 TFLOP/s against a limit of
+Confirmation spread, duration, sentinel and device conditions: every roof above has 3 repeats within 0.6 %
+(the fp16 32 flop/B reuse row 2 admitted of 3) except the two flagged rows; sentinel 34 probes, none degraded (25.40 to 25.66 TFLOP/s against a limit of
 21.67); the roofs and the kernel rates were measured within 35 minutes of each other on the same boot, driver
 and clock policy, with no other GPU client.
 
@@ -149,3 +149,7 @@ texture3d; the campaign's own runs show the same marker. It is not a correctness
 - `--local-name 4070ti` was used so that the results root has the path the task names.
 - The first `ssh` that launched part A stayed attached until its client timed out; the run itself was detached
   (`setsid nohup`) and was not affected.
+- Review round 1 (independent agent, the four checks of the task): all PASS. Its notes that changed a stated
+  fact were applied once: the fp16 32 flop/B reuse row has 2 admitted confirmation repeats of 3 (not 3), and the
+  reuse-row values are the tool's best validated median, not the median of the repeats (difference at most
+  0.5 %). No number in `efficiency.csv` changed.

@@ -33,7 +33,7 @@ KERNELS = {
         derive="WG 256x128, subgroup grid 4x2: a subgroup owns 128x32 = 8 A tiles x 2 B tiles; per K=16 step 16 MMAs, 10 tile loads of 512 B"),
     "sarc_linear_q4gsw_coopmat_t128x128k16g24s32ga_texture3d_texture2d_half": dict(
         family="fp16", mma=(16, 16, 16), a_tiles=2, b_tiles=4, mmas=8, tile_bytes=512,
-        derive="WG 128x128, subgroup grid 2x4: a subgroup owns 32x64 = 2 A tiles x 4 B tiles; per K=16 step 8 MMAs, 6 tile loads of 512 B"),
+        derive="WG 128x128, subgroup grid 2x4: a subgroup owns 32x64 = 2 A tiles x 4 B tiles; per K=16 step 8 MMAs, 6 tile loads of 512 B; the fp16 shared-fed row at 16 flop/B is excluded by the tool (short, fixed_cost), so 32 flop/B is the nearest usable row"),
     "sarc_linear_dq8ca_coopmat_zpgtr_t128x128k64g44s32mk32ra_texture3d_texture2d_half": dict(
         family="int8", mma=(16, 16, 32), a_tiles=2, b_tiles=2, mmas=4, tile_bytes=512,
         derive="WG 128x128, subgroup grid 4x4: a subgroup owns 32x32 = 2 A tiles x 2 B tiles; per K=32 step 4 MMAs, 4 tile loads of 512 B (two K steps per barrier)"),
@@ -61,11 +61,19 @@ def spirv_types(kernel):
     return TNAME[a], TNAME[c], int(n)
 
 
+EXCLUDED = {r["source"]: r["exclusion_reasons"] for r in csv.DictReader((root / "report/all-configurations.csv").open())}
+ATTEMPTS = {}
+
+
 def confirm_repeats(name):
-    """Rates of the confirmation repeats of one roofline variant (empty when it was only measured in a sweep)."""
+    """Rates of the confirmation repeats of one roofline variant that the tool admits (no exclusion reason in
+    report/all-configurations.csv); empty when the variant was only measured in a sweep."""
     out = []
-    for f in sorted(glob.glob(str(root / f"confirm/{name}_*.json"))):
-        if f.endswith((".config.json", ".telemetry.json")):
+    files = [f for f in sorted(glob.glob(str(root / f"confirm/{name}_*.json")))
+             if not f.endswith((".config.json", ".telemetry.json"))]
+    ATTEMPTS[name] = len(files)
+    for f in files:
+        if EXCLUDED.get("confirm/" + Path(f).name, "x"):
             continue
         r = json.loads(Path(f).read_text())
         if "accounting" not in r or "median_seconds" not in r:
@@ -98,9 +106,9 @@ def roof_set(dtype, kernel_reuse):
         flags.append("register roof UNCONFIRMED")
     if not fed_ok:
         flags.append("fed-shared roof UNCONFIRMED")
-    if row["source"].startswith("confirm/") and len(reps) >= 3:
+    if row["source"].startswith("confirm/") and len(reps) >= max(2, ATTEMPTS[name] - 1):
         spread = (max(reps) - min(reps)) / statistics.median(reps)
-        reuse_note = f"reuse row {name} ({row['ops_per_load_byte']:g} op/B): {len(reps)} confirmation repeats, spread {100 * spread:.2f} %"
+        reuse_note = f"reuse row {name} ({row['ops_per_load_byte']:g} op/B): {len(reps)} of {ATTEMPTS[name]} confirmation repeats admitted by the tool, spread {100 * spread:.2f} %; the value is the tool's best validated median of them"
         if spread > 0.05:
             flags.append("fed-reuse row repeat spread > 5 %")
     else:

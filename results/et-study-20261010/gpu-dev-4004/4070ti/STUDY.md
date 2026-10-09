@@ -2,8 +2,9 @@
 
 ## State
 
-- 2026-10-09 18:30 UTC: **all four parts measured and written; nothing is running on the device.** Device locks
-  are free. No decision is needed from the owner for this study; two observations for the owner are at the end.
+- 2026-10-09 18:45 UTC: **all four parts measured and written, branch pushed, one review round passed (four
+  checks PASS); nothing is running on the device.** Device locks are free. No decision is needed from the owner
+  for this study; two observations for the owner are at the end.
 - History: record copied from the template and committed 17:49:06 UTC, before the first measurement started (17:49:43); part A (roofline `fast`) 17:49 to
   18:15 UTC, rc 0; part B (microbench, 5 processes each of `--linear` and `--sdpa`) 18:15 to 18:22 UTC, all rc 0;
   part C (pipeline statistics, compile only) 18:23 UTC.
@@ -23,13 +24,13 @@ throttle reason and no `hw_slowdown` in any of 761 + 759 sensor samples; the sof
 campaign recorded); temperature 37 to 69 C. Sentinel healthy in all 34 probes (25.40 to 25.66 TFLOP/s, limit
 21.67).
 
-## Part A: roofs (confirmed with 3 repeats, spread at most 0.7 %, except the two rows named below)
+## Part A: roofs (confirmed, repeat spread at most 0.6 %, except the two rows named below)
 
 | roof | value | repeat range | matrix shape, subgroup |
 |---|---:|---|---|
 | fp16 -> fp16, operands in registers | 182.95 TFLOP/s | 182.9 to 183.0 | 16 x 16 x 16, 32 |
 | fp16 -> fp16, fed from shared memory (best reuse, 64 flop/B) | 177.94 | 177.9 to 177.9 | same |
-| fp16 -> fp16, fed from shared memory at 32 flop/B | 173.55 | 3 confirmation repeats, spread 0.7 % | same |
+| fp16 -> fp16, fed from shared memory at 32 flop/B | 173.55 | 2 of 3 confirmation repeats admitted by the tool (one excluded as short), spread 0.1 % | same |
 | fp16 -> fp32, operands in registers | 92.80 TFLOP/s | 92.3 to 92.8 | same |
 | fp16 -> fp32, fed from shared memory | 92.19 | 92.2 to 92.7 | same |
 | int8 -> int32, operands in registers | 369.24 TOP/s | 369.2 to 371.2 | 16 x 16 x 32, 32 |
@@ -114,8 +115,11 @@ pass).
 
 Kernel reuse (operations per loaded A/B tile byte, counted as the tool counts it: one subgroup, one K step):
 4w `g42` 16 multiply-adds per 10 tile loads = 25.6 flop/B, `g24` 8 per 6 = 21.3 flop/B (nearest fp16 rows 32;
-the fast plan has no fp16 shared-fed row below 32, so for `g24` it is the nearest, not an equal one); 8da4w
-4 per 4 = 32 op/B (row 32); attention 25.6 (d64) and 15.1 (d128) flop/B, but K and V come from global buffers
+the fast plan's fp16 shared-fed rows below 32 are excluded by the tool as too short, so for `g24` 32 is the
+nearest usable row, not an equal one); 8da4w
+4 per 4 = 32 op/B (row 32). The reuse-row values are the tool's best validated median of the admitted
+repeats; with the median of the repeats instead they move by at most 0.5 % (fp16 173.44, fp16 -> fp32 at
+16 flop/B 92.18); attention 25.6 (d64) and 15.1 (d128) flop/B, but K and V come from global buffers
 there, so the shared-fed roofs are context for the attention rows, not a matched operand source.
 
 ## Part C: what the driver generated
@@ -196,7 +200,7 @@ build), then H3.
 
 ## For the owner
 
-- `zun-flux-pipeline.service` on the device host is in a restart loop (`activating (auto-restart)`, exit status
+- A co-tenant image-generation service on the device host is in a restart loop (`activating (auto-restart)`, exit status
   203/EXEC, a few milliseconds of CPU per attempt). It never opened the GPU during this study (no foreign GPU
   client in any sample) and was left as found.
 - Left on the device host: this study's own directory `et-study-20261010` (235 MB: the tool build, raw results, microbench and
