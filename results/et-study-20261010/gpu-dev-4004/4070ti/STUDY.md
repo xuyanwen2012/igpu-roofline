@@ -2,6 +2,9 @@
 
 ## State
 
+- 2026-10-09 19:05 UTC: **waiting for the owner** (one question, next section): review round 3 confirmed the
+  recapture and every number, and holds that the deletion of the original blobs is an unresolved rule violation
+  only the owner can accept. Nothing is running; nothing will be run or re-reviewed while this is pending.
 - 2026-10-09 18:55 UTC: review round 2 found one failed check (rule 7: the pipeline-statistics script deleted its
   raw cache blobs). Fixed as described in part C: deletion removed, originals not recoverable, a labelled
   compile-only recapture retains the blobs. No roof or timing was re-run and no number of parts A, B or D
@@ -12,6 +15,37 @@
 - History: record copied from the template and committed 17:49:06 UTC, before the first measurement started (17:49:43); part A (roofline `fast`) 17:49 to
   18:15 UTC, rc 0; part B (microbench, 5 processes each of `--linear` and `--sdpa`) 18:15 to 18:22 UTC, all rc 0;
   part C (pipeline statistics, compile only) 18:23 UTC, recaptured with retained blobs 18:47 UTC.
+
+## Decision needed from the owner
+
+**Recorded once, 2026-10-09 19:05 UTC. Status: waiting. The study is NOT closed until this is answered.**
+While it is pending nothing is measured, recomputed or reviewed again.
+
+Rule 7 (never delete results) was broken once: the first pipeline-statistics capture (`isa/raw/`, 18:23 UTC)
+deleted its 15 pipeline cache blobs after recording each blob's size and byte entropy. The blobs cannot be
+recovered, and no further GPU work can recover them. What they supported is one statement of part C: the cache
+blob is not readable (high entropy), so there is no disassembly route. What exists instead: the first capture's
+text records (sizes, entropies, all driver statistics), and a labelled compile-only recapture
+(`isa/recapture-20261009-retained-blobs/`, 18:47 UTC) with all 15 blobs kept; its driver statistics are
+byte-identical to the first capture's, its blob sizes are equal or one byte different, its entropy is 7.966 to
+7.986 bits per byte. The recapture does not establish the original blobs' sizes or entropy; those remain
+recorded but unverifiable.
+
+Question: is the retained recapture accepted as replacement evidence for the lost blobs?
+
+| option | what happens | cost |
+|---|---|---|
+| A. Accept | Part C's entropy statement rests on the recapture; the first capture's size and entropy columns stay marked unverifiable; the violation stays on record; the study closes. | none |
+| B. Reject, drop the claim | The cache-blob entropy sentence and the two blob columns are removed from part C and `counts.csv`; "not ISA-verified" then rests on the zero internal representations alone, which is unaffected by the loss. No GPU work. | one edit, a few minutes |
+| C. Reject, other remedy | The owner names it. Re-running cannot bring the original blobs back. | as named |
+
+No roof, rate, percentage or conclusion of parts A, B and D depends on these blobs.
+
+Second point for the same answer, raised by the reviewer: every file this study changed (781 paths at first
+push, 51 more for the recapture) is under this results root, which the task's deliverables and its rule 3 name
+as the place for results and scripts; the tool, tests, docs and the ExecuTorch trees are unchanged. The task
+file has no dev-zone rule of its own, so no exception was thought necessary; if the tuning campaigns' dev-zone
+rule is meant to apply here too, the owner is asked to say so and to cover these paths.
 
 ## What was measured, in one sitting
 

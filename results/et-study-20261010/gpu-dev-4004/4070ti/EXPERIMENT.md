@@ -162,3 +162,6 @@ texture3d; the campaign's own runs show the same marker. It is not a correctness
   entropy 7.966 to 7.986 bits per byte recomputed from the retained files. The size and entropy columns of
   `isa/counts.csv` (first capture) stay unverifiable and are superseded for that purpose by
   `isa/counts-recapture-20261009-retained-blobs.csv`. No roof or microbench timing was re-run.
+- Review round 3: recapture and all numbers confirmed; the original deletion stays an open rule violation. One
+  question to the owner (accept the recapture as replacement evidence, or not) is recorded in `STUDY.md`,
+  "Decision needed from the owner", 19:05 UTC. Waiting; no measurement or review is repeated meanwhile.
