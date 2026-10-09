@@ -2,8 +2,10 @@
 
 ## State
 
-2026-10-09 18:40 UTC: finished. Nothing is running on the device; no decision of the owner is pending.
-Parts A to D are done; the review artifact is `EXPERIMENT.md`.
+2026-10-09, after review round 1: parts A to D are done and nothing is running on the device. The reviewer's
+four checks passed. One item waits for the owner (section "Decision needed from the owner" at the end): the
+individual timed runs behind each microbenchmark median were never written by the tool. Nothing is re-measured
+or recomputed while it is pending. The review artifact is `EXPERIMENT.md`.
 
 Device: Intel Arc Pro B70 (BMG G31), card 0 of two; driver ANV, Mesa 26.2.3 (109060099); kernel 7.2.9-200.fc44.
 Clock policy as found, nothing changed: GT `min_freq` 1200, `max_freq` 2800 MHz, profile `[base] power_saving`.
@@ -15,7 +17,7 @@ and SPIR-V, byte for byte). ExecuTorch: the tuning campaign's final build of com
 
 One `fast` plan, 23 minutes, sentinel healthy at all 34 checkpoints (18.349 to 18.351 TFLOP/s), no stale rows.
 GT clock, sampled every 2 s: mean 2726 MHz over the non-idle samples of part A (up to 2800; lower readings fall
-between configurations) and 2768 to 2794 MHz in the part B runs; the power-limit flag `pl2` was set in 16 of 680
+between configurations), 2768 to 2794 MHz in the linear runs of part B and 2800 MHz in its attention runs; the power-limit flag `pl2` was set in 16 of 680
 samples of part A, no thermal reason, package at most 76 C.
 
 | roof | register | fed from shared memory | unit |
@@ -24,17 +26,20 @@ samples of part A, no thermal reason, package at most 76 C.
 | fp16 -> fp32, 8x16x16 | 179.9 | 166.6 (92.6 %) | TFLOP/s |
 | int8 -> int32, 8x16x32 | 359.9 | 323.3 (89.8 %) | TOP/s |
 
-All of these are confirmed (3 repeats, spread at most 0.4 %). **Not confirmed: `matrix_fp16_fp32_feed_dram`** (the
-tool lists it as `repeat_unstable`: its 4-chain candidate spread 8.2 %; the 2-chain candidate, 591.9 GB/s, passed
-with 1.3 %). It is not used below. Against September (previous kernel) no roof moved by more than 3 %: the
-largest change is -1.03 % (`matrix_int8_feed_cache`), every matrix register and shared-fed roof is within 0.1 %.
+All of these are confirmed (3 repeats, spread at most 0.4 %). The tool's only confirmation failure is the 4-chain
+candidate of `matrix_fp16_fp32_feed_dram` (`repeat_unstable`, spread 8.2 %); that roof is confirmed by its
+2-chain candidate (591.9 GB/s, 1.3 %) and is not used below. No roof of this run is unconfirmed. Against September (previous kernel) no roof moved by more than 3 %: the
+largest change is -1.03 % (`matrix_int8_feed_cache`), every matrix register and shared-fed roof is within 0.1 %
+(recomputed from the September raw rows, recovered from the device host into `cited/sept-fleet-fast-20260926/`:
+the tool's report regenerated from them equals the committed September summary exactly).
 The roofs of 2026-10-04 quoted by the tuning campaign (173.3 / 179.9 / 359.9; 168.4 / 166.6 / 323.3) are
 reproduced. The roofline shaders run at subgroup size 32 (SIMD32), the kernels at 16: no roof at subgroup size 16
 exists in the tool, and every percentage below carries that difference.
 
 ## Part B: matched efficiency (`efficiency.csv`, prefill M = 2048, texture3d = the model path)
 
-Kernel time: median of three processes, each the median of 5 warm timed runs (process spread at most 3.9 %).
+Linear kernel time: median of three processes, each the median of 5 warm timed runs (process spread at most
+3.9 %). Attention: median of three processes, each the tool's mean of 5 warm timed runs of the whole call.
 Accumulator types are read from each kernel's SPIR-V (`isa/spirv/types.csv`): **4w accumulates in fp16**
 (fp16 x fp16 -> fp16, 8x16x16), 8da4w in int32 (int8 x int8 -> int32, 8x16x32), the fused attention in fp32.
 
@@ -161,3 +166,21 @@ Hypotheses for a third round (none of these experiments was run):
   from a process that had already exited when its name was read (`logs/partA-try1.samples.tsv`); no engine time
   of a foreign client was seen in any run, and the sentinel did not move.
 - Correctness was not re-run here: the tuning campaign's gate on this build stands (cited).
+
+## Decision needed from the owner
+
+**The five timed runs behind each microbenchmark statistic do not exist as data.** `test_llama_microbench` keeps
+them in memory and writes only `kernel_median_us` (linear) and `op_mean_us` (attention) per case; its log has no
+per-run line and the final build has no switch to print them. They were never on disk, so they cannot be
+recovered. What can be recomputed, and was by the reviewer: every number of `efficiency.csv` from the three
+per-process statistics of each case. What cannot: each process's own median or mean from its five runs.
+
+- Option 1, no cost: accept the per-process statistics as the raw level of part B (three processes per case,
+  spread at most 3.9 %, in-model trace within -14 to +6 %).
+- Option 2, about 10 minutes of the card and no build: repeat the two suites in 5 more processes each, so every
+  case has 8 process-level values; still no single-run timings.
+- Option 3, a build (forbidden to this study by rule 4, so the owner's to order): a microbenchmark that prints
+  its per-run timings, from the same commit, then one repetition of part B; about 30 minutes of build and 10 of
+  the card, and the binary would no longer be the one the tuning campaign timed.
+
+Until an answer is appended to the task file nothing is measured, built or recomputed.

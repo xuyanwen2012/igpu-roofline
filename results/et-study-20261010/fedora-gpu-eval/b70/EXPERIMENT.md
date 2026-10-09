@@ -72,8 +72,11 @@ changed, no candidate was screened.
 
 Confirmation, duration, sentinel: confirmation repeats 3 per roof (plan `fast`), 21 samples of about 6 ms each;
 sustained 120 s batches for three roofs agree with the short runs within 0.04 %; sentinel 34 readings between
-18.349 and 18.351 TFLOP/s, none degraded. Unconfirmed in this run: `matrix_fp16_fp32_feed_dram`
-(`repeat_unstable`), not used.
+18.349 and 18.351 TFLOP/s, none degraded. One confirmation candidate failed (`matrix_fp16_fp32_feed_dram`, 4 chains,
+`repeat_unstable`); that roof is confirmed by its 2-chain candidate and is not used. Missing evidence, recorded
+once in `STUDY.md` for the owner: the tool writes no per-run timings, only the per-process median (linear) or
+mean (attention). September raw rows for the comparison: `cited/sept-fleet-fast-20260926/` (on disk, recovered
+from the device host; not committed).
 
 ## Evidence before the screen
 
