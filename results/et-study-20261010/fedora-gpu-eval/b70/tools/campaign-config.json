@@ -1,0 +1,19 @@
+{
+  "campaign": "et-study-20261010",
+  "source_commit": "84361ac81182105d06a2f6d8293fa435192f1470",
+  "plan": "fast",
+  "clock_policy": "automatic, never pinned",
+  "devices": [
+    {
+      "id": "b70",
+      "name": "Intel Arc Pro B70 32 GB",
+      "kind": "dgpu",
+      "vendor": "intel",
+      "host": "fedora-gpu-eval",
+      "uuid": "868023e2-0000-0000-0100-000000000000",
+      "tags": ["intel", "battlemage", "b70"],
+      "status": "active",
+      "pci": "0000:01:00.0"
+    }
+  ]
+}
