@@ -1,0 +1,831 @@
+; SPIR-V
+; Version: 1.3
+; Generator: Google Shaderc over Glslang; 11
+; Bound: 2946
+; Schema: 0
+               OpCapability Shader
+               OpCapability Float16
+               OpCapability Int8
+               OpCapability GroupNonUniform
+               OpCapability StorageBuffer16BitAccess
+               OpCapability VulkanMemoryModel
+               OpCapability CooperativeMatrixKHR
+               OpExtension "SPV_KHR_cooperative_matrix"
+               OpExtension "SPV_KHR_vulkan_memory_model"
+          %1 = OpExtInstImport "GLSL.std.450"
+               OpMemoryModel Logical Vulkan
+               OpEntryPoint GLCompute %4 "main" %gl_WorkGroupID %SubgroupId %gl_LocalInvocationID
+               OpExecutionMode %4 LocalSize 1 1 1
+               OpDecorate %gl_WorkGroupID BuiltIn WorkgroupId
+               OpDecorate %SubgroupId BuiltIn SubgroupId
+               OpDecorate %_struct_57 Block
+               OpMemberDecorate %_struct_57 0 Offset 0
+               OpDecorate %59 Restrict
+               OpDecorate %59 NonWritable
+               OpDecorate %59 Binding 11
+               OpDecorate %59 DescriptorSet 0
+               OpDecorate %_struct_67 Block
+               OpMemberDecorate %_struct_67 0 Offset 0
+               OpDecorate %69 Restrict
+               OpDecorate %69 NonWritable
+               OpDecorate %69 Binding 10
+               OpDecorate %69 DescriptorSet 0
+               OpDecorate %gl_LocalInvocationID BuiltIn LocalInvocationId
+               OpDecorate %286 Binding 4
+               OpDecorate %286 DescriptorSet 0
+               OpDecorate %299 Binding 5
+               OpDecorate %299 DescriptorSet 0
+               OpDecorate %_runtimearr_v4half ArrayStride 8
+               OpDecorate %_struct_375 Block
+               OpMemberDecorate %_struct_375 0 Restrict
+               OpMemberDecorate %_struct_375 0 NonWritable
+               OpMemberDecorate %_struct_375 0 Offset 0
+               OpDecorate %377 Restrict
+               OpDecorate %377 NonWritable
+               OpDecorate %377 Binding 8
+               OpDecorate %377 DescriptorSet 0
+               OpDecorate %401 SpecId 5
+               OpDecorate %_runtimearr_int ArrayStride 4
+               OpDecorate %_struct_419 Block
+               OpMemberDecorate %_struct_419 0 Restrict
+               OpMemberDecorate %_struct_419 0 NonWritable
+               OpMemberDecorate %_struct_419 0 Offset 0
+               OpDecorate %421 Restrict
+               OpDecorate %421 NonWritable
+               OpDecorate %421 Binding 7
+               OpDecorate %421 DescriptorSet 0
+               OpDecorate %_runtimearr_v4int ArrayStride 16
+               OpDecorate %_struct_461 Block
+               OpMemberDecorate %_struct_461 0 Restrict
+               OpMemberDecorate %_struct_461 0 NonWritable
+               OpMemberDecorate %_struct_461 0 Offset 0
+               OpDecorate %463 Restrict
+               OpDecorate %463 NonWritable
+               OpDecorate %463 Binding 2
+               OpDecorate %463 DescriptorSet 0
+               OpDecorate %488 Binding 6
+               OpDecorate %488 DescriptorSet 0
+               OpDecorate %601 SpecId 4
+               OpDecorate %_runtimearr_half ArrayStride 2
+               OpDecorate %_struct_1119 Block
+               OpMemberDecorate %_struct_1119 0 Restrict
+               OpMemberDecorate %_struct_1119 0 NonReadable
+               OpMemberDecorate %_struct_1119 0 Offset 0
+               OpDecorate %1121 Restrict
+               OpDecorate %1121 NonReadable
+               OpDecorate %1121 Binding 0
+               OpDecorate %1121 DescriptorSet 0
+               OpDecorate %1123 SpecId 6
+               OpDecorate %1150 SpecId 0
+               OpDecorate %1151 SpecId 1
+               OpDecorate %1152 SpecId 2
+               OpDecorate %gl_WorkGroupSize BuiltIn WorkgroupSize
+       %void = OpTypeVoid
+          %3 = OpTypeFunction %void
+       %uint = OpTypeInt 32 0
+     %v4uint = OpTypeVector %uint 4
+%uint_252645135 = OpConstant %uint 252645135
+         %18 = OpConstantComposite %v4uint %uint_252645135 %uint_252645135 %uint_252645135 %uint_252645135
+%uint_134744072 = OpConstant %uint 134744072
+         %23 = OpConstantComposite %v4uint %uint_134744072 %uint_134744072 %uint_134744072 %uint_134744072
+    %uint_30 = OpConstant %uint 30
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+%gl_WorkGroupID = OpVariable %_ptr_Input_v3uint Input
+%_ptr_Input_uint = OpTypePointer Input %uint
+ %SubgroupId = OpVariable %_ptr_Input_uint Input
+     %uint_2 = OpConstant %uint 2
+        %int = OpTypeInt 32 1
+      %v4int = OpTypeVector %int 4
+ %_struct_57 = OpTypeStruct %v4int
+%_ptr_Uniform__struct_57 = OpTypePointer Uniform %_struct_57
+         %59 = OpVariable %_ptr_Uniform__struct_57 Uniform
+      %int_0 = OpConstant %int 0
+     %uint_0 = OpConstant %uint 0
+%_ptr_Uniform_int = OpTypePointer Uniform %int
+ %_struct_67 = OpTypeStruct %v4int
+%_ptr_Uniform__struct_67 = OpTypePointer Uniform %_struct_67
+         %69 = OpVariable %_ptr_Uniform__struct_67 Uniform
+     %uint_3 = OpConstant %uint 3
+     %uint_4 = OpConstant %uint 4
+   %uint_128 = OpConstant %uint 128
+     %uint_1 = OpConstant %uint 1
+    %uint_64 = OpConstant %uint 64
+       %bool = OpTypeBool
+      %float = OpTypeFloat 32
+    %uint_16 = OpConstant %uint 16
+        %113 = OpTypeCooperativeMatrixKHR %float %uint_3 %uint_16 %uint_16 %uint_2
+    %float_0 = OpConstant %float 0
+        %121 = OpConstantComposite %113 %float_0
+        %124 = OpTypeCooperativeMatrixKHR %int %uint_3 %uint_16 %uint_16 %uint_2
+        %131 = OpConstantComposite %124 %int_0
+      %int_1 = OpConstant %int 1
+%gl_LocalInvocationID = OpVariable %_ptr_Input_v3uint Input
+     %uint_8 = OpConstant %uint 8
+   %uint_256 = OpConstant %uint 256
+   %uint_512 = OpConstant %uint 512
+    %uint_32 = OpConstant %uint 32
+    %v4float = OpTypeVector %float 4
+        %283 = OpTypeImage %float 3D 0 0 0 1 Unknown
+        %284 = OpTypeSampledImage %283
+%_ptr_UniformConstant_284 = OpTypePointer UniformConstant %284
+        %286 = OpVariable %_ptr_UniformConstant_284 UniformConstant
+      %v3int = OpTypeVector %int 3
+        %296 = OpTypeImage %int 3D 0 0 0 1 Unknown
+        %297 = OpTypeSampledImage %296
+%_ptr_UniformConstant_297 = OpTypePointer UniformConstant %297
+        %299 = OpVariable %_ptr_UniformConstant_297 UniformConstant
+%_arr_float_uint_128 = OpTypeArray %float %uint_128
+%_ptr_Workgroup__arr_float_uint_128 = OpTypePointer Workgroup %_arr_float_uint_128
+        %312 = OpVariable %_ptr_Workgroup__arr_float_uint_128 Workgroup
+%_ptr_Workgroup_float = OpTypePointer Workgroup %float
+%_arr_int_uint_128 = OpTypeArray %int %uint_128
+%_ptr_Workgroup__arr_int_uint_128 = OpTypePointer Workgroup %_arr_int_uint_128
+        %337 = OpVariable %_ptr_Workgroup__arr_int_uint_128 Workgroup
+%_ptr_Workgroup_int = OpTypePointer Workgroup %int
+       %half = OpTypeFloat 16
+     %v4half = OpTypeVector %half 4
+%_ptr_Function_v4half = OpTypePointer Function %v4half
+%_runtimearr_v4half = OpTypeRuntimeArray %v4half
+%_struct_375 = OpTypeStruct %_runtimearr_v4half
+%_ptr_StorageBuffer__struct_375 = OpTypePointer StorageBuffer %_struct_375
+        %377 = OpVariable %_ptr_StorageBuffer__struct_375 StorageBuffer
+%_ptr_StorageBuffer_v4half = OpTypePointer StorageBuffer %v4half
+        %383 = OpVariable %_ptr_Workgroup__arr_float_uint_128 Workgroup
+%_ptr_Function_half = OpTypePointer Function %half
+        %401 = OpSpecConstant %int 0
+        %402 = OpSpecConstantOp %uint IAdd %401 %uint_0
+%_runtimearr_int = OpTypeRuntimeArray %int
+%_struct_419 = OpTypeStruct %_runtimearr_int
+%_ptr_StorageBuffer__struct_419 = OpTypePointer StorageBuffer %_struct_419
+        %421 = OpVariable %_ptr_StorageBuffer__struct_419 StorageBuffer
+%_ptr_StorageBuffer_int = OpTypePointer StorageBuffer %int
+%_arr_float_uint_64 = OpTypeArray %float %uint_64
+%_ptr_Workgroup__arr_float_uint_64 = OpTypePointer Workgroup %_arr_float_uint_64
+        %438 = OpVariable %_ptr_Workgroup__arr_float_uint_64 Workgroup
+     %uint_5 = OpConstant %uint 5
+   %uint_264 = OpConstant %uint 264
+%_runtimearr_v4int = OpTypeRuntimeArray %v4int
+%_struct_461 = OpTypeStruct %_runtimearr_v4int
+%_ptr_StorageBuffer__struct_461 = OpTypePointer StorageBuffer %_struct_461
+        %463 = OpVariable %_ptr_StorageBuffer__struct_461 StorageBuffer
+%_ptr_StorageBuffer_v4int = OpTypePointer StorageBuffer %v4int
+        %485 = OpTypeImage %int 2D 0 0 0 1 Unknown
+        %486 = OpTypeSampledImage %485
+%_ptr_UniformConstant_486 = OpTypePointer UniformConstant %486
+        %488 = OpVariable %_ptr_UniformConstant_486 UniformConstant
+      %v2int = OpTypeVector %int 2
+  %uint_2048 = OpConstant %uint 2048
+%_arr_uint_uint_2048 = OpTypeArray %uint %uint_2048
+%_ptr_Workgroup__arr_uint_uint_2048 = OpTypePointer Workgroup %_arr_uint_uint_2048
+        %524 = OpVariable %_ptr_Workgroup__arr_uint_uint_2048 Workgroup
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+  %uint_1024 = OpConstant %uint 1024
+%_arr_uint_uint_1024 = OpTypeArray %uint %uint_1024
+%_ptr_Workgroup__arr_uint_uint_1024 = OpTypePointer Workgroup %_arr_uint_uint_1024
+        %570 = OpVariable %_ptr_Workgroup__arr_uint_uint_1024 Workgroup
+        %601 = OpSpecConstant %int 0
+        %602 = OpSpecConstantOp %uint IAdd %601 %uint_0
+        %603 = OpSpecConstantOp %uint IMul %602 %uint_4
+        %604 = OpSpecConstantOp %uint UDiv %603 %uint_32
+        %610 = OpSpecConstantOp %uint IMul %402 %604
+       %char = OpTypeInt 8 1
+        %758 = OpTypeCooperativeMatrixKHR %char %uint_3 %uint_16 %uint_16 %uint_0
+        %792 = OpTypeCooperativeMatrixKHR %char %uint_3 %uint_16 %uint_16 %uint_1
+       %1109 = OpTypeCooperativeMatrixKHR %half %uint_3 %uint_16 %uint_16 %uint_2
+%_runtimearr_half = OpTypeRuntimeArray %half
+%_struct_1119 = OpTypeStruct %_runtimearr_half
+%_ptr_StorageBuffer__struct_1119 = OpTypePointer StorageBuffer %_struct_1119
+       %1121 = OpVariable %_ptr_StorageBuffer__struct_1119 StorageBuffer
+       %1123 = OpSpecConstant %int 0
+       %1124 = OpSpecConstantOp %uint IAdd %1123 %uint_0
+%_ptr_StorageBuffer_half = OpTypePointer StorageBuffer %half
+       %1150 = OpSpecConstant %uint 1
+       %1151 = OpSpecConstant %uint 1
+       %1152 = OpSpecConstant %uint 1
+%gl_WorkGroupSize = OpSpecConstantComposite %v3uint %1150 %1151 %1152
+       %1268 = OpUndef %float
+       %1345 = OpConstantComposite %v4uint %uint_30 %uint_30 %uint_30 %uint_30
+    %uint_12 = OpConstant %uint 12
+          %4 = OpFunction %void None %3
+          %5 = OpLabel
+        %373 = OpVariable %_ptr_Function_v4half Function
+        %404 = OpVariable %_ptr_Function_v4half Function
+        %708 = OpVariable %_ptr_Function_v4half Function
+         %42 = OpLoad %v3uint %gl_WorkGroupID
+         %47 = OpLoad %uint %SubgroupId
+         %49 = OpUMod %uint %47 %uint_2
+         %51 = OpUDiv %uint %47 %uint_2
+         %63 = OpAccessChain %_ptr_Uniform_int %59 %int_0 %uint_0
+         %64 = OpLoad %int %63
+         %65 = OpBitcast %uint %64
+         %70 = OpAccessChain %_ptr_Uniform_int %69 %int_0 %uint_0
+         %71 = OpLoad %int %70
+         %72 = OpBitcast %uint %71
+         %76 = OpIAdd %uint %72 %uint_3
+         %78 = OpUDiv %uint %76 %uint_4
+         %81 = OpIAdd %uint %65 %uint_3
+         %82 = OpShiftRightLogical %uint %81 %uint_2
+         %87 = OpCompositeExtract %uint %42 1
+         %88 = OpIMul %uint %uint_128 %87
+         %92 = OpCompositeExtract %uint %42 0
+         %93 = OpIMul %uint %uint_64 %92
+        %158 = OpAccessChain %_ptr_Input_uint %gl_LocalInvocationID %uint_0
+        %159 = OpLoad %uint %158
+        %165 = OpBitwiseAnd %uint %159 %uint_1
+        %168 = OpShiftRightLogical %uint %159 %uint_1
+        %171 = OpUMod %uint %168 %uint_8
+        %174 = OpUDiv %uint %168 %uint_8
+        %177 = OpUDiv %uint %171 %uint_4
+        %180 = OpUMod %uint %171 %uint_4
+        %187 = OpIMul %uint %177 %uint_256
+        %189 = OpIMul %uint %174 %uint_8
+        %191 = OpIMul %uint %165 %uint_4
+        %192 = OpIAdd %uint %189 %191
+        %193 = OpIMul %uint %192 %uint_4
+        %194 = OpIAdd %uint %187 %193
+        %196 = OpIAdd %uint %194 %180
+        %209 = OpShiftRightLogical %uint %93 %uint_3
+        %211 = OpIAdd %uint %209 %174
+        %235 = OpUDiv %uint %159 %uint_8
+        %238 = OpUMod %uint %159 %uint_8
+        %244 = OpUDiv %uint %238 %uint_4
+        %246 = OpIMul %uint %244 %uint_512
+        %249 = OpIMul %uint %235 %uint_16
+        %250 = OpIAdd %uint %246 %249
+        %252 = OpUMod %uint %238 %uint_4
+        %253 = OpIAdd %uint %250 %252
+        %258 = OpShiftRightLogical %uint %88 %uint_2
+        %260 = OpIAdd %uint %258 %235
+        %262 = OpIMul %uint %260 %82
+        %264 = OpIAdd %uint %262 %238
+       %2527 = OpIAdd %uint %159 %uint_128
+       %2528 = OpUDiv %uint %2527 %uint_8
+       %2529 = OpUMod %uint %2527 %uint_8
+       %2530 = OpUDiv %uint %2529 %uint_4
+       %2531 = OpIMul %uint %2530 %uint_512
+       %2533 = OpIMul %uint %2528 %uint_16
+       %2534 = OpIAdd %uint %2531 %2533
+       %2535 = OpUMod %uint %2529 %uint_4
+       %2536 = OpIAdd %uint %2534 %2535
+       %2539 = OpIAdd %uint %258 %2528
+       %2540 = OpIMul %uint %2539 %82
+       %2541 = OpIAdd %uint %2540 %2529
+        %271 = OpULessThan %bool %159 %uint_32
+               OpSelectionMerge %273 None
+               OpBranchConditional %271 %272 %273
+        %272 = OpLabel
+        %279 = OpIAdd %uint %258 %159
+        %287 = OpLoad %284 %286
+        %289 = OpBitcast %int %279
+        %291 = OpCompositeConstruct %v3int %289 %int_0 %int_0
+        %292 = OpImage %283 %287
+        %293 = OpImageFetch %v4float %292 %291 Lod %int_0
+        %300 = OpLoad %297 %299
+        %304 = OpImage %296 %300
+        %305 = OpImageFetch %v4int %304 %291 Lod %int_0
+        %309 = OpIMul %uint %159 %uint_4
+        %317 = OpCompositeExtract %float %293 0
+        %319 = OpAccessChain %_ptr_Workgroup_float %312 %309
+               OpStore %319 %317 MakePointerAvailable|NonPrivatePointer %uint_2
+        %321 = OpIAdd %uint %309 %uint_1
+        %323 = OpCompositeExtract %float %293 1
+        %324 = OpAccessChain %_ptr_Workgroup_float %312 %321
+               OpStore %324 %323 MakePointerAvailable|NonPrivatePointer %uint_2
+        %326 = OpIAdd %uint %309 %uint_2
+        %328 = OpCompositeExtract %float %293 2
+        %329 = OpAccessChain %_ptr_Workgroup_float %312 %326
+               OpStore %329 %328 MakePointerAvailable|NonPrivatePointer %uint_2
+        %331 = OpIAdd %uint %309 %uint_3
+        %333 = OpCompositeExtract %float %293 3
+        %334 = OpAccessChain %_ptr_Workgroup_float %312 %331
+               OpStore %334 %333 MakePointerAvailable|NonPrivatePointer %uint_2
+        %342 = OpCompositeExtract %int %305 0
+        %344 = OpAccessChain %_ptr_Workgroup_int %337 %309
+               OpStore %344 %342 MakePointerAvailable|NonPrivatePointer %uint_2
+        %348 = OpCompositeExtract %int %305 1
+        %349 = OpAccessChain %_ptr_Workgroup_int %337 %321
+               OpStore %349 %348 MakePointerAvailable|NonPrivatePointer %uint_2
+        %353 = OpCompositeExtract %int %305 2
+        %354 = OpAccessChain %_ptr_Workgroup_int %337 %326
+               OpStore %354 %353 MakePointerAvailable|NonPrivatePointer %uint_2
+        %358 = OpCompositeExtract %int %305 3
+        %359 = OpAccessChain %_ptr_Workgroup_int %337 %331
+               OpStore %359 %358 MakePointerAvailable|NonPrivatePointer %uint_2
+               OpBranch %273
+        %273 = OpLabel
+        %362 = OpULessThan %bool %159 %uint_64
+               OpSelectionMerge %364 None
+               OpBranchConditional %362 %363 %364
+        %363 = OpLabel
+        %369 = OpIAdd %uint %93 %159
+        %379 = OpShiftRightLogical %uint %369 %uint_2
+        %381 = OpAccessChain %_ptr_StorageBuffer_v4half %377 %int_0 %379
+        %382 = OpLoad %v4half %381
+               OpStore %373 %382
+        %387 = OpBitwiseAnd %uint %369 %uint_3
+        %389 = OpAccessChain %_ptr_Function_half %373 %387
+        %390 = OpLoad %half %389
+        %391 = OpFConvert %float %390
+        %392 = OpAccessChain %_ptr_Workgroup_float %383 %159
+               OpStore %392 %391 MakePointerAvailable|NonPrivatePointer %uint_2
+               OpBranch %395
+        %395 = OpLabel
+       %1212 = OpPhi %float %float_0 %363 %433 %396
+       %1211 = OpPhi %uint %uint_0 %363 %435 %396
+        %403 = OpULessThan %bool %1211 %402
+               OpLoopMerge %397 %396 None
+               OpBranchConditional %403 %396 %397
+        %396 = OpLabel
+        %407 = OpIMul %uint %1211 %78
+        %410 = OpIAdd %uint %407 %379
+        %411 = OpAccessChain %_ptr_StorageBuffer_v4half %377 %int_0 %410
+        %412 = OpLoad %v4half %411
+               OpStore %404 %412
+        %415 = OpAccessChain %_ptr_Function_half %404 %387
+        %416 = OpLoad %half %415
+        %417 = OpFConvert %float %416
+        %424 = OpIMul %uint %1211 %72
+        %426 = OpIAdd %uint %424 %369
+        %428 = OpAccessChain %_ptr_StorageBuffer_int %421 %int_0 %426
+        %429 = OpLoad %int %428
+        %430 = OpConvertSToF %float %429
+        %431 = OpFMul %float %417 %430
+        %433 = OpFAdd %float %1212 %431
+        %435 = OpIAdd %uint %1211 %int_1
+               OpBranch %395
+        %397 = OpLabel
+        %442 = OpAccessChain %_ptr_Workgroup_float %438 %159
+               OpStore %442 %1212 MakePointerAvailable|NonPrivatePointer %uint_2
+               OpBranch %364
+        %364 = OpLabel
+               OpMemoryBarrier %uint_5 %uint_264
+               OpControlBarrier %uint_2 %uint_2 %uint_264
+        %468 = OpAccessChain %_ptr_StorageBuffer_v4int %463 %int_0 %264
+        %469 = OpLoad %v4int %468
+       %2514 = OpAccessChain %_ptr_StorageBuffer_v4int %463 %int_0 %2541
+       %2515 = OpLoad %v4int %2514
+        %489 = OpLoad %486 %488
+        %493 = OpBitcast %int %171
+        %497 = OpBitcast %int %211
+        %499 = OpCompositeConstruct %v2int %493 %497
+        %500 = OpImage %485 %489
+        %501 = OpImageFetch %v4int %500 %499 Lod %int_0
+        %534 = OpCompositeExtract %int %469 0
+        %535 = OpBitcast %uint %534
+        %537 = OpAccessChain %_ptr_Workgroup_uint %524 %253
+               OpStore %537 %535 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2406 = OpIAdd %uint %253 %uint_4
+       %2408 = OpCompositeExtract %int %469 1
+       %2409 = OpBitcast %uint %2408
+       %2410 = OpAccessChain %_ptr_Workgroup_uint %524 %2406
+               OpStore %2410 %2409 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2421 = OpIAdd %uint %253 %uint_8
+       %2423 = OpCompositeExtract %int %469 2
+       %2424 = OpBitcast %uint %2423
+       %2425 = OpAccessChain %_ptr_Workgroup_uint %524 %2421
+               OpStore %2425 %2424 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2436 = OpIAdd %uint %253 %uint_12
+       %2438 = OpCompositeExtract %int %469 3
+       %2439 = OpBitcast %uint %2438
+       %2440 = OpAccessChain %_ptr_Workgroup_uint %524 %2436
+               OpStore %2440 %2439 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2457 = OpCompositeExtract %int %2515 0
+       %2458 = OpBitcast %uint %2457
+       %2459 = OpAccessChain %_ptr_Workgroup_uint %524 %2536
+               OpStore %2459 %2458 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2469 = OpIAdd %uint %2536 %uint_4
+       %2471 = OpCompositeExtract %int %2515 1
+       %2472 = OpBitcast %uint %2471
+       %2473 = OpAccessChain %_ptr_Workgroup_uint %524 %2469
+               OpStore %2473 %2472 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2483 = OpIAdd %uint %2536 %uint_8
+       %2485 = OpCompositeExtract %int %2515 2
+       %2486 = OpBitcast %uint %2485
+       %2487 = OpAccessChain %_ptr_Workgroup_uint %524 %2483
+               OpStore %2487 %2486 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2497 = OpIAdd %uint %2536 %uint_12
+       %2499 = OpCompositeExtract %int %2515 3
+       %2500 = OpBitcast %uint %2499
+       %2501 = OpAccessChain %_ptr_Workgroup_uint %524 %2497
+               OpStore %2501 %2500 MakePointerAvailable|NonPrivatePointer %uint_2
+        %554 = OpBitcast %v4uint %501
+       %1160 = OpCompositeConstruct %v4uint %191 %191 %191 %191
+       %1161 = OpShiftRightLogical %v4uint %554 %1160
+       %1162 = OpBitwiseAnd %v4uint %1161 %18
+       %1164 = OpBitwiseXor %v4uint %1162 %23
+       %1166 = OpBitwiseAnd %v4uint %1164 %23
+       %1170 = OpIMul %v4uint %1166 %1345
+       %1171 = OpBitwiseOr %v4uint %1164 %1170
+        %579 = OpCompositeExtract %uint %1171 0
+        %580 = OpAccessChain %_ptr_Workgroup_uint %570 %196
+               OpStore %580 %579 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2364 = OpIAdd %uint %196 %uint_4
+       %2366 = OpCompositeExtract %uint %1171 1
+       %2367 = OpAccessChain %_ptr_Workgroup_uint %570 %2364
+               OpStore %2367 %2366 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2378 = OpIAdd %uint %196 %uint_8
+       %2380 = OpCompositeExtract %uint %1171 2
+       %2381 = OpAccessChain %_ptr_Workgroup_uint %570 %2378
+               OpStore %2381 %2380 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2392 = OpIAdd %uint %196 %uint_12
+       %2394 = OpCompositeExtract %uint %1171 3
+       %2395 = OpAccessChain %_ptr_Workgroup_uint %570 %2392
+               OpStore %2395 %2394 MakePointerAvailable|NonPrivatePointer %uint_2
+               OpBranch %587
+        %587 = OpLabel
+       %2753 = OpPhi %113 %121 %364 %2348 %590
+       %2749 = OpPhi %113 %121 %364 %2333 %590
+       %2745 = OpPhi %113 %121 %364 %2318 %590
+       %2741 = OpPhi %113 %121 %364 %2303 %590
+       %2737 = OpPhi %113 %121 %364 %2276 %590
+       %2733 = OpPhi %113 %121 %364 %2260 %590
+       %2729 = OpPhi %113 %121 %364 %2244 %590
+       %2725 = OpPhi %113 %121 %364 %981 %590
+       %2852 = OpPhi %v4int %501 %364 %2851 %590
+       %2846 = OpPhi %v4int %2515 %364 %2845 %590
+       %2840 = OpPhi %v4int %469 %364 %2839 %590
+       %1217 = OpPhi %uint %uint_0 %364 %991 %590
+       %1258 = OpPhi %float %1268 %364 %1257 %590
+       %1232 = OpPhi %uint %uint_0 %364 %1231 %590
+        %593 = OpULessThan %bool %1217 %402
+               OpLoopMerge %589 %590 None
+               OpBranchConditional %593 %588 %589
+        %588 = OpLabel
+               OpBranch %595
+        %595 = OpLabel
+       %2851 = OpPhi %v4int %2852 %588 %2849 %598
+       %2845 = OpPhi %v4int %2846 %588 %2843 %598
+       %2839 = OpPhi %v4int %2840 %588 %2837 %598
+       %2799 = OpPhi %124 %131 %588 %2062 %598
+       %2793 = OpPhi %124 %131 %588 %2050 %598
+       %2787 = OpPhi %124 %131 %588 %2038 %598
+       %2781 = OpPhi %124 %131 %588 %2026 %598
+       %2775 = OpPhi %124 %131 %588 %1999 %598
+       %2769 = OpPhi %124 %131 %588 %1987 %598
+       %2763 = OpPhi %124 %131 %588 %1975 %598
+       %2757 = OpPhi %124 %131 %588 %1963 %598
+       %1257 = OpPhi %float %1258 %588 %1255 %598
+       %1231 = OpPhi %uint %1232 %588 %932 %598
+       %1225 = OpPhi %uint %uint_0 %588 %930 %598
+        %605 = OpULessThan %bool %1225 %604
+               OpLoopMerge %597 %598 None
+               OpBranchConditional %605 %596 %597
+        %596 = OpLabel
+        %609 = OpIAdd %uint %1231 %uint_1
+        %611 = OpULessThan %bool %609 %610
+               OpSelectionMerge %615 None
+               OpBranchConditional %611 %614 %615
+        %614 = OpLabel
+        %617 = OpIAdd %uint %1225 %uint_1
+        %618 = OpIEqual %bool %617 %604
+               OpBranch %615
+        %615 = OpLabel
+        %619 = OpPhi %bool %611 %596 %618 %614
+        %622 = OpUMod %uint %1231 %uint_2
+        %623 = OpIMul %uint %622 %uint_1024
+        %627 = OpIMul %uint %622 %uint_512
+        %631 = OpUMod %uint %609 %uint_2
+        %632 = OpIMul %uint %631 %uint_1024
+        %637 = OpIMul %uint %631 %uint_512
+               OpMemoryBarrier %uint_5 %uint_264
+               OpControlBarrier %uint_2 %uint_2 %uint_264
+               OpSelectionMerge %640 None
+               OpBranchConditional %611 %639 %640
+        %639 = OpLabel
+        %644 = OpIMul %uint %609 %uint_32
+        %658 = OpShiftRightLogical %uint %644 %uint_2
+        %659 = OpIAdd %uint %264 %658
+        %660 = OpAccessChain %_ptr_StorageBuffer_v4int %463 %int_0 %659
+        %661 = OpLoad %v4int %660
+       %1716 = OpIAdd %uint %2541 %658
+       %1717 = OpAccessChain %_ptr_StorageBuffer_v4int %463 %int_0 %1716
+       %1718 = OpLoad %v4int %1717
+        %679 = OpIAdd %uint %658 %171
+        %681 = OpLoad %486 %488
+        %683 = OpBitcast %int %679
+        %688 = OpCompositeConstruct %v2int %683 %497
+        %689 = OpImage %485 %681
+        %690 = OpImageFetch %v4int %689 %688 Lod %int_0
+       %2944 = OpSelect %bool %619 %362 %619
+               OpSelectionMerge %702 None
+               OpBranchConditional %2944 %701 %702
+        %701 = OpLabel
+        %707 = OpIAdd %uint %93 %159
+        %710 = OpIAdd %uint %1217 %uint_1
+        %712 = OpIMul %uint %710 %78
+        %714 = OpShiftRightLogical %uint %707 %uint_2
+        %715 = OpIAdd %uint %712 %714
+        %716 = OpAccessChain %_ptr_StorageBuffer_v4half %377 %int_0 %715
+        %717 = OpLoad %v4half %716
+               OpStore %708 %717
+        %720 = OpBitwiseAnd %uint %707 %uint_3
+        %721 = OpAccessChain %_ptr_Function_half %708 %720
+        %722 = OpLoad %half %721
+        %723 = OpFConvert %float %722
+               OpBranch %702
+        %702 = OpLabel
+       %1272 = OpPhi %float %1257 %639 %723 %701
+               OpBranch %640
+        %640 = OpLabel
+       %2849 = OpPhi %v4int %2851 %615 %690 %702
+       %2843 = OpPhi %v4int %2845 %615 %1718 %702
+       %2837 = OpPhi %v4int %2839 %615 %661 %702
+       %1255 = OpPhi %float %1257 %615 %1272 %702
+        %753 = OpIMul %uint %uint_4 %51
+        %767 = OpIMul %uint %51 %uint_256
+        %768 = OpIAdd %uint %623 %767
+        %769 = OpAccessChain %_ptr_Workgroup_uint %524 %768
+        %774 = OpCooperativeMatrixLoadKHR %758 %769 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1729 = OpIAdd %uint %753 %uint_1
+       %1732 = OpIMul %uint %1729 %uint_64
+       %1733 = OpIAdd %uint %623 %1732
+       %1734 = OpAccessChain %_ptr_Workgroup_uint %524 %1733
+       %1735 = OpCooperativeMatrixLoadKHR %758 %1734 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1745 = OpIAdd %uint %753 %uint_2
+       %1748 = OpIMul %uint %1745 %uint_64
+       %1749 = OpIAdd %uint %623 %1748
+       %1750 = OpAccessChain %_ptr_Workgroup_uint %524 %1749
+       %1751 = OpCooperativeMatrixLoadKHR %758 %1750 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1761 = OpIAdd %uint %753 %uint_3
+       %1764 = OpIMul %uint %1761 %uint_64
+       %1765 = OpIAdd %uint %623 %1764
+       %1766 = OpAccessChain %_ptr_Workgroup_uint %524 %1765
+       %1767 = OpCooperativeMatrixLoadKHR %758 %1766 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+        %788 = OpIMul %uint %uint_2 %49
+        %797 = OpIMul %uint %49 %uint_128
+        %798 = OpIAdd %uint %627 %797
+        %799 = OpAccessChain %_ptr_Workgroup_uint %570 %798
+        %804 = OpCooperativeMatrixLoadKHR %792 %799 %int_1 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+        %823 = OpCooperativeMatrixMulAddKHR %124 %774 %804 %2757 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1779 = OpCooperativeMatrixMulAddKHR %124 %1735 %804 %2763 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1792 = OpCooperativeMatrixMulAddKHR %124 %1751 %804 %2769 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1805 = OpCooperativeMatrixMulAddKHR %124 %1767 %804 %2775 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1816 = OpIAdd %uint %788 %uint_1
+       %1818 = OpIMul %uint %1816 %uint_64
+       %1819 = OpIAdd %uint %627 %1818
+       %1820 = OpAccessChain %_ptr_Workgroup_uint %570 %1819
+       %1821 = OpCooperativeMatrixLoadKHR %792 %1820 %int_1 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1830 = OpCooperativeMatrixMulAddKHR %124 %774 %1821 %2781 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1842 = OpCooperativeMatrixMulAddKHR %124 %1735 %1821 %2787 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1854 = OpCooperativeMatrixMulAddKHR %124 %1751 %1821 %2793 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1866 = OpCooperativeMatrixMulAddKHR %124 %1767 %1821 %2799 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1879 = OpIAdd %uint %623 %uint_512
+       %1881 = OpIAdd %uint %627 %uint_256
+       %1892 = OpIAdd %uint %1879 %767
+       %1893 = OpAccessChain %_ptr_Workgroup_uint %524 %1892
+       %1894 = OpCooperativeMatrixLoadKHR %758 %1893 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1907 = OpIAdd %uint %1879 %1732
+       %1908 = OpAccessChain %_ptr_Workgroup_uint %524 %1907
+       %1909 = OpCooperativeMatrixLoadKHR %758 %1908 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1922 = OpIAdd %uint %1879 %1748
+       %1923 = OpAccessChain %_ptr_Workgroup_uint %524 %1922
+       %1924 = OpCooperativeMatrixLoadKHR %758 %1923 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1937 = OpIAdd %uint %1879 %1764
+       %1938 = OpAccessChain %_ptr_Workgroup_uint %524 %1937
+       %1939 = OpCooperativeMatrixLoadKHR %758 %1938 %int_0 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1952 = OpIAdd %uint %1881 %797
+       %1953 = OpAccessChain %_ptr_Workgroup_uint %570 %1952
+       %1954 = OpCooperativeMatrixLoadKHR %792 %1953 %int_1 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %1963 = OpCooperativeMatrixMulAddKHR %124 %1894 %1954 %823 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1975 = OpCooperativeMatrixMulAddKHR %124 %1909 %1954 %1779 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1987 = OpCooperativeMatrixMulAddKHR %124 %1924 %1954 %1792 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %1999 = OpCooperativeMatrixMulAddKHR %124 %1939 %1954 %1805 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %2015 = OpIAdd %uint %1881 %1818
+       %2016 = OpAccessChain %_ptr_Workgroup_uint %570 %2015
+       %2017 = OpCooperativeMatrixLoadKHR %792 %2016 %int_1 %uint_4 MakePointerVisible|NonPrivatePointer %uint_2
+       %2026 = OpCooperativeMatrixMulAddKHR %124 %1894 %2017 %1830 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %2038 = OpCooperativeMatrixMulAddKHR %124 %1909 %2017 %1842 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %2050 = OpCooperativeMatrixMulAddKHR %124 %1924 %2017 %1854 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+       %2062 = OpCooperativeMatrixMulAddKHR %124 %1939 %2017 %1866 MatrixASignedComponentsKHR|MatrixBSignedComponentsKHR|MatrixCSignedComponentsKHR|MatrixResultSignedComponentsKHR
+               OpSelectionMerge %833 None
+               OpBranchConditional %611 %832 %833
+        %832 = OpLabel
+        %854 = OpIAdd %uint %632 %253
+        %861 = OpCompositeExtract %int %2837 0
+        %862 = OpBitcast %uint %861
+        %863 = OpAccessChain %_ptr_Workgroup_uint %524 %854
+               OpStore %863 %862 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2081 = OpIAdd %uint %854 %uint_4
+       %2083 = OpCompositeExtract %int %2837 1
+       %2084 = OpBitcast %uint %2083
+       %2085 = OpAccessChain %_ptr_Workgroup_uint %524 %2081
+               OpStore %2085 %2084 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2097 = OpIAdd %uint %854 %uint_8
+       %2099 = OpCompositeExtract %int %2837 2
+       %2100 = OpBitcast %uint %2099
+       %2101 = OpAccessChain %_ptr_Workgroup_uint %524 %2097
+               OpStore %2101 %2100 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2113 = OpIAdd %uint %854 %uint_12
+       %2115 = OpCompositeExtract %int %2837 3
+       %2116 = OpBitcast %uint %2115
+       %2117 = OpAccessChain %_ptr_Workgroup_uint %524 %2113
+               OpStore %2117 %2116 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2131 = OpIAdd %uint %632 %2536
+       %2135 = OpCompositeExtract %int %2843 0
+       %2136 = OpBitcast %uint %2135
+       %2137 = OpAccessChain %_ptr_Workgroup_uint %524 %2131
+               OpStore %2137 %2136 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2148 = OpIAdd %uint %2131 %uint_4
+       %2150 = OpCompositeExtract %int %2843 1
+       %2151 = OpBitcast %uint %2150
+       %2152 = OpAccessChain %_ptr_Workgroup_uint %524 %2148
+               OpStore %2152 %2151 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2163 = OpIAdd %uint %2131 %uint_8
+       %2165 = OpCompositeExtract %int %2843 2
+       %2166 = OpBitcast %uint %2165
+       %2167 = OpAccessChain %_ptr_Workgroup_uint %524 %2163
+               OpStore %2167 %2166 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2178 = OpIAdd %uint %2131 %uint_12
+       %2180 = OpCompositeExtract %int %2843 3
+       %2181 = OpBitcast %uint %2180
+       %2182 = OpAccessChain %_ptr_Workgroup_uint %524 %2178
+               OpStore %2182 %2181 MakePointerAvailable|NonPrivatePointer %uint_2
+        %880 = OpBitcast %v4uint %2849
+       %1178 = OpShiftRightLogical %v4uint %880 %1160
+       %1179 = OpBitwiseAnd %v4uint %1178 %18
+       %1181 = OpBitwiseXor %v4uint %1179 %23
+       %1183 = OpBitwiseAnd %v4uint %1181 %23
+       %1187 = OpIMul %v4uint %1183 %1345
+       %1188 = OpBitwiseOr %v4uint %1181 %1187
+        %897 = OpIAdd %uint %637 %196
+        %903 = OpCompositeExtract %uint %1188 0
+        %904 = OpAccessChain %_ptr_Workgroup_uint %570 %897
+               OpStore %904 %903 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2197 = OpIAdd %uint %897 %uint_4
+       %2199 = OpCompositeExtract %uint %1188 1
+       %2200 = OpAccessChain %_ptr_Workgroup_uint %570 %2197
+               OpStore %2200 %2199 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2212 = OpIAdd %uint %897 %uint_8
+       %2214 = OpCompositeExtract %uint %1188 2
+       %2215 = OpAccessChain %_ptr_Workgroup_uint %570 %2212
+               OpStore %2215 %2214 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2227 = OpIAdd %uint %897 %uint_12
+       %2229 = OpCompositeExtract %uint %1188 3
+       %2230 = OpAccessChain %_ptr_Workgroup_uint %570 %2227
+               OpStore %2230 %2229 MakePointerAvailable|NonPrivatePointer %uint_2
+       %2945 = OpSelect %bool %619 %362 %619
+               OpSelectionMerge %917 None
+               OpBranchConditional %2945 %916 %917
+        %916 = OpLabel
+        %920 = OpIAdd %uint %1217 %uint_1
+        %921 = OpUMod %uint %920 %uint_2
+        %922 = OpIMul %uint %921 %uint_64
+        %926 = OpIAdd %uint %922 %159
+        %928 = OpAccessChain %_ptr_Workgroup_float %383 %926
+               OpStore %928 %1255 MakePointerAvailable|NonPrivatePointer %uint_2
+               OpBranch %917
+        %917 = OpLabel
+               OpBranch %833
+        %833 = OpLabel
+               OpBranch %598
+        %598 = OpLabel
+        %930 = OpIAdd %uint %1225 %int_1
+        %932 = OpIAdd %uint %1231 %int_1
+               OpBranch %595
+        %597 = OpLabel
+        %935 = OpUMod %uint %1217 %uint_2
+        %936 = OpIMul %uint %935 %uint_64
+        %948 = OpIMul %uint %uint_2 %49
+        %951 = OpIMul %uint %49 %uint_32
+        %956 = OpIAdd %uint %936 %951
+        %957 = OpAccessChain %_ptr_Workgroup_float %383 %956
+        %961 = OpCooperativeMatrixLoadKHR %113 %957 %int_0 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+        %976 = OpConvertSToF %113 %2757
+        %978 = OpFMul %113 %976 %961
+        %981 = OpFAdd %113 %2725 %978
+       %2240 = OpConvertSToF %113 %2763
+       %2241 = OpFMul %113 %2240 %961
+       %2244 = OpFAdd %113 %2729 %2241
+       %2256 = OpConvertSToF %113 %2769
+       %2257 = OpFMul %113 %2256 %961
+       %2260 = OpFAdd %113 %2733 %2257
+       %2272 = OpConvertSToF %113 %2775
+       %2273 = OpFMul %113 %2272 %961
+       %2276 = OpFAdd %113 %2737 %2273
+       %2288 = OpIAdd %uint %948 %uint_1
+       %2289 = OpIMul %uint %uint_16 %2288
+       %2290 = OpIAdd %uint %936 %2289
+       %2291 = OpAccessChain %_ptr_Workgroup_float %383 %2290
+       %2292 = OpCooperativeMatrixLoadKHR %113 %2291 %int_0 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %2299 = OpConvertSToF %113 %2781
+       %2300 = OpFMul %113 %2299 %2292
+       %2303 = OpFAdd %113 %2741 %2300
+       %2314 = OpConvertSToF %113 %2787
+       %2315 = OpFMul %113 %2314 %2292
+       %2318 = OpFAdd %113 %2745 %2315
+       %2329 = OpConvertSToF %113 %2793
+       %2330 = OpFMul %113 %2329 %2292
+       %2333 = OpFAdd %113 %2749 %2330
+       %2344 = OpConvertSToF %113 %2799
+       %2345 = OpFMul %113 %2344 %2292
+       %2348 = OpFAdd %113 %2753 %2345
+               OpBranch %590
+        %590 = OpLabel
+        %991 = OpIAdd %uint %1217 %int_1
+               OpBranch %587
+        %589 = OpLabel
+       %1003 = OpIMul %uint %uint_4 %51
+       %1006 = OpIMul %uint %51 %uint_64
+       %1010 = OpAccessChain %_ptr_Workgroup_int %337 %1006
+       %1011 = OpCooperativeMatrixLoadKHR %124 %1010 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1017 = OpConvertSToF %113 %1011
+       %1023 = OpAccessChain %_ptr_Workgroup_float %312 %1006
+       %1024 = OpCooperativeMatrixLoadKHR %113 %1023 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1661 = OpIAdd %uint %1003 %uint_1
+       %1662 = OpIMul %uint %uint_16 %1661
+       %1663 = OpAccessChain %_ptr_Workgroup_int %337 %1662
+       %1664 = OpCooperativeMatrixLoadKHR %124 %1663 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1665 = OpConvertSToF %113 %1664
+       %1668 = OpAccessChain %_ptr_Workgroup_float %312 %1662
+       %1669 = OpCooperativeMatrixLoadKHR %113 %1668 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1679 = OpIAdd %uint %1003 %uint_2
+       %1680 = OpIMul %uint %uint_16 %1679
+       %1681 = OpAccessChain %_ptr_Workgroup_int %337 %1680
+       %1682 = OpCooperativeMatrixLoadKHR %124 %1681 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1683 = OpConvertSToF %113 %1682
+       %1686 = OpAccessChain %_ptr_Workgroup_float %312 %1680
+       %1687 = OpCooperativeMatrixLoadKHR %113 %1686 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1697 = OpIAdd %uint %1003 %uint_3
+       %1698 = OpIMul %uint %uint_16 %1697
+       %1699 = OpAccessChain %_ptr_Workgroup_int %337 %1698
+       %1700 = OpCooperativeMatrixLoadKHR %124 %1699 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1701 = OpConvertSToF %113 %1700
+       %1704 = OpAccessChain %_ptr_Workgroup_float %312 %1698
+       %1705 = OpCooperativeMatrixLoadKHR %113 %1704 %int_1 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1038 = OpIMul %uint %uint_2 %49
+       %1041 = OpIMul %uint %49 %uint_32
+       %1044 = OpAccessChain %_ptr_Workgroup_float %438 %1041
+       %1045 = OpCooperativeMatrixLoadKHR %113 %1044 %int_0 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1067 = OpFMul %113 %1017 %1045
+       %1068 = OpFSub %113 %2725 %1067
+       %1069 = OpFMul %113 %1024 %1068
+       %1536 = OpFMul %113 %1665 %1045
+       %1537 = OpFSub %113 %2729 %1536
+       %1538 = OpFMul %113 %1669 %1537
+       %1553 = OpFMul %113 %1683 %1045
+       %1554 = OpFSub %113 %2733 %1553
+       %1555 = OpFMul %113 %1687 %1554
+       %1570 = OpFMul %113 %1701 %1045
+       %1571 = OpFSub %113 %2737 %1570
+       %1572 = OpFMul %113 %1705 %1571
+       %1583 = OpIAdd %uint %1038 %uint_1
+       %1584 = OpIMul %uint %uint_16 %1583
+       %1585 = OpAccessChain %_ptr_Workgroup_float %438 %1584
+       %1586 = OpCooperativeMatrixLoadKHR %113 %1585 %int_0 %uint_0 MakePointerVisible|NonPrivatePointer %uint_2
+       %1597 = OpFMul %113 %1017 %1586
+       %1598 = OpFSub %113 %2741 %1597
+       %1599 = OpFMul %113 %1024 %1598
+       %1613 = OpFMul %113 %1665 %1586
+       %1614 = OpFSub %113 %2745 %1613
+       %1615 = OpFMul %113 %1669 %1614
+       %1629 = OpFMul %113 %1683 %1586
+       %1630 = OpFSub %113 %2749 %1629
+       %1631 = OpFMul %113 %1687 %1630
+       %1645 = OpFMul %113 %1701 %1586
+       %1646 = OpFSub %113 %2753 %1645
+       %1647 = OpFMul %113 %1705 %1646
+       %1099 = OpIAdd %uint %88 %1006
+       %1108 = OpIAdd %uint %93 %1041
+       %1116 = OpFConvert %1109 %1069
+       %1125 = OpIMul %uint %1099 %1124
+       %1127 = OpIAdd %uint %1125 %1108
+       %1129 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1127
+               OpCooperativeMatrixStoreKHR %1129 %1116 %int_0 %1124 None
+       %1360 = OpIAdd %uint %93 %1584
+       %1363 = OpFConvert %1109 %1599
+       %1365 = OpIAdd %uint %1125 %1360
+       %1366 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1365
+               OpCooperativeMatrixStoreKHR %1366 %1363 %int_0 %1124 None
+       %1382 = OpIAdd %uint %88 %1662
+       %1390 = OpFConvert %1109 %1538
+       %1391 = OpIMul %uint %1382 %1124
+       %1392 = OpIAdd %uint %1391 %1108
+       %1393 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1392
+               OpCooperativeMatrixStoreKHR %1393 %1390 %int_0 %1124 None
+       %1412 = OpFConvert %1109 %1615
+       %1414 = OpIAdd %uint %1391 %1360
+       %1415 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1414
+               OpCooperativeMatrixStoreKHR %1415 %1412 %int_0 %1124 None
+       %1434 = OpIAdd %uint %88 %1680
+       %1442 = OpFConvert %1109 %1555
+       %1443 = OpIMul %uint %1434 %1124
+       %1444 = OpIAdd %uint %1443 %1108
+       %1445 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1444
+               OpCooperativeMatrixStoreKHR %1445 %1442 %int_0 %1124 None
+       %1464 = OpFConvert %1109 %1631
+       %1466 = OpIAdd %uint %1443 %1360
+       %1467 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1466
+               OpCooperativeMatrixStoreKHR %1467 %1464 %int_0 %1124 None
+       %1486 = OpIAdd %uint %88 %1698
+       %1494 = OpFConvert %1109 %1572
+       %1495 = OpIMul %uint %1486 %1124
+       %1496 = OpIAdd %uint %1495 %1108
+       %1497 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1496
+               OpCooperativeMatrixStoreKHR %1497 %1494 %int_0 %1124 None
+       %1516 = OpFConvert %1109 %1647
+       %1518 = OpIAdd %uint %1495 %1360
+       %1519 = OpAccessChain %_ptr_StorageBuffer_half %1121 %int_0 %1518
+               OpCooperativeMatrixStoreKHR %1519 %1516 %int_0 %1124 None
+               OpReturn
+               OpFunctionEnd

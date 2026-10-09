@@ -1,0 +1,4 @@
+gemm.csv is a copy, not a new measurement: the tuning campaign's warm in-model ETDump trace of its final linear
+kernels (session s9-final-dev15, 2026-10-05, arm "cand" = candidate 11, whose linear kernels the 780m-final
+profile dispatches unchanged). Origin: ExecuTorch fork, branch topic/780m-prefill-refine,
+openspec/changes/sarc-1.5-780m-prefill-refine/results/780m/sessions/s9-final-dev15/trace/gemm.csv.

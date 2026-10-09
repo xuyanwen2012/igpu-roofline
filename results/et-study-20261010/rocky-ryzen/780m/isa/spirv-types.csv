@@ -1,0 +1,131 @@
+file,record,detail,count,distinct_A,distinct_B,A_source,B_source,loaded_operands,loaded_bytes,matrix_ops,ops_per_loaded_byte,local_size
+sarc_dev_780m_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,64,12,64,load:StorageBuffer/load:Workgroup,load:StorageBuffer,76,38912,524288,13.47,1 1 1
+sarc_dev_780m_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_sdpa_fused3sb_d64_t32x32g11s32rko_buffer_buffer_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,32,12,16,load:StorageBuffer/load:Workgroup,load:StorageBuffer,28,14336,262144,18.29,1 1 1
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_dq8ca_coopmat_zpg_t256x64k64g48s32afmb1_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,8,8,4,load:Workgroup,load:Workgroup,12,3072,65536,21.33,1 1 1
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x128k32g24s32f32cbt_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,32,8,16,load:Workgroup,load:Workgroup,24,12288,262144,21.33,1 1 1
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x256k32g42s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x256k32g42s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x256k32g42s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x256k32g42s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t128x256k32g42s32f32cbt_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,64,16,16,load:Workgroup,load:Workgroup,32,16384,524288,32.00,1 1 1
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g18s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g18s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g18s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g18s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g18s32f32cbt_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,64,8,32,load:Workgroup,load:Workgroup,40,20480,524288,25.60,1 1 1
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g24s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g24s32f32cbt_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,64,16,16,load:Workgroup,load:Workgroup,32,16384,524288,32.00,1 1 1
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g28s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g28s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g28s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g28s32f32cbt_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_780m_x_linear_q4gsw_coopmat_t256x128k32g28s32f32cbt_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,32,8,16,load:Workgroup,load:Workgroup,24,12288,262144,21.33,1 1 1
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_buffer_texture2d_half,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,16,8,4,load:Workgroup,load:Workgroup,12,3072,131072,42.67,1 1 1
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_dev_linear_dq8ca_coopmat_zpg_bt_t128x64k32g22s32_texture3d_texture2d_half,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,16,8,4,load:Workgroup,load:Workgroup,12,3072,131072,42.67,1 1 1
+sarc_linear_q4gsw_coopmat_t128x128k32g42s32f32c_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+sarc_linear_q4gsw_coopmat_t128x128k32g42s32f32c_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+sarc_linear_q4gsw_coopmat_t128x128k32g42s32f32c_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+sarc_linear_q4gsw_coopmat_t128x128k32g42s32f32c_buffer_texture2d_half,OpTypeCooperativeMatrixKHR,half 16x16 use=Accumulator,,,,,,,,,,
+sarc_linear_q4gsw_coopmat_t128x128k32g42s32f32c_buffer_texture2d_half,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,32,16,8,load:Workgroup,load:Workgroup,24,12288,262144,21.33,1 1 1
+matrix_fp16_fp32_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_lds,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,1,1,1,load:Workgroup,load:Workgroup,2,1024,8192,8.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_lds,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,2,1,1,load:Workgroup,load:Workgroup,2,1024,16384,16.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_lds,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,4,1,1,load:Workgroup,load:Workgroup,2,1024,32768,32.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_lds,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,8,1,1,load:Workgroup,load:Workgroup,2,1024,65536,64.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c1_lds,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c1_lds,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,1,1,1,load:Workgroup,load:Workgroup,2,512,8192,16.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c2_lds,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c2_lds,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,2,1,1,load:Workgroup,load:Workgroup,2,512,16384,32.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c4_lds,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c4_lds,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,4,1,1,load:Workgroup,load:Workgroup,2,512,32768,64.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c8_lds,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c8_lds,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,8,1,1,load:Workgroup,load:Workgroup,2,512,65536,128.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c8,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,8,1,1,load:StorageBuffer,load:StorageBuffer,2,1024,65536,64.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c8,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c8,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c8,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c8,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,8,1,1,load:StorageBuffer,load:StorageBuffer,2,512,65536,128.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c1_gmem,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,1,1,1,load:StorageBuffer,load:StorageBuffer,2,1024,8192,8.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c2_gmem,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,2,1,1,load:StorageBuffer,load:StorageBuffer,2,1024,16384,16.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c4_gmem,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,4,1,1,load:StorageBuffer,load:StorageBuffer,2,1024,32768,32.00,%7 %uint_1 %uint_1
+matrix_fp16_fp32_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=A,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,half 16x16 use=B,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,float 16x16 use=Accumulator,,,,,,,,,,
+matrix_fp16_fp32_16x16x16_c8_gmem,OpCooperativeMatrixMulAddKHR,A[half 16x16 A] x B[half 16x16 B] + C[float 16x16 Accumulator] -> float 16x16 Accumulator,8,1,1,load:StorageBuffer,load:StorageBuffer,2,1024,65536,64.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c1_gmem,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c1_gmem,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,1,1,1,load:StorageBuffer,load:StorageBuffer,2,512,8192,16.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c2_gmem,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c2_gmem,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,2,1,1,load:StorageBuffer,load:StorageBuffer,2,512,16384,32.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c4_gmem,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c4_gmem,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,4,1,1,load:StorageBuffer,load:StorageBuffer,2,512,32768,64.00,%7 %uint_1 %uint_1
+matrix_int8_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=A,,,,,,,,,,
+matrix_int8_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,char 16x16 use=B,,,,,,,,,,
+matrix_int8_16x16x16_c8_gmem,OpTypeCooperativeMatrixKHR,int 16x16 use=Accumulator,,,,,,,,,,
+matrix_int8_16x16x16_c8_gmem,OpCooperativeMatrixMulAddKHR,A[char 16x16 A] x B[char 16x16 B] + C[int 16x16 Accumulator] -> int 16x16 Accumulator,8,1,1,load:StorageBuffer,load:StorageBuffer,2,512,65536,128.00,%7 %uint_1 %uint_1
