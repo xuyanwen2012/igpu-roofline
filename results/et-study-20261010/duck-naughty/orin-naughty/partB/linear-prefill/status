@@ -1,0 +1,7 @@
+RUNNING 2026-10-09T18:03:06Z linear-prefill reps=5 args=--linear --regime=prefill --storage=texture3d --skip-correctness
+run1 rc=1 2026-10-09T18:03:39Z
+run2 rc=1 2026-10-09T18:04:12Z
+run3 rc=1 2026-10-09T18:04:45Z
+run4 rc=1 2026-10-09T18:05:18Z
+run5 rc=1 2026-10-09T18:05:50Z
+DONE rc=1 2026-10-09T18:05:50Z

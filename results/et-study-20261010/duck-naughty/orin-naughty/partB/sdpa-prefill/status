@@ -1,0 +1,7 @@
+RUNNING 2026-10-09T18:06:22Z sdpa-prefill reps=5 args=--sdpa --regime=prefill --skip-correctness
+run1 rc=0 2026-10-09T18:06:31Z
+run2 rc=0 2026-10-09T18:06:39Z
+run3 rc=0 2026-10-09T18:06:47Z
+run4 rc=0 2026-10-09T18:06:55Z
+run5 rc=0 2026-10-09T18:07:04Z
+DONE rc=0 2026-10-09T18:07:04Z
