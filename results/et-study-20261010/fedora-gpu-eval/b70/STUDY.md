@@ -4,7 +4,7 @@
 
 2026-10-09, after review round 1: parts A to D are done and nothing is running on the device. The reviewer's
 four checks passed. One item waits for the owner (section "Decision needed from the owner" at the end): the
-individual timed runs behind each microbenchmark median were never written by the tool. Nothing is re-measured
+individual timed runs behind each linear kernel median were never written by the tool (the attention runs were). Nothing is re-measured
 or recomputed while it is pending. The review artifact is `EXPERIMENT.md`.
 
 Device: Intel Arc Pro B70 (BMG G31), card 0 of two; driver ANV, Mesa 26.2.3 (109060099); kernel 7.2.9-200.fc44.
@@ -169,18 +169,21 @@ Hypotheses for a third round (none of these experiments was run):
 
 ## Decision needed from the owner
 
-**The five timed runs behind each microbenchmark statistic do not exist as data.** `test_llama_microbench` keeps
-them in memory and writes only `kernel_median_us` (linear) and `op_mean_us` (attention) per case; its log has no
-per-run line and the final build has no switch to print them. They were never on disk, so they cannot be
-recovered. What can be recomputed, and was by the reviewer: every number of `efficiency.csv` from the three
-per-process statistics of each case. What cannot: each process's own median or mean from its five runs.
+**The five timed runs behind each linear kernel median do not exist as data.** For the linear suite
+`test_llama_microbench` keeps them in memory and writes only `kernel_median_us` per case; its log has no per-run
+line and the final build has no switch to print them. They were never on disk, so they cannot be recovered.
+The attention suite is not affected: its five timed runs per case are in `raw/sdpa-r{1,2,3}.log` on the
+`[sdpa-runs]` lines, and the reviewer recomputed the three attention rows from them (corrected in review round
+2: an earlier version of this section wrongly said the attention runs were missing too). What can be
+recomputed for the linear rows: every number of `efficiency.csv` from the three per-process medians of each
+case. What cannot: each process's own median from its five runs.
 
-- Option 1, no cost: accept the per-process statistics as the raw level of part B (three processes per case,
+- Option 1, no cost: accept the per-process medians as the raw level of the linear rows (three processes per case,
   spread at most 3.9 %, in-model trace within -14 to +6 %).
-- Option 2, about 10 minutes of the card and no build: repeat the two suites in 5 more processes each, so every
-  case has 8 process-level values; still no single-run timings.
+- Option 2, about 8 minutes of the card and no build: repeat the linear suite in 5 more processes, so every
+  linear case has 8 process-level medians; still no single-run timings.
 - Option 3, a build (forbidden to this study by rule 4, so the owner's to order): a microbenchmark that prints
-  its per-run timings, from the same commit, then one repetition of part B; about 30 minutes of build and 10 of
+  the linear per-run timings, from the same commit, then one repetition of the linear suite; about 30 minutes of build and 10 of
   the card, and the binary would no longer be the one the tuning campaign timed.
 
 Until an answer is appended to the task file nothing is measured, built or recomputed.
