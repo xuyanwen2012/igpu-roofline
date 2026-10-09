@@ -1,0 +1,34 @@
+1. time-weighted rate per model and scheme (weights: dispatches per prefill in the in-model trace)
+model scheme  microbench_rate pct_register  in_model_rate pct_register  (roof)
+1B    4w       11.496   77.9 %     11.267   76.3 %   (14.764)
+3B    4w       11.589   78.5 %     11.375   77.0 %   (14.764)
+8B    4w       11.774   79.7 %     11.122   75.3 %   (14.764)
+1B    8da4w    11.577   80.6 %     11.612   80.8 %   (14.364)
+3B    8da4w    11.717   81.6 %     11.555   80.4 %   (14.364)
+8B    8da4w    11.618   80.9 %     11.198   78.0 %   (14.364)
+
+2. per-shape percentages: min, max, geometric mean
+4w     pct_register      69.3   81.7   77.1
+4w     pct_fed_shared    70.8   83.4   78.7
+4w     pct_fed_reuse    111.2  241.5  140.6
+8da4w  pct_register      74.1   82.6   79.9
+8da4w  pct_fed_shared    75.4   84.1   81.3
+8da4w  pct_fed_reuse    132.5  293.9  201.6
+
+3. 4w: logical activation-fetch traffic (GB/s) = M*K*2*(N/tile_N)/kernel_time
+   roof texture_rgba16f_tex3d_cache: 82.27 GB/s (confirmed=True)
+   roof texture_rgba16f_tex3d_dram: 40.80 GB/s (confirmed=True)
+   roof global_read: 86.74 GB/s (confirmed=True)
+model shape  tile     kernel_ms  rate   pct_reg  A_traffic_GBps  pct_of_tex3d_cache_roof
+1B    wq_wo  128x128     1.5421 11.140   75.5       87.0        106 %
+1B    wk_wv  128x128     0.4200 10.225   69.3       79.9         97 %
+1B    w1_w3  256x128     5.9194 11.609   78.6       90.7        110 %
+1B    w2     256x128     5.9066 11.634   78.8       90.9        110 %
+3B    wq_wo  256x128     3.3382 11.579   78.4       90.5        110 %
+3B    wk_wv  128x256     1.2040 10.701   72.5       41.8         51 %
+3B    w1_w3  256x128     8.9723 11.489   77.8       89.8        109 %
+3B    w2     256x128     8.5480 12.059   81.7       94.2        115 %
+8B    wq_wo  256x128     5.8708 11.705   79.3       91.4        111 %
+8B    wk_wv  256x128     1.5808 10.868   73.6       84.9        103 %
+8B    w1_w3  256x128    20.2898 11.854   80.3       92.6        113 %
+8B    w2     256x128    20.3954 11.793   79.9       92.1        112 %

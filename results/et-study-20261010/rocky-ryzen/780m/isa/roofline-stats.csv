@@ -1,0 +1,11 @@
+file,VGPRs,SGPRs,Spilled_VGPRs,Spilled_SGPRs,LDS_size,Scratch_size,Subgroups_per_SIMD,Code_size,Instructions,Pre-Sched_SGPRs,Pre-Sched_VGPRs
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,24,128,0,0,4096,0,16,616,105,8,28
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,32,128,0,0,4096,0,16,740,119,8,32
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,40,128,0,0,4096,0,16,964,147,8,40
+matrix_fp16_fp32_16x16x16_c8.isa.txt,80,128,0,0,0,0,12,1388,208,13,74
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,64,128,0,0,4096,0,16,1416,204,8,56
+matrix_int8_16x16x16_c1_lds.isa.txt,24,128,0,0,2048,0,32,744,119,8,24
+matrix_int8_16x16x16_c2_lds.isa.txt,24,128,0,0,2048,0,32,836,133,8,28
+matrix_int8_16x16x16_c4_lds.isa.txt,40,128,0,0,2048,0,24,1024,160,8,36
+matrix_int8_16x16x16_c8.isa.txt,64,128,0,0,0,0,16,1332,199,13,58
+matrix_int8_16x16x16_c8_lds.isa.txt,56,128,0,0,2048,0,18,1424,218,8,52

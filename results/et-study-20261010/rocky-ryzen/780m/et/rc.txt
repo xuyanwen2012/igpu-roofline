@@ -1,0 +1,12 @@
+linear-r0 rc=1
+linear-r1 rc=1
+linear-r2 rc=1
+linear-r3 rc=1
+linear-r4 rc=1
+linear-r5 rc=1
+sdpa-r1 rc=0
+sdpa-r2 rc=0
+sdpa-r3 rc=0
+isa-4w rc=1
+isa-8da4w rc=1
+isa-sdpa rc=0

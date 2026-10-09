@@ -1,0 +1,19 @@
+2026-10-09T19:04:25Z linear-r0 start sclk=0: 800Mhz * busy=0 load=0.00 0.00 0.00 monitors=none
+2026-10-09T19:05:25Z linear-r0 end sclk=1: 2800Mhz * busy=44 load=0.60 0.17 0.06 monitors=none
+2026-10-09T19:05:25Z linear-r1 start sclk=1: 2717Mhz * busy=45 load=0.60 0.17 0.06 monitors=none
+2026-10-09T19:06:24Z linear-r1 end sclk=1: 2800Mhz * busy=44 load=0.64 0.25 0.09 monitors=none
+2026-10-09T19:06:24Z linear-r2 start sclk=1: 2699Mhz * busy=45 load=0.64 0.25 0.09 monitors=none
+2026-10-09T19:07:24Z linear-r2 end sclk=1: 2800Mhz * busy=45 load=0.73 0.36 0.14 monitors=none
+2026-10-09T19:07:24Z linear-r3 start sclk=1: 2608Mhz * busy=45 load=0.73 0.36 0.14 monitors=none
+2026-10-09T19:08:24Z linear-r3 end sclk=1: 2800Mhz * busy=46 load=0.72 0.43 0.18 monitors=none
+2026-10-09T19:08:24Z linear-r4 start sclk=1: 2618Mhz * busy=46 load=0.72 0.43 0.18 monitors=none
+2026-10-09T19:09:24Z linear-r4 end sclk=1: 2800Mhz * busy=44 load=0.60 0.45 0.21 monitors=none
+2026-10-09T19:09:24Z linear-r5 start sclk=1: 2643Mhz * busy=45 load=0.60 0.45 0.21 monitors=none
+2026-10-09T19:10:24Z linear-r5 end sclk=1: 2800Mhz * busy=45 load=0.50 0.46 0.22 monitors=none
+2026-10-09T19:10:24Z sdpa-r1 start sclk=1: 2656Mhz * busy=46 load=0.50 0.46 0.22 monitors=none
+2026-10-09T19:10:33Z sdpa-r1 end sclk=1: 2800Mhz * busy=87 load=0.46 0.45 0.22 monitors=none
+2026-10-09T19:10:33Z sdpa-r2 start sclk=1: 2257Mhz * busy=85 load=0.46 0.45 0.22 monitors=none
+2026-10-09T19:10:43Z sdpa-r2 end sclk=1: 2800Mhz * busy=87 load=0.46 0.45 0.22 monitors=none
+2026-10-09T19:10:43Z sdpa-r3 start sclk=1: 2247Mhz * busy=85 load=0.46 0.45 0.22 monitors=none
+2026-10-09T19:10:53Z sdpa-r3 end sclk=1: 2800Mhz * busy=87 load=0.39 0.44 0.22 monitors=none
+2026-10-09T19:11:01Z end sclk=0: 800Mhz * busy=51 load=0.56 0.47 0.24 monitors=none

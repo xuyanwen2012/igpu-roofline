@@ -39,6 +39,8 @@ def reuse_row(dtype, level, opb):
     name = r['source'].split('/')[-1].rsplit('_', 1)[0]
     reps = [(float(c['float_ops']) + float(c['integer_ops'])) / float(c['median_seconds']) / 1e12 for c in allc
             if c['name'] == name and c['source'].startswith('confirm/') and c['accepted'] == 'True']
+    # the same shader runs at other working sets too (cache- or DRAM-resident): keep only repeats of this configuration
+    reps = [x for x in reps if abs(x / r['rate'] - 1) < 0.05]
     if len(reps) >= 3:
         status = f"{len(reps)} confirmation repeats, median {statistics.median(reps):.3f}, spread {100 * (max(reps) - min(reps)) / statistics.median(reps):.2f} %"
     else:

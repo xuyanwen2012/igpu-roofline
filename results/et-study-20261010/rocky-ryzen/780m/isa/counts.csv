@@ -1,0 +1,306 @@
+file,scope,opcode,count
+4w-shader04.isa.txt,total,buffer_load_b64,2
+4w-shader04.isa.txt,total,ds_load_b128,50
+4w-shader04.isa.txt,total,ds_store_b128,4
+4w-shader04.isa.txt,total,ds_store_b16,64
+4w-shader04.isa.txt,total,ds_store_b64,8
+4w-shader04.isa.txt,total,image_load,10
+4w-shader04.isa.txt,total,image_store,2
+4w-shader04.isa.txt,total,s_barrier,6
+4w-shader04.isa.txt,total,v_wmma_f32_16x16x16_f16,32
+4w-shader04.isa.txt,total,invalid_instruction_lines,0
+4w-shader04.isa.txt,total,wave,wave32
+4w-shader04.isa.txt,loop BB1..BB7,buffer_load_b64,1
+4w-shader04.isa.txt,loop BB1..BB7,ds_load_b128,24
+4w-shader04.isa.txt,loop BB1..BB7,ds_store_b128,2
+4w-shader04.isa.txt,loop BB1..BB7,ds_store_b64,4
+4w-shader04.isa.txt,loop BB1..BB7,image_load,5
+4w-shader04.isa.txt,loop BB1..BB7,s_barrier,1
+4w-shader04.isa.txt,loop BB1..BB7,v_wmma_f32_16x16x16_f16,16
+4w-shader06.isa.txt,total,buffer_load_b64,2
+4w-shader06.isa.txt,total,ds_load_b128,50
+4w-shader06.isa.txt,total,ds_store_b128,4
+4w-shader06.isa.txt,total,ds_store_b16,64
+4w-shader06.isa.txt,total,ds_store_b64,8
+4w-shader06.isa.txt,total,image_load,10
+4w-shader06.isa.txt,total,image_store,2
+4w-shader06.isa.txt,total,s_barrier,6
+4w-shader06.isa.txt,total,v_wmma_f32_16x16x16_f16,32
+4w-shader06.isa.txt,total,invalid_instruction_lines,0
+4w-shader06.isa.txt,total,wave,wave32
+4w-shader06.isa.txt,loop BB1..BB7,buffer_load_b64,1
+4w-shader06.isa.txt,loop BB1..BB7,ds_load_b128,24
+4w-shader06.isa.txt,loop BB1..BB7,ds_store_b128,2
+4w-shader06.isa.txt,loop BB1..BB7,ds_store_b64,4
+4w-shader06.isa.txt,loop BB1..BB7,image_load,5
+4w-shader06.isa.txt,loop BB1..BB7,s_barrier,1
+4w-shader06.isa.txt,loop BB1..BB7,v_wmma_f32_16x16x16_f16,16
+4w-shader07.isa.txt,total,buffer_load_b64,2
+4w-shader07.isa.txt,total,ds_load_b128,50
+4w-shader07.isa.txt,total,ds_store_b128,4
+4w-shader07.isa.txt,total,ds_store_b16,64
+4w-shader07.isa.txt,total,ds_store_b64,8
+4w-shader07.isa.txt,total,image_load,10
+4w-shader07.isa.txt,total,image_store,2
+4w-shader07.isa.txt,total,s_barrier,6
+4w-shader07.isa.txt,total,v_wmma_f32_16x16x16_f16,32
+4w-shader07.isa.txt,total,invalid_instruction_lines,0
+4w-shader07.isa.txt,total,wave,wave32
+4w-shader07.isa.txt,loop BB13..BB31,buffer_load_b64,1
+4w-shader07.isa.txt,loop BB13..BB31,ds_load_b128,24
+4w-shader07.isa.txt,loop BB13..BB31,ds_store_b128,2
+4w-shader07.isa.txt,loop BB13..BB31,ds_store_b64,4
+4w-shader07.isa.txt,loop BB13..BB31,image_load,5
+4w-shader07.isa.txt,loop BB13..BB31,s_barrier,1
+4w-shader07.isa.txt,loop BB13..BB31,v_wmma_f32_16x16x16_f16,16
+4w-shader08.isa.txt,total,buffer_load_b64,2
+4w-shader08.isa.txt,total,ds_load_b128,82
+4w-shader08.isa.txt,total,ds_store_b128,8
+4w-shader08.isa.txt,total,ds_store_b16,128
+4w-shader08.isa.txt,total,ds_store_b64,8
+4w-shader08.isa.txt,total,image_load,18
+4w-shader08.isa.txt,total,image_store,2
+4w-shader08.isa.txt,total,s_barrier,6
+4w-shader08.isa.txt,total,v_wmma_f32_16x16x16_f16,64
+4w-shader08.isa.txt,total,invalid_instruction_lines,0
+4w-shader08.isa.txt,total,wave,wave32
+4w-shader08.isa.txt,loop BB1..BB7,buffer_load_b64,1
+4w-shader08.isa.txt,loop BB1..BB7,ds_load_b128,40
+4w-shader08.isa.txt,loop BB1..BB7,ds_store_b128,4
+4w-shader08.isa.txt,loop BB1..BB7,ds_store_b64,4
+4w-shader08.isa.txt,loop BB1..BB7,image_load,9
+4w-shader08.isa.txt,loop BB1..BB7,s_barrier,1
+4w-shader08.isa.txt,loop BB1..BB7,v_wmma_f32_16x16x16_f16,32
+8da4w-shader08.isa.txt,total,buffer_load_b128,3
+8da4w-shader08.isa.txt,total,buffer_load_b32,16
+8da4w-shader08.isa.txt,total,buffer_load_b64,17
+8da4w-shader08.isa.txt,total,ds_load_2addr_b32,8
+8da4w-shader08.isa.txt,total,ds_load_b128,24
+8da4w-shader08.isa.txt,total,ds_load_b32,18
+8da4w-shader08.isa.txt,total,ds_load_u16_d16,4
+8da4w-shader08.isa.txt,total,ds_load_u16_d16_hi,4
+8da4w-shader08.isa.txt,total,ds_store_b16,15
+8da4w-shader08.isa.txt,total,ds_store_b16_d16_hi,1
+8da4w-shader08.isa.txt,total,ds_store_b32,26
+8da4w-shader08.isa.txt,total,image_load,5
+8da4w-shader08.isa.txt,total,image_store,2
+8da4w-shader08.isa.txt,total,s_barrier,7
+8da4w-shader08.isa.txt,total,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader08.isa.txt,total,invalid_instruction_lines,0
+8da4w-shader08.isa.txt,total,wave,wave32
+8da4w-shader08.isa.txt,loop BB7..BB34,buffer_load_b128,2
+8da4w-shader08.isa.txt,loop BB7..BB34,buffer_load_b64,1
+8da4w-shader08.isa.txt,loop BB7..BB34,ds_load_b128,24
+8da4w-shader08.isa.txt,loop BB7..BB34,ds_load_b32,1
+8da4w-shader08.isa.txt,loop BB7..BB34,ds_store_b32,11
+8da4w-shader08.isa.txt,loop BB7..BB34,image_load,2
+8da4w-shader08.isa.txt,loop BB7..BB34,s_barrier,2
+8da4w-shader08.isa.txt,loop BB7..BB34,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader10.isa.txt,total,buffer_load_b128,4
+8da4w-shader10.isa.txt,total,buffer_load_b32,16
+8da4w-shader10.isa.txt,total,buffer_load_b64,17
+8da4w-shader10.isa.txt,total,ds_load_2addr_b32,32
+8da4w-shader10.isa.txt,total,ds_load_b128,12
+8da4w-shader10.isa.txt,total,ds_load_b32,4
+8da4w-shader10.isa.txt,total,ds_load_u16_d16,2
+8da4w-shader10.isa.txt,total,ds_load_u16_d16_hi,2
+8da4w-shader10.isa.txt,total,ds_store_b16,16
+8da4w-shader10.isa.txt,total,ds_store_b32,35
+8da4w-shader10.isa.txt,total,image_load,4
+8da4w-shader10.isa.txt,total,image_store,1
+8da4w-shader10.isa.txt,total,s_barrier,4
+8da4w-shader10.isa.txt,total,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader10.isa.txt,total,invalid_instruction_lines,0
+8da4w-shader10.isa.txt,total,wave,wave32
+8da4w-shader10.isa.txt,loop BB14..BB35,buffer_load_b128,2
+8da4w-shader10.isa.txt,loop BB14..BB35,buffer_load_b64,1
+8da4w-shader10.isa.txt,loop BB14..BB35,ds_load_b128,12
+8da4w-shader10.isa.txt,loop BB14..BB35,ds_store_b32,13
+8da4w-shader10.isa.txt,loop BB14..BB35,image_load,1
+8da4w-shader10.isa.txt,loop BB14..BB35,s_barrier,1
+8da4w-shader10.isa.txt,loop BB14..BB35,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader11.isa.txt,total,buffer_load_b128,3
+8da4w-shader11.isa.txt,total,buffer_load_b32,16
+8da4w-shader11.isa.txt,total,buffer_load_b64,17
+8da4w-shader11.isa.txt,total,ds_load_2addr_b32,8
+8da4w-shader11.isa.txt,total,ds_load_b128,24
+8da4w-shader11.isa.txt,total,ds_load_b32,18
+8da4w-shader11.isa.txt,total,ds_load_u16_d16,4
+8da4w-shader11.isa.txt,total,ds_load_u16_d16_hi,4
+8da4w-shader11.isa.txt,total,ds_store_b16,15
+8da4w-shader11.isa.txt,total,ds_store_b16_d16_hi,1
+8da4w-shader11.isa.txt,total,ds_store_b32,26
+8da4w-shader11.isa.txt,total,image_load,5
+8da4w-shader11.isa.txt,total,image_store,2
+8da4w-shader11.isa.txt,total,s_barrier,7
+8da4w-shader11.isa.txt,total,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader11.isa.txt,total,invalid_instruction_lines,0
+8da4w-shader11.isa.txt,total,wave,wave32
+8da4w-shader11.isa.txt,loop BB7..BB34,buffer_load_b128,2
+8da4w-shader11.isa.txt,loop BB7..BB34,buffer_load_b64,1
+8da4w-shader11.isa.txt,loop BB7..BB34,ds_load_b128,24
+8da4w-shader11.isa.txt,loop BB7..BB34,ds_load_b32,1
+8da4w-shader11.isa.txt,loop BB7..BB34,ds_store_b32,11
+8da4w-shader11.isa.txt,loop BB7..BB34,image_load,2
+8da4w-shader11.isa.txt,loop BB7..BB34,s_barrier,2
+8da4w-shader11.isa.txt,loop BB7..BB34,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader12.isa.txt,total,buffer_load_b128,4
+8da4w-shader12.isa.txt,total,buffer_load_b32,64
+8da4w-shader12.isa.txt,total,buffer_load_b64,65
+8da4w-shader12.isa.txt,total,ds_load_2addr_b32,32
+8da4w-shader12.isa.txt,total,ds_load_b128,12
+8da4w-shader12.isa.txt,total,ds_load_b32,4
+8da4w-shader12.isa.txt,total,ds_load_u16_d16,2
+8da4w-shader12.isa.txt,total,ds_load_u16_d16_hi,2
+8da4w-shader12.isa.txt,total,ds_store_b16,16
+8da4w-shader12.isa.txt,total,ds_store_b32,35
+8da4w-shader12.isa.txt,total,image_load,4
+8da4w-shader12.isa.txt,total,image_store,1
+8da4w-shader12.isa.txt,total,s_barrier,4
+8da4w-shader12.isa.txt,total,v_wmma_i32_16x16x16_iu8,16
+8da4w-shader12.isa.txt,total,invalid_instruction_lines,0
+8da4w-shader12.isa.txt,total,wave,wave32
+8da4w-shader12.isa.txt,loop BB14..BB35,buffer_load_b128,2
+8da4w-shader12.isa.txt,loop BB14..BB35,buffer_load_b64,1
+8da4w-shader12.isa.txt,loop BB14..BB35,ds_load_b128,12
+8da4w-shader12.isa.txt,loop BB14..BB35,ds_store_b32,13
+8da4w-shader12.isa.txt,loop BB14..BB35,image_load,1
+8da4w-shader12.isa.txt,loop BB14..BB35,s_barrier,1
+8da4w-shader12.isa.txt,loop BB14..BB35,v_wmma_i32_16x16x16_iu8,16
+sdpa-shader08.isa.txt,total,buffer_load_b128,48
+sdpa-shader08.isa.txt,total,buffer_store_b16,64
+sdpa-shader08.isa.txt,total,ds_load_2addr_b32,3
+sdpa-shader08.isa.txt,total,ds_load_2addr_stride64_b32,4
+sdpa-shader08.isa.txt,total,ds_load_b128,12
+sdpa-shader08.isa.txt,total,ds_load_b32,19
+sdpa-shader08.isa.txt,total,ds_store_b128,6
+sdpa-shader08.isa.txt,total,ds_store_b16,32
+sdpa-shader08.isa.txt,total,ds_store_b32,1
+sdpa-shader08.isa.txt,total,v_wmma_f32_16x16x16_f16,32
+sdpa-shader08.isa.txt,total,invalid_instruction_lines,0
+sdpa-shader08.isa.txt,total,wave,wave32
+sdpa-shader08.isa.txt,loop BB2..BB18,buffer_load_b128,32
+sdpa-shader08.isa.txt,loop BB2..BB18,ds_load_2addr_stride64_b32,4
+sdpa-shader08.isa.txt,loop BB2..BB18,ds_load_b128,12
+sdpa-shader08.isa.txt,loop BB2..BB18,ds_load_b32,8
+sdpa-shader08.isa.txt,loop BB2..BB18,ds_store_b128,5
+sdpa-shader08.isa.txt,loop BB2..BB18,ds_store_b16,32
+sdpa-shader08.isa.txt,loop BB2..BB18,v_wmma_f32_16x16x16_f16,32
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,buffer_load_d16_b16,2
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,buffer_store_b32,4
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,ds_store_b16,2
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,v_wmma_f32_16x16x16_f16,1
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,total,wave,wave64
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c1_lds.isa.txt,loop BB21..BB24,v_wmma_f32_16x16x16_f16,1
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,buffer_load_d16_b16,2
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,buffer_store_b32,8
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,ds_store_b16,2
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,v_wmma_f32_16x16x16_f16,2
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,total,wave,wave64
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c2_lds.isa.txt,loop BB21..BB24,v_wmma_f32_16x16x16_f16,2
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,buffer_load_d16_b16,2
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,buffer_store_b32,16
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,ds_store_b16,2
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,v_wmma_f32_16x16x16_f16,4
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,total,wave,wave64
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c4_lds.isa.txt,loop BB21..BB24,v_wmma_f32_16x16x16_f16,4
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,buffer_load_b128,2
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,buffer_load_d16_b16,16
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,buffer_store_b32,32
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,v_wmma_f32_16x16x16_f16,8
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,invalid_instruction_lines,0
+matrix_fp16_fp32_16x16x16_c8.isa.txt,total,wave,unknown
+matrix_fp16_fp32_16x16x16_c8.isa.txt,loop BB1..BB4,v_wmma_f32_16x16x16_f16,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,buffer_load_d16_b16,2
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,buffer_store_b32,32
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,ds_store_b16,2
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,v_wmma_f32_16x16x16_f16,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,total,wave,wave64
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_b128,2
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_u16_d16_hi,8
+matrix_fp16_fp32_16x16x16_c8_lds.isa.txt,loop BB21..BB24,v_wmma_f32_16x16x16_f16,8
+matrix_int8_16x16x16_c1_lds.isa.txt,total,buffer_load_d16_u8,2
+matrix_int8_16x16x16_c1_lds.isa.txt,total,buffer_store_b32,4
+matrix_int8_16x16x16_c1_lds.isa.txt,total,ds_load_b128,1
+matrix_int8_16x16x16_c1_lds.isa.txt,total,ds_load_u8_d16,8
+matrix_int8_16x16x16_c1_lds.isa.txt,total,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c1_lds.isa.txt,total,ds_store_b8,2
+matrix_int8_16x16x16_c1_lds.isa.txt,total,v_wmma_i32_16x16x16_iu8,1
+matrix_int8_16x16x16_c1_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_int8_16x16x16_c1_lds.isa.txt,total,wave,wave64
+matrix_int8_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_b128,1
+matrix_int8_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16,8
+matrix_int8_16x16x16_c1_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c1_lds.isa.txt,loop BB21..BB24,v_wmma_i32_16x16x16_iu8,1
+matrix_int8_16x16x16_c2_lds.isa.txt,total,buffer_load_d16_u8,2
+matrix_int8_16x16x16_c2_lds.isa.txt,total,buffer_store_b32,8
+matrix_int8_16x16x16_c2_lds.isa.txt,total,ds_load_b128,1
+matrix_int8_16x16x16_c2_lds.isa.txt,total,ds_load_u8_d16,8
+matrix_int8_16x16x16_c2_lds.isa.txt,total,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c2_lds.isa.txt,total,ds_store_b8,2
+matrix_int8_16x16x16_c2_lds.isa.txt,total,v_wmma_i32_16x16x16_iu8,2
+matrix_int8_16x16x16_c2_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_int8_16x16x16_c2_lds.isa.txt,total,wave,wave64
+matrix_int8_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_b128,1
+matrix_int8_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16,8
+matrix_int8_16x16x16_c2_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c2_lds.isa.txt,loop BB21..BB24,v_wmma_i32_16x16x16_iu8,2
+matrix_int8_16x16x16_c4_lds.isa.txt,total,buffer_load_d16_u8,2
+matrix_int8_16x16x16_c4_lds.isa.txt,total,buffer_store_b32,16
+matrix_int8_16x16x16_c4_lds.isa.txt,total,ds_load_b128,1
+matrix_int8_16x16x16_c4_lds.isa.txt,total,ds_load_u8_d16,8
+matrix_int8_16x16x16_c4_lds.isa.txt,total,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c4_lds.isa.txt,total,ds_store_b8,2
+matrix_int8_16x16x16_c4_lds.isa.txt,total,v_wmma_i32_16x16x16_iu8,4
+matrix_int8_16x16x16_c4_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_int8_16x16x16_c4_lds.isa.txt,total,wave,wave64
+matrix_int8_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_b128,1
+matrix_int8_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16,8
+matrix_int8_16x16x16_c4_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c4_lds.isa.txt,loop BB21..BB24,v_wmma_i32_16x16x16_iu8,4
+matrix_int8_16x16x16_c8.isa.txt,total,buffer_load_b128,1
+matrix_int8_16x16x16_c8.isa.txt,total,buffer_load_d16_u8,16
+matrix_int8_16x16x16_c8.isa.txt,total,buffer_store_b32,32
+matrix_int8_16x16x16_c8.isa.txt,total,v_wmma_i32_16x16x16_iu8,8
+matrix_int8_16x16x16_c8.isa.txt,total,invalid_instruction_lines,0
+matrix_int8_16x16x16_c8.isa.txt,total,wave,unknown
+matrix_int8_16x16x16_c8.isa.txt,loop BB1..BB4,v_wmma_i32_16x16x16_iu8,8
+matrix_int8_16x16x16_c8_lds.isa.txt,total,buffer_load_d16_u8,2
+matrix_int8_16x16x16_c8_lds.isa.txt,total,buffer_store_b32,32
+matrix_int8_16x16x16_c8_lds.isa.txt,total,ds_load_b128,1
+matrix_int8_16x16x16_c8_lds.isa.txt,total,ds_load_u8_d16,8
+matrix_int8_16x16x16_c8_lds.isa.txt,total,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c8_lds.isa.txt,total,ds_store_b8,2
+matrix_int8_16x16x16_c8_lds.isa.txt,total,v_wmma_i32_16x16x16_iu8,8
+matrix_int8_16x16x16_c8_lds.isa.txt,total,invalid_instruction_lines,0
+matrix_int8_16x16x16_c8_lds.isa.txt,total,wave,wave64
+matrix_int8_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_b128,1
+matrix_int8_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16,8
+matrix_int8_16x16x16_c8_lds.isa.txt,loop BB21..BB24,ds_load_u8_d16_hi,8
+matrix_int8_16x16x16_c8_lds.isa.txt,loop BB21..BB24,v_wmma_i32_16x16x16_iu8,8

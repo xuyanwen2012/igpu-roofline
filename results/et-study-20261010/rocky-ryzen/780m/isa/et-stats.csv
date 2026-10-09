@@ -1,0 +1,10 @@
+file,ordinal,VGPRs,SGPRs,Spilled_VGPRs,Spilled_SGPRs,LDS_size,Scratch_size,Subgroups_per_SIMD,Code_size,Instructions,Pre-Sched_SGPRs,Pre-Sched_VGPRs,wmma_total
+4w-shader04.isa.txt,4,160,128,0,0,40960,0,6,4108,735,37,124,32
+4w-shader06.isa.txt,6,160,128,0,0,40960,0,6,4108,735,37,124,32
+4w-shader07.isa.txt,7,128,128,0,0,61440,0,8,4268,765,32,118,32
+4w-shader08.isa.txt,8,240,128,0,0,61440,0,4,6160,1027,34,197,64
+8da4w-shader08.isa.txt,8,64,128,0,0,60416,0,16,4928,842,37,64,16
+8da4w-shader10.isa.txt,10,192,128,0,0,18432,0,5,6616,1138,34,175,16
+8da4w-shader11.isa.txt,11,64,128,0,0,60416,0,16,4928,842,37,64,16
+8da4w-shader12.isa.txt,12,192,128,0,0,18432,0,5,11672,1904,34,175,16
+sdpa-shader08.isa.txt,8,256,128,0,0,5120,0,4,7892,1193,48,201,32
