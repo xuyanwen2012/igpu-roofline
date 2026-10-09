@@ -1,0 +1,40 @@
+{
+  "quality": {
+    "max_median_se": 0.03,
+    "max_fixed_fraction": 0.1,
+    "max_drift": 0.05
+  },
+  "selected": {
+    "matrix_fp16_fp32_feed_shared": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c2_lds",
+        "rate": 8202251344453.763,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_lds_77cde6d83660.jsonl"
+      }
+    ],
+    "matrix_int8_feed_shared": [
+      {
+        "name": "matrix_int8_16x16x32_c2_lds",
+        "rate": 9067323859481.799,
+        "raw": "sweep-matrix-feed/matrix_int8_16x16x32_c2_lds_2a073790116f.jsonl"
+      }
+    ]
+  },
+  "gated_but_faster": {
+    "matrix_fp16_feed_shared": []
+  },
+  "excluded": {
+    "matrix_fp16_feed_shared": [
+      {
+        "name": "matrix_fp16_16x16x16_c4_lds",
+        "rate": 9043483369970.773,
+        "why": [
+          "short"
+        ]
+      }
+    ]
+  },
+  "roofs_without_quality_candidate": [
+    "matrix_fp16_feed_shared"
+  ]
+}

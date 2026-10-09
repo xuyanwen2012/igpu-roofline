@@ -1,0 +1,39 @@
+{
+  "plan": "fast",
+  "focused": false,
+  "sustained": true,
+  "stages": [
+    {
+      "name": "validate",
+      "configurations": 31
+    },
+    {
+      "name": "cache",
+      "configurations": 18
+    },
+    {
+      "name": "memory",
+      "configurations": 8
+    },
+    {
+      "name": "compute",
+      "configurations": 148
+    },
+    {
+      "name": "matrix_feed",
+      "configurations": 36
+    },
+    {
+      "name": "texture",
+      "configurations": 12
+    },
+    {
+      "name": "shared",
+      "configurations": 56
+    },
+    {
+      "name": "latency",
+      "configurations": 10
+    }
+  ]
+}

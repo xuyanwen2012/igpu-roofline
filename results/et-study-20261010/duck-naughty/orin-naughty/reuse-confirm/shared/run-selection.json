@@ -1,0 +1,11 @@
+{
+  "plan": "fast",
+  "focused": true,
+  "sustained": false,
+  "stages": [
+    {
+      "name": "matrix_feed",
+      "configurations": 3
+    }
+  ]
+}

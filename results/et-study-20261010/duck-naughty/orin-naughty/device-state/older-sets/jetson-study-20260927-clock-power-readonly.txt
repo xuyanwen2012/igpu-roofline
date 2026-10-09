@@ -1,0 +1,8 @@
+2133000000
+NV Power Mode: 15W
+0
+orin-naughty sweep-shared sharedbw_fp16_v4_op0 PASS 1.0996 ms
+orin-naughty sweep-shared sharedbw_fp16_v4_op0 PASS 1.2860 ms
+orin-naughty sweep-shared sharedbw_fp16_v4_op2 PASS 6.0181 ms
+orin-naughty sweep-shared sharedbw_fp16_v4_op2 PASS 6.3943 ms
+orin-naughty sweep-shared sharedbw_fp16_v4_op2 PASS 6.6719 ms

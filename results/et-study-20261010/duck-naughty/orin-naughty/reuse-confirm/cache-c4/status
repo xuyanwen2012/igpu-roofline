@@ -1,0 +1,2 @@
+RUNNING 2026-10-09T18:57:41Z --plan fast --stage matrix_feed --no-sustain --variant matrix_fp16_fp32_16x16x16_c4_gmem
+DONE rc=0 2026-10-09T18:58:20Z

@@ -1,0 +1,87 @@
+{
+  "rc": 0,
+  "shader": "mem_triad_v4_volatile",
+  "stderr": "Device: NVIDIA Tegra Orin (nvgpu) (Vulkan 1.4)\nFeatures: cooperativeMatrix=1 shaderFloat16=1 shaderInt8=1 16bitStorage=1 8bitStorage=1 vulkanMemoryModel=1 subgroupSizeControl=1\nSubgroup size: 32 (size control: 1)\nBUFFER bytes=16384 type=1 flags=7\nBUFFER bytes=16384 type=1 flags=7\nBUFFER bytes=16 type=1 flags=7\nBUFFER bytes=16384 type=1 flags=7\n",
+  "inspector_sha256": "150ebfb70d989a26f69ceb1bf4ce04726235f0ce46dfffa4d6bd6f99400ba89c",
+  "records": [
+    {
+      "config": {
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=5",
+          "-DVOLATILE=volatile",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_triad_v4_volatile.spv"
+        ],
+        "dtype": "fp32",
+        "family": "memory",
+        "groups": 16,
+        "loops": 128,
+        "n": 1024,
+        "name": "mem_triad_v4_volatile",
+        "op": 5,
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "samples": 21,
+        "schema_version": 2,
+        "shader": "shaders/mem_triad_v4_volatile.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 0,
+          "coopmat_muladd": 0,
+          "dot": 0,
+          "fma": 1,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 2,
+          "store_StorageBuffer": 1,
+          "volatile": 6
+        },
+        "spirv_sha256": "76b74c807d5acfe8960bf95326b4d7b872e095c22139ff5c303ee2f263929715",
+        "stride": 1,
+        "volatile_global": true,
+        "wg": 64,
+        "width": 4
+      },
+      "executables": [
+        {
+          "description": "Compute Shader",
+          "name": "CS",
+          "representations": [],
+          "statistics": [
+            {
+              "description": "Number of temporary registers used by this shader stage",
+              "name": "Register Count",
+              "value": 16
+            },
+            {
+              "description": "Size in bytes of the executable for this stage",
+              "name": "Binary Size",
+              "value": 1152
+            },
+            {
+              "description": "Size in bytes required for the shader stack",
+              "name": "Stack Size",
+              "value": 0
+            },
+            {
+              "description": "Size in bytes required per-thread for local memory",
+              "name": "Local Memory Size",
+              "value": 68719476736
+            },
+            {
+              "description": "Size in bytes used for shared memory",
+              "name": "Shared Memory Size",
+              "value": 0
+            }
+          ],
+          "subgroup_size": 32
+        }
+      ]
+    }
+  ]
+}

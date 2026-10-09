@@ -1,0 +1,91 @@
+{
+  "rc": 0,
+  "shader": "matrix_fp16_16x16x16_c4",
+  "stderr": "Device: NVIDIA Tegra Orin (nvgpu) (Vulkan 1.4)\nFeatures: cooperativeMatrix=1 shaderFloat16=1 shaderInt8=1 16bitStorage=1 8bitStorage=1 vulkanMemoryModel=1 subgroupSizeControl=1\nSubgroup size: 32 (size control: 1)\nBUFFER bytes=512 type=1 flags=7\nBUFFER bytes=512 type=1 flags=7\nBUFFER bytes=16 type=1 flags=7\nBUFFER bytes=32768 type=1 flags=7\n",
+  "inspector_sha256": "150ebfb70d989a26f69ceb1bf4ce04726235f0ce46dfffa4d6bd6f99400ba89c",
+  "records": [
+    {
+      "config": {
+        "chains": 4,
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=16",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float16_t",
+          "-DCHAINS=4",
+          "build/shaders/matrix_fp16_16x16x16_c4.comp",
+          "-o",
+          "build/shaders/matrix_fp16_16x16x16_c4.spv"
+        ],
+        "dtype": "fp16",
+        "family": "matrix",
+        "groups": 16,
+        "k": 16,
+        "loops": 128,
+        "m": 16,
+        "matrix_n": 16,
+        "n": 1024,
+        "name": "matrix_fp16_16x16x16_c4",
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "samples": 21,
+        "schema_version": 2,
+        "shader": "shaders/matrix_fp16_16x16x16_c4.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 2,
+          "coopmat_muladd": 4,
+          "dot": 0,
+          "fma": 0,
+          "load_Input": 3,
+          "load_PushConstant": 1,
+          "volatile": 0
+        },
+        "spirv_sha256": "ecfbb5dbced4bd72c9859581b4f35a93b7bc6fb299c153373423bbc23a8c2078",
+        "stride": 1,
+        "subgroup": 32,
+        "wg": 32,
+        "width": 1
+      },
+      "executables": [
+        {
+          "description": "Compute Shader",
+          "name": "CS",
+          "representations": [],
+          "statistics": [
+            {
+              "description": "Number of temporary registers used by this shader stage",
+              "name": "Register Count",
+              "value": 47
+            },
+            {
+              "description": "Size in bytes of the executable for this stage",
+              "name": "Binary Size",
+              "value": 5504
+            },
+            {
+              "description": "Size in bytes required for the shader stack",
+              "name": "Stack Size",
+              "value": 0
+            },
+            {
+              "description": "Size in bytes required per-thread for local memory",
+              "name": "Local Memory Size",
+              "value": 68719476736
+            },
+            {
+              "description": "Size in bytes used for shared memory",
+              "name": "Shared Memory Size",
+              "value": 0
+            }
+          ],
+          "subgroup_size": 32
+        }
+      ]
+    }
+  ]
+}

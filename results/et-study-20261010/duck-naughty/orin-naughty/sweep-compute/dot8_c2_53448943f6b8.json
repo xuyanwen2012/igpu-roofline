@@ -1,0 +1,365 @@
+{
+  "config": {
+    "family": "dot",
+    "width": 1,
+    "chains": 2,
+    "dtype": "int8",
+    "dots_per_step": 8,
+    "name": "dot8_c2",
+    "shader": "shaders/dot8_c2.spv",
+    "spirv_ledger": {
+      "fma": 0,
+      "dot": 16,
+      "coopmat_muladd": 0,
+      "coopmat_load": 0,
+      "control_barrier": 0,
+      "volatile": 0,
+      "load_Input": 1,
+      "load_StorageBuffer": 2,
+      "load_PushConstant": 1,
+      "store_StorageBuffer": 2
+    },
+    "spirv_sha256": "297bc514a79488d86f8dd2cf8f064657fa9b29443c6965350e4fab698eeebd17",
+    "compile_command": [
+      "glslc",
+      "--target-env=vulkan1.3",
+      "-O",
+      "-DCHAINS=2",
+      "-DDOTS=8",
+      "shaders/dot8.comp",
+      "-o",
+      "build/shaders/dot8_c2.spv"
+    ],
+    "wg": 256,
+    "groups": 2048,
+    "n": 1024,
+    "loops": 128,
+    "samples": 21,
+    "shared_count": 1024,
+    "stride": 1,
+    "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+    "schema_version": 2,
+    "warmup_seconds": 0.5
+  },
+  "plan": "fast",
+  "raw": "sweep-compute/dot8_c2_53448943f6b8.jsonl",
+  "rc": 0,
+  "fault_before": null,
+  "fault_after": null,
+  "fault_delta": null,
+  "wall_seconds": 1.6733720302581787,
+  "allocation": {
+    "buffers": [
+      {
+        "binding": 0,
+        "bytes": 2097152,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 1,
+        "bytes": 2097152,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 2,
+        "bytes": 16,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 3,
+        "bytes": 4194304,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      }
+    ],
+    "event": "allocation",
+    "memory_mode": "device_local"
+  },
+  "warmup": {
+    "batch_dispatches": 1,
+    "dispatches": 82,
+    "event": "warmup",
+    "first_seconds": 0.0059972160000000005,
+    "last_seconds": 0.0059952,
+    "phase": "sampling",
+    "steady": true,
+    "wall_seconds": 0.505510562
+  },
+  "warmups": [
+    {
+      "batch_dispatches": 1,
+      "dispatches": 82,
+      "event": "warmup",
+      "first_seconds": 0.005995936,
+      "last_seconds": 0.005998048000000001,
+      "phase": "calibration",
+      "steady": true,
+      "wall_seconds": 0.50493052
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 82,
+      "event": "warmup",
+      "first_seconds": 0.0059972160000000005,
+      "last_seconds": 0.0059952,
+      "phase": "sampling",
+      "steady": true,
+      "wall_seconds": 0.505510562
+    }
+  ],
+  "gpu_freq": [
+    {},
+    {}
+  ],
+  "events": [
+    {
+      "buffers": [
+        {
+          "binding": 0,
+          "bytes": 2097152,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 1,
+          "bytes": 2097152,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 2,
+          "bytes": 16,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 3,
+          "bytes": 4194304,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        }
+      ],
+      "event": "allocation",
+      "memory_mode": "device_local"
+    },
+    {
+      "event": "schema",
+      "schema_version": 2,
+      "validation_scope": "pre_and_post"
+    },
+    {
+      "config": {
+        "chains": 2,
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DCHAINS=2",
+          "-DDOTS=8",
+          "shaders/dot8.comp",
+          "-o",
+          "build/shaders/dot8_c2.spv"
+        ],
+        "dots_per_step": 8,
+        "dtype": "int8",
+        "family": "dot",
+        "groups": 2048,
+        "loops": 128,
+        "n": 1024,
+        "name": "dot8_c2",
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "samples": 21,
+        "schema_version": 2,
+        "shader": "shaders/dot8_c2.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 0,
+          "coopmat_muladd": 0,
+          "dot": 16,
+          "fma": 0,
+          "load_Input": 1,
+          "load_PushConstant": 1,
+          "load_StorageBuffer": 2,
+          "store_StorageBuffer": 2,
+          "volatile": 0
+        },
+        "spirv_sha256": "297bc514a79488d86f8dd2cf8f064657fa9b29443c6965350e4fab698eeebd17",
+        "stride": 1,
+        "warmup_seconds": 0.5,
+        "wg": 256,
+        "width": 1
+      },
+      "event": "first_dispatch",
+      "qualification": "after_host_initialization_not_guaranteed_cold",
+      "seconds": 0.000444768
+    },
+    {
+      "batch_dispatches": 1,
+      "event": "calibration",
+      "fixed_fraction": -0.49540038632929795,
+      "loops": 128,
+      "next_batch_dispatches": 1,
+      "next_loops": 92,
+      "reason": "reduce_loops",
+      "round": 0,
+      "seconds": 0.00836592,
+      "stop": false
+    },
+    {
+      "batch_dispatches": 1,
+      "event": "calibration",
+      "fixed_fraction": 0.013962822137727208,
+      "loops": 92,
+      "next_batch_dispatches": 1,
+      "next_loops": 183,
+      "reason": "increase_loops",
+      "round": 1,
+      "seconds": 0.0030297600000000003,
+      "stop": false
+    },
+    {
+      "batch_dispatches": 1,
+      "event": "calibration",
+      "fixed_fraction": 0.006485480568612201,
+      "loops": 183,
+      "next_batch_dispatches": 1,
+      "next_loops": 183,
+      "reason": "target_reached",
+      "round": 2,
+      "seconds": 0.005997504000000001,
+      "stop": true
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 82,
+      "event": "warmup",
+      "first_seconds": 0.005995936,
+      "last_seconds": 0.005998048000000001,
+      "phase": "calibration",
+      "steady": true,
+      "wall_seconds": 0.50493052
+    },
+    {
+      "batch_dispatches": 1,
+      "event": "calibration",
+      "fixed_fraction": 0.006496127656494497,
+      "loops": 183,
+      "next_batch_dispatches": 1,
+      "next_loops": 183,
+      "reason": "target_reached",
+      "round": 0,
+      "seconds": 0.005997312,
+      "stop": true
+    },
+    {
+      "event": "validation_pre",
+      "loops": 183,
+      "validation": {
+        "checked": 256,
+        "errors": 0,
+        "max_abs_error": 0.0,
+        "pass": true
+      }
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 82,
+      "event": "warmup",
+      "first_seconds": 0.0059972160000000005,
+      "last_seconds": 0.0059952,
+      "phase": "sampling",
+      "steady": true,
+      "wall_seconds": 0.505510562
+    },
+    {
+      "event": "validation_post",
+      "loops": 183,
+      "sample": 20,
+      "validation": {
+        "checked": 256,
+        "errors": 0,
+        "max_abs_error": 0.0,
+        "pass": true
+      }
+    }
+  ],
+  "schema_version": 2,
+  "validation_scope": "pre_and_post",
+  "n": 21,
+  "validation_pre": {
+    "event": "validation_pre",
+    "loops": 183,
+    "validation": {
+      "checked": 256,
+      "errors": 0,
+      "max_abs_error": 0.0,
+      "pass": true
+    }
+  },
+  "validation_post": {
+    "event": "validation_post",
+    "loops": 183,
+    "sample": 20,
+    "validation": {
+      "checked": 256,
+      "errors": 0,
+      "max_abs_error": 0.0,
+      "pass": true
+    }
+  },
+  "accepted": true,
+  "median_seconds": 0.005995712,
+  "min_seconds": 0.005994272,
+  "mean_seconds": 0.005995753142857143,
+  "stddev_seconds": 6.723917225631383e-07,
+  "cv": 0.00011214466415518983,
+  "p05_seconds": 0.0059946240000000005,
+  "p95_seconds": 0.00599664,
+  "effective_loops": 183,
+  "batch_dispatches": 1,
+  "accounting": {
+    "float_ops": 0,
+    "integer_ops": 12280922112,
+    "logical_global_bytes": 8388608,
+    "logical_shared_bytes": 0,
+    "physical_dram_bytes": null,
+    "physical_cache_bytes": null
+  },
+  "below_target_duration": false,
+  "sample_drift": 1.0674409171462784e-05,
+  "differential": {
+    "loops": 183,
+    "half_loops": 91,
+    "pairs": 21,
+    "seconds_per_loop": 3.2541913043478265e-05,
+    "fixed_seconds": 4.054191304347747e-05,
+    "fixed_fraction": 0.006761817953143424,
+    "incremental_seconds_for_L": 0.005955170086956523,
+    "valid": true
+  },
+  "exclusion_reasons": [],
+  "phase_seconds": {
+    "resume_and_guard": 0.0005553700029850006,
+    "config_upload": 0.0010200499964412302,
+    "telemetry_before": 0.003187513997545466,
+    "runner_process": 1.6681595089903567,
+    "telemetry_after": 0.003995239996584132,
+    "analysis": 0.002038117003394291
+  },
+  "runner_observed_seconds": {
+    "warmup_wall": 1.010441082,
+    "sampled_gpu": 0.18895398400000002
+  }
+}

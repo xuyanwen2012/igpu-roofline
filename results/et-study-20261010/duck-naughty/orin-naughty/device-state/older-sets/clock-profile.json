@@ -1,0 +1,9 @@
+{
+  "mode": "gpu1020000000_emc2133000000",
+  "requested": {
+    "/sys/class/devfreq/17000000.gpu/min_freq": "1020000000",
+    "/sys/kernel/debug/bpmp/debug/clk/emc/mrq_rate_locked": "1",
+    "/sys/kernel/debug/bpmp/debug/clk/emc/rate": "2133000000"
+  },
+  "note": "Clock endpoint checks; measurements retain unchanged quality gates."
+}

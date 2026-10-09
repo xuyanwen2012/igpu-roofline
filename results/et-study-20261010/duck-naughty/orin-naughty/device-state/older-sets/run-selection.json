@@ -1,0 +1,51 @@
+{
+  "plan": "quick",
+  "focused": false,
+  "sustained": false,
+  "stages": [
+    {
+      "name": "validate",
+      "configurations": 31
+    },
+    {
+      "name": "first_look",
+      "configurations": 32
+    },
+    {
+      "name": "cache",
+      "configurations": 18
+    },
+    {
+      "name": "memory",
+      "configurations": 14
+    },
+    {
+      "name": "compute",
+      "configurations": 58
+    },
+    {
+      "name": "matrix_feed",
+      "configurations": 72
+    },
+    {
+      "name": "texture",
+      "configurations": 12
+    },
+    {
+      "name": "shared",
+      "configurations": 54
+    },
+    {
+      "name": "latency",
+      "configurations": 10
+    },
+    {
+      "name": "ert",
+      "configurations": 38
+    },
+    {
+      "name": "memory_type",
+      "configurations": 8
+    }
+  ]
+}

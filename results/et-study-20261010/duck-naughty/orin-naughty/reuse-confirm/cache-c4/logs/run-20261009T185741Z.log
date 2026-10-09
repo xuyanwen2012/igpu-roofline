@@ -1,0 +1,21 @@
+Plan 'fast' on local GPU (orin-naughty); results in /home/doremy/roofline-study-20261010/reuse-confirm/cache-c4/results/orin-naughty
+2 configurations before confirmation; sustained: no
+8 matrix shapes are not compiled; see matrix-coverage.json
+  offline ISA skipped: no public offline compiler for this GPU
+=== orin-naughty matrix_feed (2 configurations)
+orin-naughty probe alu_fp32_v4_c16 PASS 63.0841 ms
+orin-naughty probe matrix_feed_start 0.732 TFLOP/s
+orin-naughty sweep-matrix-feed matrix_fp16_fp32_16x16x16_c4_gmem PASS 10.3897 ms
+orin-naughty sweep-matrix-feed matrix_fp16_fp32_16x16x16_c4_gmem PASS 12.1583 ms
+orin-naughty probe alu_fp32_v4_c16 PASS 63.0932 ms
+orin-naughty probe matrix_feed_end 0.732 TFLOP/s
+orin-naughty probe confirm_start REUSE probe/alu_fp32_v4_c16_56ae2761ec6b.jsonl
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 8.8818 ms
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 11.2213 ms
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 12.4524 ms
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 10.3672 ms
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 7.5384 ms
+orin-naughty confirm matrix_fp16_fp32_16x16x16_c4_gmem PASS 11.5492 ms
+orin-naughty probe alu_fp32_v4_c16 PASS 63.0943 ms
+orin-naughty probe confirm_end 0.732 TFLOP/s
+Report: /home/doremy/roofline-study-20261010/reuse-confirm/cache-c4/results/orin-naughty/report/REPORT.md

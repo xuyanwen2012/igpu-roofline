@@ -1,0 +1,5 @@
+{
+  "/sys/class/devfreq/17000000.gpu/min_freq": "306000000",
+  "/sys/kernel/debug/bpmp/debug/clk/emc/mrq_rate_locked": "0",
+  "/sys/kernel/debug/bpmp/debug/clk/emc/rate": "2133000000"
+}

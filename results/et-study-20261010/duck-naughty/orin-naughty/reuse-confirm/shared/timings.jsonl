@@ -1,0 +1,19 @@
+{"utc": "2026-10-09T18:57:04.259969+00:00", "kind": "stage", "name": "deploy", "status": "completed", "wall_seconds": 0.23059683697647415, "plan": "fast"}
+{"utc": "2026-10-09T18:57:04.490948+00:00", "kind": "stage", "name": "capabilities", "status": "completed", "wall_seconds": 0.2462184060132131, "plan": "fast"}
+{"utc": "2026-10-09T18:57:04.740253+00:00", "kind": "stage", "name": "pipeline_stats", "status": "completed", "wall_seconds": 1.0152748560067266, "plan": "fast"}
+{"utc": "2026-10-09T18:57:05.755937+00:00", "kind": "stage", "name": "offline_isa", "status": "completed", "wall_seconds": 0.005768246977822855, "plan": "fast"}
+{"utc": "2026-10-09T18:57:05.762457+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 6.743824723991565, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:57:12.506912+00:00", "kind": "configuration", "name": "matrix_fp16_16x16x16_c4_lds", "status": "completed", "wall_seconds": 2.0833068350038957, "stage": "sweep-matrix-feed", "plan": "fast"}
+{"utc": "2026-10-09T18:57:14.590404+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_lds", "status": "completed", "wall_seconds": 1.7810204889974557, "stage": "sweep-matrix-feed", "plan": "fast"}
+{"utc": "2026-10-09T18:57:16.371591+00:00", "kind": "configuration", "name": "matrix_int8_16x16x32_c2_lds", "status": "completed", "wall_seconds": 2.082249890023377, "stage": "sweep-matrix-feed", "plan": "fast"}
+{"utc": "2026-10-09T18:57:18.454143+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 3.5341046070097946, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:57:05.762296+00:00", "kind": "stage", "name": "matrix_feed", "status": "completed", "wall_seconds": 16.227147878002143, "plan": "fast", "configurations": 3}
+{"utc": "2026-10-09T18:57:21.993691+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_lds", "status": "completed", "wall_seconds": 1.7315613849787042, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:23.725428+00:00", "kind": "configuration", "name": "matrix_int8_16x16x32_c2_lds", "status": "completed", "wall_seconds": 2.0798678400169592, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:25.805425+00:00", "kind": "configuration", "name": "matrix_int8_16x16x32_c2_lds", "status": "completed", "wall_seconds": 2.0302748740068637, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:27.835872+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_lds", "status": "completed", "wall_seconds": 1.8312692499894183, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:29.667313+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_lds", "status": "completed", "wall_seconds": 1.7316010229988024, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:31.399088+00:00", "kind": "configuration", "name": "matrix_int8_16x16x32_c2_lds", "status": "completed", "wall_seconds": 2.031768789020134, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:57:33.431255+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 3.535914170992328, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:57:21.989886+00:00", "kind": "stage", "name": "confirm", "status": "completed", "wall_seconds": 14.978287214995362, "plan": "fast"}
+{"utc": "2026-10-09T18:57:37.727861+00:00", "kind": "stage", "name": "report", "status": "completed", "wall_seconds": 3.7561459530261345, "plan": "fast"}

@@ -1,0 +1,321 @@
+{
+  "config": {
+    "family": "latency",
+    "width": 1,
+    "dtype": "uint32",
+    "name": "pchase",
+    "shader": "shaders/pchase.spv",
+    "spirv_ledger": {
+      "fma": 0,
+      "dot": 0,
+      "coopmat_muladd": 0,
+      "coopmat_load": 0,
+      "control_barrier": 0,
+      "volatile": 0,
+      "load_PushConstant": 1,
+      "load_StorageBuffer": 16,
+      "store_StorageBuffer": 1
+    },
+    "spirv_sha256": "766bae6ab082ec54a6b04da797db6befaf446a7e4e18aede478079ce5f2d52d7",
+    "compile_command": [
+      "glslc",
+      "--target-env=vulkan1.3",
+      "-O",
+      "shaders/pchase.comp",
+      "-o",
+      "build/shaders/pchase.spv"
+    ],
+    "wg": 1,
+    "groups": 1,
+    "n": 67108864,
+    "loops": 65536,
+    "samples": 9,
+    "shared_count": 1024,
+    "stride": 1,
+    "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+    "schema_version": 2,
+    "warmup_seconds": 0.5,
+    "calibrate": false,
+    "chain_stride_bytes": 64,
+    "chain_order": "random"
+  },
+  "plan": "fast",
+  "raw": "latency-capacity/pchase_8f5abab4244d.jsonl",
+  "rc": 0,
+  "fault_before": null,
+  "fault_after": null,
+  "fault_delta": null,
+  "wall_seconds": 24.59280753135681,
+  "allocation": {
+    "buffers": [
+      {
+        "binding": 0,
+        "bytes": 268435456,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 1,
+        "bytes": 16,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 2,
+        "bytes": 16,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      },
+      {
+        "binding": 3,
+        "bytes": 16,
+        "fallback_host_visible": false,
+        "flags": 1,
+        "memory_type": 0
+      }
+    ],
+    "event": "allocation",
+    "memory_mode": "device_local"
+  },
+  "warmup": {
+    "batch_dispatches": 1,
+    "dispatches": 2,
+    "event": "warmup",
+    "first_seconds": 1.1991892160000002,
+    "last_seconds": 1.193290304,
+    "phase": "sampling",
+    "steady": false,
+    "wall_seconds": 2.394230573
+  },
+  "warmups": [
+    {
+      "batch_dispatches": 1,
+      "dispatches": 2,
+      "event": "warmup",
+      "first_seconds": 1.1982240640000001,
+      "last_seconds": 1.194295968,
+      "phase": "calibration",
+      "steady": false,
+      "wall_seconds": 2.393290489
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 2,
+      "event": "warmup",
+      "first_seconds": 1.1991892160000002,
+      "last_seconds": 1.193290304,
+      "phase": "sampling",
+      "steady": false,
+      "wall_seconds": 2.394230573
+    }
+  ],
+  "gpu_freq": [
+    {},
+    {},
+    {},
+    {}
+  ],
+  "events": [
+    {
+      "buffers": [
+        {
+          "binding": 0,
+          "bytes": 268435456,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 1,
+          "bytes": 16,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 2,
+          "bytes": 16,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        },
+        {
+          "binding": 3,
+          "bytes": 16,
+          "fallback_host_visible": false,
+          "flags": 1,
+          "memory_type": 0
+        }
+      ],
+      "event": "allocation",
+      "memory_mode": "device_local"
+    },
+    {
+      "event": "schema",
+      "schema_version": 2,
+      "validation_scope": "pre_and_post"
+    },
+    {
+      "config": {
+        "calibrate": false,
+        "chain_order": "random",
+        "chain_stride_bytes": 64,
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "shaders/pchase.comp",
+          "-o",
+          "build/shaders/pchase.spv"
+        ],
+        "dtype": "uint32",
+        "family": "latency",
+        "groups": 1,
+        "loops": 65536,
+        "n": 67108864,
+        "name": "pchase",
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "samples": 9,
+        "schema_version": 2,
+        "shader": "shaders/pchase.spv",
+        "shared_count": 1024,
+        "spirv_ledger": {
+          "control_barrier": 0,
+          "coopmat_load": 0,
+          "coopmat_muladd": 0,
+          "dot": 0,
+          "fma": 0,
+          "load_PushConstant": 1,
+          "load_StorageBuffer": 16,
+          "store_StorageBuffer": 1,
+          "volatile": 0
+        },
+        "spirv_sha256": "766bae6ab082ec54a6b04da797db6befaf446a7e4e18aede478079ce5f2d52d7",
+        "stride": 1,
+        "warmup_seconds": 0.5,
+        "wg": 1,
+        "width": 1
+      },
+      "event": "first_dispatch",
+      "qualification": "after_host_initialization_not_guaranteed_cold",
+      "seconds": 4.5504000000000003e-05
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 2,
+      "event": "warmup",
+      "first_seconds": 1.1982240640000001,
+      "last_seconds": 1.194295968,
+      "phase": "calibration",
+      "steady": false,
+      "wall_seconds": 2.393290489
+    },
+    {
+      "event": "validation_pre",
+      "loops": 65536,
+      "validation": {
+        "checked": 1,
+        "errors": 0,
+        "max_abs_error": 0.0,
+        "pass": true
+      }
+    },
+    {
+      "batch_dispatches": 1,
+      "dispatches": 2,
+      "event": "warmup",
+      "first_seconds": 1.1991892160000002,
+      "last_seconds": 1.193290304,
+      "phase": "sampling",
+      "steady": false,
+      "wall_seconds": 2.394230573
+    },
+    {
+      "event": "validation_post",
+      "loops": 65536,
+      "sample": 8,
+      "validation": {
+        "checked": 1,
+        "errors": 0,
+        "max_abs_error": 0.0,
+        "pass": true
+      }
+    }
+  ],
+  "schema_version": 2,
+  "validation_scope": "pre_and_post",
+  "n": 9,
+  "validation_pre": {
+    "event": "validation_pre",
+    "loops": 65536,
+    "validation": {
+      "checked": 1,
+      "errors": 0,
+      "max_abs_error": 0.0,
+      "pass": true
+    }
+  },
+  "validation_post": {
+    "event": "validation_post",
+    "loops": 65536,
+    "sample": 8,
+    "validation": {
+      "checked": 1,
+      "errors": 0,
+      "max_abs_error": 0.0,
+      "pass": true
+    }
+  },
+  "accepted": true,
+  "median_seconds": 1.193229472,
+  "min_seconds": 1.191740096,
+  "mean_seconds": 1.1931532586666667,
+  "stddev_seconds": 0.0008064159849209403,
+  "cv": 0.000675869574225611,
+  "p05_seconds": 1.191740096,
+  "p95_seconds": 1.193850624,
+  "effective_loops": 65536,
+  "batch_dispatches": 1,
+  "accounting": {
+    "float_ops": 0,
+    "integer_ops": 0,
+    "logical_global_bytes": 0,
+    "logical_shared_bytes": 0,
+    "physical_dram_bytes": null,
+    "physical_cache_bytes": null,
+    "dependent_loads": 1048576,
+    "working_set_bytes": 268435456,
+    "chain_stride_bytes": 64,
+    "chain_order": "random"
+  },
+  "below_target_duration": false,
+  "sample_drift": -0.0006819974284498764,
+  "differential": {
+    "loops": 65536,
+    "half_loops": 32768,
+    "pairs": 9,
+    "seconds_per_loop": 1.82180595703125e-05,
+    "fixed_seconds": -0.0007092799999999233,
+    "fixed_fraction": -0.0005944204502517712,
+    "incremental_seconds_for_L": 1.193938752,
+    "valid": true
+  },
+  "exclusion_reasons": [
+    "warmup_unsteady"
+  ],
+  "phase_seconds": {
+    "resume_and_guard": 0.0005178659921512008,
+    "config_upload": 0.0010425469954498112,
+    "telemetry_before": 0.0029992540075909346,
+    "runner_process": 24.587718231981853,
+    "telemetry_after": 0.0041536110220476985,
+    "analysis": 0.001611933985259384
+  },
+  "runner_observed_seconds": {
+    "warmup_wall": 4.787521062,
+    "sampled_gpu": 16.108089056
+  }
+}

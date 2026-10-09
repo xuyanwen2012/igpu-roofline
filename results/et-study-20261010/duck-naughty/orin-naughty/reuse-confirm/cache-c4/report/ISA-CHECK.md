@@ -1,0 +1,10 @@
+# NVIDIA Tegra Orin (nvgpu) SPIR-V / driver / ISA check
+
+1. **SPIR-V ledger**: exact static counts asserted at build time for every variant.
+2. **Driver statistics** (`VK_KHR_pipeline_executable_properties`): registers, spills, instruction counts.
+3. **ISA**: text returned by the driver when it offers one; otherwise an offline vendor compiler (malioc for Mali, RGA for AMD RDNA as an approximation). All static, not runtime counters.
+
+| roof | variant | SPIR-V ledger | driver statistics | ISA |
+|---|---|---|---|---|
+| matrix_fp16_fp32_feed_cache | matrix_fp16_fp32_16x16x16_c4_gmem | coopmat_muladd=4 | Register Count=75 | — |
+| matrix_fp16_fp32_feed_dram | matrix_fp16_fp32_16x16x16_c4_gmem | coopmat_muladd=4 | Register Count=75 | — |

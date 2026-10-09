@@ -1,0 +1,358 @@
+{
+  "confirmation_diagnostics": [
+    {
+      "roof": "matrix_fp16_fp32_feed_dram",
+      "config": {
+        "family": "matrix",
+        "dtype": "fp16_fp32",
+        "m": 16,
+        "matrix_n": 16,
+        "k": 16,
+        "chains": 2,
+        "width": 1,
+        "feed": "global",
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "shader": "shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 2,
+          "coopmat_load": 4,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_PushConstant": 2,
+          "load_Input": 6
+        },
+        "spirv_sha256": "2faec5b4879688aef9204052d5df857722937e8bd01dcd05970e0da5b3f3c92e",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=16",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float",
+          "-DCHAINS=2",
+          "-DFEED=2",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.comp",
+          "-o",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv"
+        ],
+        "wg": 32,
+        "groups": 16384,
+        "n": 262144,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "subgroup": 32,
+        "replicate": 1,
+        "confirm_key": "matrix_fp16_fp32_feed_dram",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        59293432724.26883,
+        59410575895.078606
+      ],
+      "repeat_spread": 0.0019737020202143917,
+      "reasons": []
+    },
+    {
+      "roof": "matrix_fp16_fp32_feed_cache",
+      "config": {
+        "family": "matrix",
+        "dtype": "fp16_fp32",
+        "m": 16,
+        "matrix_n": 16,
+        "k": 16,
+        "chains": 2,
+        "width": 1,
+        "feed": "global",
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "shader": "shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 2,
+          "coopmat_load": 4,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_PushConstant": 2,
+          "load_Input": 6
+        },
+        "spirv_sha256": "2faec5b4879688aef9204052d5df857722937e8bd01dcd05970e0da5b3f3c92e",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=16",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float",
+          "-DCHAINS=2",
+          "-DFEED=2",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.comp",
+          "-o",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv"
+        ],
+        "wg": 32,
+        "groups": 16384,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "subgroup": 32,
+        "replicate": 2,
+        "confirm_key": "matrix_fp16_fp32_feed_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        2231400795964.928,
+        2223042467421.9375,
+        2216789350246.0938
+      ],
+      "repeat_spread": 0.006572724512896673,
+      "reasons": []
+    }
+  ],
+  "repeat_spread_limit": 0.05,
+  "device": "NVIDIA Tegra Orin (nvgpu)",
+  "serial": "orin-naughty",
+  "plans": [
+    "fast"
+  ],
+  "roof_basis": "short-run",
+  "sentinel": {
+    "config": "alu_fp32_v4_c16 wg256 groups512",
+    "unit": "TFLOP/s",
+    "median": 0.7315958187873882,
+    "degraded_below": 0.62185644596928,
+    "timeline": [
+      {
+        "utc": "2026-10-09T18:58:21.824519+00:00",
+        "label": "matrix_feed_start",
+        "value": 0.7315958187873882,
+        "degraded": false
+      },
+      {
+        "utc": "2026-10-09T18:58:32.886249+00:00",
+        "label": "matrix_feed_end",
+        "value": 0.7317744421516192,
+        "degraded": false
+      },
+      {
+        "utc": "2026-10-09T18:58:49.016148+00:00",
+        "label": "confirm_end",
+        "value": 0.7315243205316466,
+        "degraded": false
+      }
+    ]
+  },
+  "stale_rows_excluded": 0,
+  "excluded_rows": {
+    "confirm/matrix_fp16_fp32_16x16x16_c2_gmem_44f7aaf3e8ef.json": [
+      "fixed_cost"
+    ]
+  },
+  "validation_scope": "pre_and_post",
+  "missing_reasons": [
+    "Sustained roofs require three distinct stable batches per current confirmed configuration and duration"
+  ],
+  "clock_state": {
+    "domains": {},
+    "pinned_domains": [],
+    "captured_utc": "2026-10-09T18:58:21.304368+00:00"
+  },
+  "short_run": {
+    "matrix_fp16_fp32_feed_dram": {
+      "value": 59.352004309673724,
+      "best": 59.48032140796021,
+      "unit": "GB/s",
+      "source": "confirm/matrix_fp16_fp32_16x16x16_c2_gmem_a52cd8b1d28c.json",
+      "config": {
+        "family": "matrix",
+        "dtype": "fp16_fp32",
+        "m": 16,
+        "matrix_n": 16,
+        "k": 16,
+        "chains": 2,
+        "width": 1,
+        "feed": "global",
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "shader": "shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 2,
+          "coopmat_load": 4,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_PushConstant": 2,
+          "load_Input": 6
+        },
+        "spirv_sha256": "2faec5b4879688aef9204052d5df857722937e8bd01dcd05970e0da5b3f3c92e",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=16",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float",
+          "-DCHAINS=2",
+          "-DFEED=2",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.comp",
+          "-o",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv"
+        ],
+        "wg": 32,
+        "groups": 16384,
+        "n": 262144,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "subgroup": 32,
+        "replicate": 0,
+        "confirm_key": "matrix_fp16_fp32_feed_dram",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.0014140827926077601,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 64.59654160149135,
+      "fixed_fraction": 0.08028240487557332,
+      "confirmed": true,
+      "repeats": 2,
+      "repeat_min": 59.29343272426883,
+      "repeat_max": 59.41057589507861,
+      "repeat_spread": 0.0019737020202143804,
+      "sweep_best_unconfirmed": 59.51437441083423
+    },
+    "matrix_fp16_fp32_feed_cache": {
+      "value": 2.2230424674219376,
+      "best": 2.2367327248487334,
+      "unit": "TFLOP/s",
+      "source": "confirm/matrix_fp16_fp32_16x16x16_c2_gmem_7fa971d07981.json",
+      "config": {
+        "family": "matrix",
+        "dtype": "fp16_fp32",
+        "m": 16,
+        "matrix_n": 16,
+        "k": 16,
+        "chains": 2,
+        "width": 1,
+        "feed": "global",
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "shader": "shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 2,
+          "coopmat_load": 4,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_PushConstant": 2,
+          "load_Input": 6
+        },
+        "spirv_sha256": "2faec5b4879688aef9204052d5df857722937e8bd01dcd05970e0da5b3f3c92e",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DM=16",
+          "-DN=16",
+          "-DK=16",
+          "-DAT=float16_t",
+          "-DCT=float",
+          "-DCHAINS=2",
+          "-DFEED=2",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.comp",
+          "-o",
+          "build/shaders/matrix_fp16_fp32_16x16x16_c2_gmem.spv"
+        ],
+        "wg": 32,
+        "groups": 16384,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "subgroup": 32,
+        "replicate": 1,
+        "confirm_key": "matrix_fp16_fp32_feed_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.0005023223663869659,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 2.3750823042578673,
+      "fixed_fraction": 0.06401455501704692,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 2.216789350246094,
+      "repeat_max": 2.231400795964928,
+      "repeat_spread": 0.006572724512896557,
+      "sweep_best_unconfirmed": 2.20917949204142
+    }
+  },
+  "sustained": {},
+  "ridges": {
+    "short_run": {},
+    "roofs": {}
+  },
+  "physical_dram_bandwidth": null,
+  "physical_cache_bandwidth": null,
+  "matrix_feed_by_reuse": [
+    {
+      "dtype": "fp16_fp32",
+      "level": "cache",
+      "chains": 2,
+      "rate": 2.231400795964928,
+      "unit": "TFLOP/s",
+      "load_gbps": 139.46254974780803,
+      "ops_per_load_byte": 16.0,
+      "gates": [],
+      "source": "confirm/matrix_fp16_fp32_16x16x16_c2_gmem_fe0ed8b110c4.json"
+    },
+    {
+      "dtype": "fp16_fp32",
+      "level": "dram",
+      "chains": 2,
+      "rate": 0.8280260787594328,
+      "unit": "TFLOP/s",
+      "load_gbps": 51.751629922464545,
+      "ops_per_load_byte": 16.0,
+      "gates": [],
+      "source": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_gmem_2a2361593b25.json"
+    }
+  ],
+  "git_commit": null,
+  "runner_sha256": "bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69"
+}

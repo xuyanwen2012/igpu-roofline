@@ -1,0 +1,1 @@
+device: NVIDIA Tegra Orin (nvgpu) driver 0x94d38000

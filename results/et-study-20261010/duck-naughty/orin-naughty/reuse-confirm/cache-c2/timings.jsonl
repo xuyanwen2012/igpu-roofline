@@ -1,0 +1,18 @@
+{"utc": "2026-10-09T18:58:20.835894+00:00", "kind": "stage", "name": "deploy", "status": "completed", "wall_seconds": 0.2172356469964143, "plan": "fast"}
+{"utc": "2026-10-09T18:58:21.053515+00:00", "kind": "stage", "name": "capabilities", "status": "completed", "wall_seconds": 0.25175215597846545, "plan": "fast"}
+{"utc": "2026-10-09T18:58:21.308164+00:00", "kind": "stage", "name": "pipeline_stats", "status": "completed", "wall_seconds": 0.5092591810098384, "plan": "fast"}
+{"utc": "2026-10-09T18:58:21.817989+00:00", "kind": "stage", "name": "offline_isa", "status": "completed", "wall_seconds": 0.0058458139828871936, "plan": "fast"}
+{"utc": "2026-10-09T18:58:21.824553+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 6.745768693013815, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:58:28.570988+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 1.831804702989757, "stage": "sweep-matrix-feed", "plan": "fast"}
+{"utc": "2026-10-09T18:58:30.402957+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 2.483034899982158, "stage": "sweep-matrix-feed", "plan": "fast"}
+{"utc": "2026-10-09T18:58:32.886296+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 3.5848479160049465, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:58:21.824408+00:00", "kind": "stage", "name": "matrix_feed", "status": "completed", "wall_seconds": 14.647741666005459, "plan": "fast", "configurations": 2}
+{"utc": "2026-10-09T18:58:36.477174+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 1.7812453659716994, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:38.258590+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 2.4829546199762262, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:40.741744+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 2.433466527989367, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:43.175372+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 1.7309816270135343, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:44.906528+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 1.7291878539836034, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:46.635852+00:00", "kind": "configuration", "name": "matrix_fp16_fp32_16x16x16_c2_gmem", "status": "completed", "wall_seconds": 2.380063552001957, "stage": "confirm", "plan": "fast"}
+{"utc": "2026-10-09T18:58:49.016181+00:00", "kind": "configuration", "name": "alu_fp32_v4_c16", "status": "completed", "wall_seconds": 3.5836820370168425, "stage": "probe", "plan": "fast"}
+{"utc": "2026-10-09T18:58:36.472625+00:00", "kind": "stage", "name": "confirm", "status": "completed", "wall_seconds": 16.128273718000855, "plan": "fast"}
+{"utc": "2026-10-09T18:58:53.349512+00:00", "kind": "stage", "name": "report", "status": "completed", "wall_seconds": 3.692266048019519, "plan": "fast"}

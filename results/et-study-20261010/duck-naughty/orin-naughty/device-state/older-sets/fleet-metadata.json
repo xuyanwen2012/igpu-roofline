@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "campaign": "fleet-quick-20260925",
+  "source_commit": "3bd916f6e97cd37b525e1baedc0a152f8b44342f",
+  "registry_device": {
+    "id": "orin-naughty",
+    "name": "NVIDIA Jetson Orin Nano (Ampere, 8 GB shared)",
+    "kind": "igpu",
+    "vendor": "nvidia",
+    "host": "duck-naughty",
+    "uuid": "b49259c9-868c-5b7c-b6f1-65a2bf4b63be",
+    "tags": [
+      "nvidia",
+      "ampere",
+      "jetson",
+      "arm"
+    ],
+    "status": "active",
+    "notes": "The harness never touches jetson_clocks or nvpmodel."
+  },
+  "started_utc": "2026-09-26T05:09:24.980005+00:00",
+  "status": "finished",
+  "preflight": {
+    "name": "NVIDIA Tegra Orin (nvgpu)",
+    "uuid": "b49259c9-868c-5b7c-b6f1-65a2bf4b63be",
+    "type": "igpu",
+    "vendor_id": 4318,
+    "api": "1.4.329",
+    "driver": "NVIDIA",
+    "driver_info": "595.78",
+    "subgroup_size": 32,
+    "max_wg_invocations": 1024,
+    "max_shared_bytes": 49152,
+    "max_push_bytes": 256,
+    "busy_pct": 2.1,
+    "busy_method": "tegra-load"
+  },
+  "clock_mode": "gpu1020000000_emc2133000000",
+  "ended_utc": "2026-09-26T05:24:42.426998+00:00",
+  "elapsed_seconds": 917.4470375839155
+}

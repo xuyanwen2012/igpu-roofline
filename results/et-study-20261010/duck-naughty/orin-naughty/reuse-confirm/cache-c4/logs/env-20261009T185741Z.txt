@@ -1,0 +1,8 @@
+bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69  /home/doremy/roofline-study-20261010/roofline/build/host/roofline
+bdc8d65c4c5e8c75f22acb225c9d4069ece69dffe9f2812f141e6a2f711b2e69  /home/doremy/roofline-study-20261010/roofline/build/host/roofline_sustained
+150ebfb70d989a26f69ceb1bf4ce04726235f0ce46dfffa4d6bd6f99400ba89c  /home/doremy/roofline-study-20261010/roofline/build/host/inspect
+03307d6b4d607bfee5d933b3aceb5bf8bcef8bc964ca4ef817c29bbd517386f1  /home/doremy/roofline-study-20261010/roofline/build/shader-manifest.json
+igpu-roofline commit 84361ac81182105d06a2f6d8293fa435192f1470 (branch study/et-20261010-orin; igpu_roofline/, runner/, shaders/ identical to origin/main: 0 changed lines)
+shaders built on the workstation by 'igpu-roofline build --host' (shaderc v2026.1 2026-01-23spirv-tools v2026.1 2026-02-03glslang 301b4ede53d59b68bf55f95bb26412d9233c8187); runner cross-built for aarch64 in localhost/et-jetson-cross:jp7.2.1 from runner/CMakeLists.txt
+2026-10-09T18:57:41Z clk=306000000 min=306000000 max=612000000 gov=nvhost_podgov temp_mC=54750 NV Power Mode: 15W 0 
+2026-10-09T18:58:20Z clk=306000000 min=306000000 max=612000000 gov=nvhost_podgov temp_mC=56062 NV Power Mode: 15W 0 

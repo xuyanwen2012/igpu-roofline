@@ -1,0 +1,26 @@
+{
+  "quality": {
+    "max_median_se": 0.03,
+    "max_fixed_fraction": 0.1,
+    "max_drift": 0.05
+  },
+  "selected": {
+    "matrix_fp16_fp32_feed_dram": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "rate": 59514374410.83423,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_gmem_2a2361593b25.jsonl"
+      }
+    ],
+    "matrix_fp16_fp32_feed_cache": [
+      {
+        "name": "matrix_fp16_fp32_16x16x16_c2_gmem",
+        "rate": 2209179492041.42,
+        "raw": "sweep-matrix-feed/matrix_fp16_fp32_16x16x16_c2_gmem_a0cf692d143d.jsonl"
+      }
+    ]
+  },
+  "gated_but_faster": {},
+  "excluded": {},
+  "roofs_without_quality_candidate": []
+}
