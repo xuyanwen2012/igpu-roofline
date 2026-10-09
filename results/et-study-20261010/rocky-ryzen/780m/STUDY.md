@@ -144,6 +144,8 @@ is and test 2 shows more than a few points behind staging; that is the owner's d
 - The microbench marks every linear case `unexpected_coopmat` (rc 1): development kernels are not in its expected
   table; the campaign's own runs have the same status.
 - GPU timestamps against wall clock: not checked in this study. Radeon GPU Analyzer cross-check: not run.
+- ExecuTorch trees: no file built, written or changed. I ran `git status` in the campaign's checkout three
+  times; that command may refresh the index file under `.git` (the directory's time stamp moved), nothing else.
 - Raw rows of part A, the driver dumps and the kernels' SPIR-V are in this results root on the share; git
   tracks the reports, tables, tools and this file.
 
