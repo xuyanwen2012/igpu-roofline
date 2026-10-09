@@ -5,6 +5,7 @@ import collections
 import json
 import statistics
 from pathlib import Path
+from typing import Any
 
 p = argparse.ArgumentParser()
 p.add_argument("campaign", type=Path)
@@ -14,7 +15,7 @@ groups = collections.defaultdict(list)
 for row in rows:
     if row["rc"] == 0 and row.get("stop_reason") is None and "prefill_ms" in row:
         groups[row["job"].rsplit("-r", 1)[0]].append(row)
-summary = {}
+summary: dict[str, dict[str, Any]] = {}
 for key, repeat in sorted(groups.items()):
     prefill = [r["prefill_ms"] for r in repeat]
     decode = [r["decode_token_per_sec"] for r in repeat]

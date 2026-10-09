@@ -11,6 +11,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 spec = json.load(sys.stdin)
 root = Path.home() / ".cache/et-jetson-study"
@@ -99,7 +100,7 @@ for job in spec["jobs"]:
         a.replace("@ROOT@", str(root)).replace("@OUT@", str(out)) for a in job["argv"]
     ]
     before = memory()
-    info = {
+    info: dict[str, Any] = {
         "argv": argv,
         "env": {k: v for k, v in env.items() if k.startswith(("ET_VK_", "ETVK_"))},
         "memory_before_kb": before,

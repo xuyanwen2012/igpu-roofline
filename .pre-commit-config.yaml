@@ -1,7 +1,40 @@
-# Formatting on commit. Install once per checkout: `uv run pre-commit install`.
-# Hooks use the project's pinned ruff (uv dev group) and the system clang-format
-# (the same binary clangd uses), so editor and commit formatting agree.
+# Formatting and linting on commit. Install once per checkout: `uv run pre-commit install`.
+# Run everything by hand with `uv run pre-commit run --all-files`.
+# Python hooks use the project's pinned ruff/ty (uv dev group) and C++ uses the system
+# clang-format (the same binary clangd uses), so editor and commit formatting agree.
+# Shell hooks download their own shellcheck/shfmt, so hosts need not install them.
+
+# Byte-identical on purpose: campaign artifacts (scripts exactly as they ran), vendored
+# code, shaders (their SPIR-V hash keys results), patches and generated reports.
+exclude: ^(results/|third_party/|shaders/|docs/reports/|.*\.patch$)
+
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1-1
+    hooks:
+      - id: shellcheck
+        args: [--severity=warning]
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.14.1-1
+    hooks:
+      - id: shfmt
+        # Style comes from .editorconfig (2 spaces, indented case arms, `> file`).
+        args: [-w]
   - repo: local
     hooks:
       - id: ruff-check
@@ -14,6 +47,12 @@ repos:
         entry: uv run ruff format --force-exclude
         language: system
         types_or: [python, pyi]
+      - id: ty
+        name: ty check
+        entry: uv run ty check
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false
       - id: clang-format
         name: clang-format
         entry: clang-format -i

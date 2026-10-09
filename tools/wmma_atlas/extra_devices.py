@@ -20,6 +20,8 @@ def from_roofline(path, key):
     out = []
     for s in g["coopmat_shapes"]:
         m = re.fullmatch(r"(\d+)x(\d+)x(\d+) (\w+)x(\w+)\+(\w+)->(\w+)( sat)?", s)
+        if m is None:
+            raise ValueError(f"unrecognised coopmat shape: {s!r}")
         M, N, K, a, b, c, r, sat = m.groups()
         out.append(
             {

@@ -1,0 +1,32 @@
+# Editor defaults matching the formatters (ruff, clang-format, shfmt).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{c,cpp,h,hpp,sh,yaml,yml,json,md,cmake}]
+indent_size = 2
+
+[CMakeLists.txt]
+indent_size = 2
+
+# shfmt reads these when run without style flags.
+[*.sh]
+switch_case_indent = true
+space_redirects = true
+
+# Byte-identical on purpose: campaign artifacts, vendored code, shaders (their
+# SPIR-V hash keys results), patches (context lines carry trailing blanks) and
+# generated reports.
+[{results/**,third_party/**,shaders/**,*.patch,docs/reports/**}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset

@@ -38,6 +38,26 @@ clangd --check=runner/src/roofline.cpp
 ```
 
 Do not rebuild while a campaign is recording: builds change artifact identities.
+
+## Formatting and linting
+
+```sh
+uv run pre-commit install             # once per checkout: run the hooks on commit
+uv run pre-commit run --all-files     # everything, by hand
+uv run pytest                         # offline tests; no GPU needed
+```
+
+| Files | Tools | Configuration |
+|---|---|---|
+| Python | `ruff check`, `ruff format`, `ty check` | `pyproject.toml` |
+| Runner C/C++ | system `clang-format` | `.clang-format` |
+| Shell | `shellcheck`, `shfmt` (downloaded by pre-commit) | `.editorconfig` |
+| YAML, TOML, JSON, whitespace, executable bits | `pre-commit-hooks` | `.pre-commit-config.yaml` |
+
+`results/`, `third_party/`, `shaders/`, `docs/reports/` and `*.patch` are never
+reformatted: campaign artifacts stay as they ran, and a shader's SPIR-V hash keys
+its results. CI (`.github/workflows/ci.yml`) runs the same hooks except
+clang-format, then the tests.
 For a separate Ninja build directory, pass `-G Ninja` to CMake; do not replace a
 campaign's build directory merely to change generators.
 

@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import pytest
 
@@ -14,7 +15,7 @@ def roof(value, unit, spread=0.01, confirmed=True):
     }
 
 
-SUMMARY = {
+SUMMARY: dict[str, Any] = {
     "device": "Test GPU",
     "short_run": {
         "matrix_fp16": roof(200.0, "TFLOP/s"),

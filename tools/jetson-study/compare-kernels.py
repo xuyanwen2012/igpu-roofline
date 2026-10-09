@@ -5,6 +5,7 @@ import json
 import math
 import statistics
 from pathlib import Path
+from typing import Any
 
 p = argparse.ArgumentParser()
 p.add_argument("campaign", type=Path)
@@ -14,7 +15,7 @@ modes = {
     mode: {tuple(row["key"]): row for row in summary[mode]}
     for mode in ("baseline", "original", "tuned")
 }
-rows = []
+rows: list[dict[str, Any]] = []
 for key, tuned in modes["tuned"].items():
     model, scheme, regime, op, storage, m, k, n = key
     correctness = a.campaign / f"pdiff-{scheme}-{model}/result.json"

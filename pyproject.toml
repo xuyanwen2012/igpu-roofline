@@ -45,7 +45,14 @@ ignore = [
 python-version = "3.10"
 
 [tool.ty.src]
-exclude = ["third_party", "build"]
+# results/ holds campaign scripts exactly as they ran (see the ruff note above).
+exclude = ["third_party", "build", "results"]
+
+# `min(d, key=d.get)` is correct here; ty cannot match the overload. Kept as a
+# config override because igpu_roofline/ must not change while campaigns record.
+[[tool.ty.overrides]]
+include = ["igpu_roofline/workload.py"]
+rules = { no-matching-overload = "ignore" }
 
 [tool.pytest.ini_options]
 # Only the repo tests: campaign source snapshots under results/ carry their own tests/.

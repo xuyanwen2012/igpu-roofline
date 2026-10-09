@@ -6,11 +6,17 @@ repo=$(cd "$(dirname "$0")/../.." && pwd)
 checkout=/home/doremy/Desktop/sarc-acl/yanwen/release14-quant-shaders-jetson/executorch
 work=$repo/out/jetson-cross
 output=$repo/out/jetson-study/builds/$version
-[[ ! -e "$output" ]] || { echo "Preserving existing build: $output"; exit 2; }
+[[ ! -e "$output" ]] || {
+  echo "Preserving existing build: $output"
+  exit 2
+}
 mkdir -p "$output"
 # Sync only the isolated branch's study changes into the disposable build snapshot.
 while IFS= read -r -d '' path; do
-  [[ -f "$checkout/$path" ]] || { echo "Unsupported deleted source: $path"; exit 2; }
+  [[ -f "$checkout/$path" ]] || {
+    echo "Unsupported deleted source: $path"
+    exit 2
+  }
   mkdir -p "$work/source/executorch/$(dirname "$path")"
   cp "$checkout/$path" "$work/source/executorch/$path"
 done < <(git -C "$checkout" diff --name-only -z)

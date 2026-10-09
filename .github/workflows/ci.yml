@@ -1,0 +1,31 @@
+# Static checks and the offline test suite. Nothing here touches a GPU or builds
+# the runner; device measurements stay manual (see CLAUDE.md).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Lint and format (pre-commit)
+        # clang-format is skipped: its output depends on the installed version,
+        # and the hook is pinned to the developer's system binary.
+        run: SKIP=clang-format uv run pre-commit run --all-files --show-diff-on-failure
+      - name: Tests
+        run: uv run pytest

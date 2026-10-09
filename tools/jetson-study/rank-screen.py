@@ -5,6 +5,7 @@ import json
 import math
 import statistics
 from pathlib import Path
+from typing import Any
 
 p = argparse.ArgumentParser()
 p.add_argument("screen", type=Path)
@@ -21,7 +22,7 @@ for f in a.baseline.glob("linear-r*/perf.json"):
     for r in json.loads(f.read_text())["cases"]:
         base.setdefault(key(r), []).append(r["kernel_median_us"])
 base = {k: statistics.median(v) for k, v in base.items()}
-rank = []
+rank: list[dict[str, Any]] = []
 for f in a.screen.glob("*/perf.json"):
     meta = f.parent / "result.json"
     if not meta.exists() or json.loads(meta.read_text())["rc"] != 0:
