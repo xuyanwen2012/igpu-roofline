@@ -248,11 +248,31 @@ class AdbDevice:
         }
 
 
+INTEL_VENDOR_ID = 0x8086
+NVIDIA_VENDOR_ID = 0x10DE
+NVIDIA_QUERY = (
+    "temperature.gpu",
+    "clocks.sm",
+    "clocks.mem",
+    "clocks.max.sm",
+    "clocks.max.mem",
+    "utilization.gpu",
+    "clocks_throttle_reasons.active",
+    "power.draw",
+)
+
+
+def _mhz(text: str) -> str | None:
+    """MHz text -> Hz string (the unit every clock domain uses), else None."""
+    return str(int(text) * 10**6) if text.isdigit() and int(text) else None
+
+
 class LocalDevice:
-    """The host's own GPU (Linux iGPU such as Radeon 780M), same interface as AdbDevice.
+    """The host's own GPU (iGPU or discrete), same interface as AdbDevice.
 
     "Remote" paths are a local staging directory; commands run through bash. GPU
-    clocks, busy % and temperature come from amdgpu sysfs when present (read only).
+    clocks, busy % and temperature are read only: amdgpu sysfs, Intel xe
+    `tile*/gt*/freq0`, or `nvidia-smi` (the proprietary driver has no DRM hwmon).
     """
 
     kind = "local"
@@ -269,6 +289,7 @@ class LocalDevice:
 
         self.overrides = overrides or {}
         self.card = None
+        self.vendor_id = None
         result = subprocess.run(
             [str(paths.RUNNER), "identity"], capture_output=True, text=True, check=True
         )
@@ -314,6 +335,7 @@ class LocalDevice:
             if (vendor, device) == (caps.get("vendor_id"), caps.get("device_id")):
                 matches.append(card)
         self.card = matches[0] if len(matches) == 1 else None
+        self.vendor_id = caps.get("vendor_id") if self.card else None
 
     # --- transport -------------------------------------------------------------
     def shell(self, command: str, timeout=90):
@@ -391,6 +413,38 @@ class LocalDevice:
                     cur = int(m[1])
         return levels, cur
 
+    def _nvidia(self) -> dict:
+        """nvidia-smi fields for this GPU (Vulkan deviceUUID == NVIDIA GPU UUID)."""
+        if self.vendor_id != NVIDIA_VENDOR_ID:
+            return {}
+        u = self.identity.removeprefix("vulkan:")
+        gpu = f"GPU-{u[:8]}-{u[8:12]}-{u[12:16]}-{u[16:20]}-{u[20:]}"
+        fields = NVIDIA_QUERY
+        try:
+            out = subprocess.run(
+                [
+                    "nvidia-smi",
+                    f"--id={gpu}",
+                    "--query-gpu=" + ",".join(fields),
+                    "--format=csv,noheader,nounits",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return {}
+        values = [v.strip() for v in out.stdout.strip().split(",")]
+        if out.returncode or len(values) != len(fields):
+            return {}
+        return dict(zip(fields, values))
+
+    def _xe_gts(self) -> list[str]:
+        """Intel xe per-GT frequency directories (gt0 = render/compute, gt1 = media)."""
+        if not self.card or self.vendor_id != INTEL_VENDOR_ID:
+            return []
+        return sorted(glob.glob(f"{self.card}/device/tile*/gt*/freq0"))
+
     def clock_state(self) -> dict:
         domains = {}
         if self.card:
@@ -404,11 +458,44 @@ class LocalDevice:
                         "max": str(max(levels) * 10**6),
                         "cur": str(cur * 10**6) if cur else None,
                     }
+        for gt in self._xe_gts():
+            lo, hi = self._read(f"{gt}/min_freq"), self._read(f"{gt}/max_freq")
+            if lo.isdigit() and hi.isdigit():
+                domains[gt] = {
+                    # xe has no governor file; min == max is how a pin shows up.
+                    "governor": "pinned" if lo == hi else "xe",
+                    "min": str(int(lo) * 10**6),
+                    "max": str(int(hi) * 10**6),
+                    "cur": _mhz(self._read(f"{gt}/act_freq")),
+                    "hw_max": _mhz(self._read(f"{gt}/rp0_freq")),
+                }
+        nv = self._nvidia()
+        for dom, cur, hi in (
+            ("sm", "clocks.sm", "clocks.max.sm"),
+            ("mem", "clocks.mem", "clocks.max.mem"),
+        ):
+            if nv.get(hi, "").isdigit():
+                domains[f"nvidia-smi:{dom}"] = {
+                    # nvidia-smi shows application-clock locks, not DVFS limits here.
+                    "governor": "nvidia",
+                    "min": None,
+                    "max": str(int(nv[hi]) * 10**6),
+                    "cur": _mhz(nv.get(cur, "")),
+                }
         # amdgpu is pinned only with a manual/peak performance level (needs root).
         pinned = [
-            p for p, d in domains.items() if d["governor"] in ("profile_peak", "manual")
+            p
+            for p, d in domains.items()
+            if d["governor"] in ("profile_peak", "manual", "pinned")
         ]
-        return {"domains": domains, "pinned_domains": pinned, "captured_utc": utc_now()}
+        state = {
+            "domains": domains,
+            "pinned_domains": pinned,
+            "captured_utc": utc_now(),
+        }
+        if nv:
+            state["nvidia_smi"] = nv
+        return state
 
     def gpu_freq(self) -> dict:
         out = {}
@@ -416,6 +503,14 @@ class LocalDevice:
             _, cur = self._dpm(name) if self.card else ([], None)
             if cur:
                 out[f"{self.card}/device/{name}"] = str(cur * 10**6)
+        for gt in self._xe_gts():
+            cur = _mhz(self._read(f"{gt}/act_freq"))
+            if cur:
+                out[gt] = cur
+        nv = self._nvidia()
+        for dom, key in (("sm", "clocks.sm"), ("mem", "clocks.mem")):
+            if _mhz(nv.get(key, "")):
+                out[f"nvidia-smi:{dom}"] = _mhz(nv[key])
         return out
 
     def faults(self) -> int | None:
@@ -440,11 +535,18 @@ class LocalDevice:
 
     def gpu_temp_c(self) -> float | None:
         vals = list(self._temps(selected_gpu=True).values())
+        if not vals:
+            with contextlib.suppress(ValueError):
+                vals = [float(self._nvidia().get("temperature.gpu", ""))]
         return max(vals) if vals else None
 
     def telemetry(self) -> dict:
         temps = self._temps()
         busy = self._read(f"{self.card}/device/gpu_busy_percent") if self.card else ""
+        nv = self._nvidia()
+        if nv:
+            temps["nvidia:gpu"] = nv.get("temperature.gpu")
+            busy = busy or nv.get("utilization.gpu", "")
         text = "\n".join(
             [f"{k} {v}" for k, v in sorted(temps.items())]
             + [f"gpu_busy_percent {busy}", "loadavg " + self._read("/proc/loadavg")]

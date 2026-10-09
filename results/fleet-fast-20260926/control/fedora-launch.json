@@ -1,0 +1,32 @@
+[
+  {
+    "host": "fedora",
+    "devices": [
+      "b580"
+    ],
+    "source": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926",
+    "results": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/results",
+    "pid": "60951",
+    "log": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/controller-b580.log"
+  },
+  {
+    "host": "fedora",
+    "devices": [
+      "s24"
+    ],
+    "source": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926",
+    "results": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/results",
+    "pid": "60953",
+    "log": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/controller-s24.log"
+  },
+  {
+    "host": "fedora",
+    "devices": [
+      "pixel-7a"
+    ],
+    "source": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926",
+    "results": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/results",
+    "pid": "60955",
+    "log": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/controller-pixel-7a.log"
+  }
+]

@@ -1,5 +1,11 @@
 # How to run
 
+For project responsibilities and real-workload comparisons, see the
+[ExecuTorch workflow](EXECUTORCH-WORKFLOW.md). For GPU access and advertised
+capabilities, use [gpu-lab's guide](../../gpu-lab/AGENTS.md) and `./gpu caps` in
+that checkout. Roofline currently runs on the execution host or ADB controller;
+it does not yet consume gpu-lab's registry automatically.
+
 ## Host setup
 
 | need | notes |
@@ -15,6 +21,10 @@ git clone https://github.com/xuyanwen2012/igpu-roofline && cd igpu-roofline
 uv sync                      # creates .venv from uv.lock
 uv run igpu-roofline build   # shaders + Android runner
 ```
+
+For a Linux GPU, build with `uv run igpu-roofline build --host` and run with
+`uv run igpu-roofline run --local`. Host builds need Vulkan headers and a loader;
+use `--vulkan-include <directory>` for headers outside standard include paths.
 
 Every command below is `uv run ...`; with a plain pip install, drop the `uv run` prefix
 (or use `.venv/bin/igpu-roofline`).
@@ -32,10 +42,14 @@ fails on any mismatch), and cross-compiles the runner for arm64 Android.
 The device needs Vulkan 1.3. Features it lacks (fp16 arithmetic, int8 dot product,
 cooperative matrix) simply skip the corresponding variants.
 
+Check gpu-lab availability and coordinate ownership before starting. The two
+projects currently use separate locks; neither lock excludes the other tool.
+
 ## Running
 
 ```sh
 uv run igpu-roofline run --device <serial>                  # quick
+uv run igpu-roofline run --device <serial> --plan fast
 uv run igpu-roofline run --device <serial> --plan standard
 uv run igpu-roofline run --device <serial> --plan gold
 ```
@@ -99,6 +113,9 @@ can narrow a replay; `--stage` cannot be combined with it. Replay tests the expo
 points, not a new neighborhood search. Use discovery when the winning point may have
 changed. Reusing the same results directory still follows normal resume semantics;
 use a fresh results root for independent repeats.
+After rebuilding the runner, start a fresh results directory. A targeted replay
+remeasures only its selected configurations; do not combine old/new builds into
+one confirmed group or present a partial retest as a complete device baseline.
 Reports still summarize the campaign directory, including other current results
 already present there; a focused invocation does not erase those measurements.
 
@@ -148,6 +165,10 @@ e.g. with [tools/pin_gpu_clock.sh](../tools/pin_gpu_clock.sh) on a rooted device
 run. The report states whether each GPU clock domain was pinned (min == max) when the
 capabilities were captured.
 
+For fleet devices follow gpu-lab's device-use rules. In particular, Pixel 7a has a
+[verified pin/restore procedure](../../gpu-lab/docs/android-phones.md#reusable-clock-script);
+root access alone is not an instruction to change clocks.
+
 ## Device overrides (optional)
 
 Auto-detection covers most devices. For special cases pass `--overrides my-device.yaml`:
@@ -165,7 +186,8 @@ notes: "dev board, GPU clock pinned before the run"
 - **AMD RDNA (e.g. Samsung Xclipse)**: install Radeon GPU Analyzer and put `rga` on
   `PATH` (or set `$RGA`; `$RGA_ASIC` selects the target, default `gfx1103`).
 
-Missing tools are skipped. Driver-returned ISA and driver statistics are always used.
+Missing tools are skipped. Driver-returned ISA and statistics are collected when
+the driver exposes them; state missing verification in the report.
 
 ## Results layout
 
@@ -201,6 +223,7 @@ selected physical device without creating a logical device or submitting GPU wor
 ADB keys use the device serial on the controlling host; cross-host ADB exclusion is
 outside this guarantee. Conflicts name the device and owner PID and never kill it.
 The campaign's `owner.lock` also prevents two GPUs from writing the same directory.
+These locks cover roofline processes, not gpu-lab or unrelated GPU applications.
 
 `IGPU_ROOFLINE_STAGE` is a **parent directory**: local staging appends the full UUID.
 Default local result names include a short UUID; explicit `--local-name` stays

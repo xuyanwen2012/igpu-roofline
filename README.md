@@ -8,6 +8,14 @@ into a roofline and a shader-tuning guide for that device.
 Runs on **Android** (arm64, Vulkan 1.3) through `adb`, and on the host's own Linux
 integrated GPU (`run --local`, e.g. Radeon 780M).
 
+The project uses measured rooflines to study and guide real **ExecuTorch Vulkan
+4w and 8da4w WMMA shader optimizations**. `gpu-lab` is the hub for GPU access and
+queried driver capabilities; this repository owns the microbenchmarks and measurement
+rigor; ExecuTorch owns the actual workloads and kernel, operator and model performance
+evaluation.
+See [the ExecuTorch workflow](docs/EXECUTORCH-WORKFLOW.md) for responsibilities,
+matching workloads to roofs, and the proposed optimization experiment loop.
+
 ## What it measures
 
 | family | method | output |
@@ -21,14 +29,13 @@ integrated GPU (`run --local`, e.g. Radeon 780M).
 | latency | pointer chasing: capacity/levels, TLB reach, line size (Saavedra) | latency ladder |
 | ERT | one kernel swept from 0.25 to 256 FLOP/byte | measured ridge point |
 | memory type | same kernels, DEVICE_LOCAL vs host-visible buffers, A/B repeated | placement advice |
-| sustained | each roof held for 300 s, last-60 s median, steadiness and duty cycle | thermal behaviour |
+| sustained | plan-selected roofs held for 120 or 300 s, last-60 s median, steadiness and duty cycle | thermal behaviour |
 
-Every result is validated against a CPU reference, timed with GPU timestamps, and
-corrected for fixed per-dispatch cost by two-point (differential) timing. Every shader
-variant's SPIR-V is checked at build time against its exact designed instruction
-counts; on the device, driver pipeline statistics (and ISA text when the driver
-offers it) and optional offline compilers (Arm `malioc`, AMD `rga`) confirm what runs.
-See [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
+Trusted results require CPU reference checks before and after sampling, GPU timestamp
+quality gates, matching build hashes and repeat confirmation. Differential timing
+estimates fixed dispatch cost where applicable. SPIR-V ledgers check designed
+instruction counts; driver statistics, ISA and optional offline compilers provide
+additional evidence when available. See [methodology](docs/METHODOLOGY.md).
 
 ## Quick start
 
@@ -49,37 +56,17 @@ Plans:
 | `standard` | all sweeps, 1 s warm-up per config, top 3 candidates per roof confirmed 5×, one 300 s sustained run per roof | ~3.5 h (estimate) |
 | `gold` | as standard with three sustained batches (repeatability) | ~7 h |
 
-`quick` is a screening plan: it samples each axis coarsely, so compute and DRAM roofs
-land within a few percent of a full sweep, while shared-memory roofs (very sensitive to
-workgroup and allocation size) can read ~20% low. Use `standard` or `gold` for roofs you
-will quote.
+`quick` is a screening plan; its coarse grid can miss the best configuration.
+Use `standard` or `gold` for a full sweep. Plan durations are device-dependent
+estimates; confirmation and quality gates determine which results are usable.
 
 Runs are resumable: re-run the same command and finished configurations are skipped.
 Results go to `~/igpu-roofline-results/<serial>/` (override with `--results` or
 `$IGPU_ROOFLINE_RESULTS`); regenerate reports any time with `uv run igpu-roofline report`.
 Tests: `uv run --group dev pytest`.
 
-For development, select the work you need instead of repeating device discovery:
-
-```sh
-uv run igpu-roofline run --local --family alu --stage compute
-uv run igpu-roofline run --local --variant sharedbw_fp32_v4_op0 --stage shared
-uv run igpu-roofline --results ./results/new-build run --local --replay /path/to/previous/report/summary.json
-uv run igpu-roofline --results ./results/new-build sustain --local --roof alu_fp32 --duration 60
-```
-
-Selectors are repeatable and intersect across types. Focused/replay runs retain
-validation, warm-up, timing quality gates and confirmation, but omit sustained tests
-unless `--sustain` is explicit. Unfiltered plans keep their existing defaults;
-`--no-sustain` disables their sustained portion. Replay accepts `best-configurations.json`
-(exported after confirmation) or an existing `report/summary.json`, uses only confirmed
-roof configurations, and measures them with the current build. The standalone
-`sustain` command requires confirmations from the current build in the chosen results
-directory. See [development workflow details](docs/HOW-TO-RUN.md#development-workflow).
-
-`timings.jsonl` records stage/configuration wall time, including failed stages. New
-result rows also separate config upload, telemetry, runner process and analysis time,
-with observed warm-up wall time and sampled GPU time reported separately.
+For focused runs, replay, standalone sustained tests and timing diagnostics, see
+[the development workflow](docs/HOW-TO-RUN.md#development-workflow).
 
 ## Output
 
@@ -101,61 +88,21 @@ Per device, in `report/`:
   theoretical peaks are used. Clocks are only read, never changed — pin them yourself
   on a rooted device if you want (see [tools/pin_gpu_clock.sh](tools/pin_gpu_clock.sh));
   the report records whether they were pinned.
-- Bandwidths are shader-logical bytes. Physical DRAM/L2 traffic needs
-  `VK_KHR_performance_query`, which phones generally do not expose.
-- One device at a time per process; each device is locked while measured.
+- Bandwidths are shader-logical bytes. Physical DRAM/L2 traffic is not measured by
+  this suite; it requires separate hardware-counter evidence.
+- One device at a time per process; roofline locks its own runs. gpu-lab currently
+  uses separate locks, so coordinate use across both tools.
+- Only explicitly confirmed roofs support optimization claims. Current plots and
+  ridge calculations can include unconfirmed sweep values; check the confirmation
+  table or `confirmed` field before using them.
 
-More: [docs/HOW-TO-RUN.md](docs/HOW-TO-RUN.md).
+## Documentation
+
+Start with the [documentation index](docs/README.md): running instructions,
+measurement methodology, the ExecuTorch optimization workflow, gpu-lab capability
+references, and historical campaign notes.
 
 ## License
 
 Apache-2.0. Third-party code keeps its own license: nlohmann/json (MIT) and the access
 pattern adapted from Google uVkCompute (Apache-2.0); see [NOTICE](NOTICE).
-
-
-Measurement trust: new results record separate pre/post validation (schema v2),
-strict build hashes and unchanged quality gates. Continuous sampling does not check
-every intermediate output. Legacy results remain diagnostic and their confirmed
-configurations can be replayed. Device ownership uses host/user-wide Vulkan UUID
-locks (ADB serial locks), independent of result and staging directories. See
-[methodology](docs/METHODOLOGY.md) and [running](docs/HOW-TO-RUN.md) for coverage,
-calibration and sustained-roof eligibility.
-
-### Targeted anomaly retests and repeat admission
-
-Sentinels now use the same build, validation and timing-quality gates as result
-selection. The first quality-passing probe fixes loop and batch counts for the
-session. Invalid probes are retried at most three times, then stop with
-`paused_probe_invalid` and quarantine the affected interval; they do not establish
-hardware degradation or advance the healthy boundary. A fresh process establishes
-a fresh baseline. Calibration prioritizes fixed cost over the nominal 5 ms target
-and retains a quality floor instead of oscillating between short and long loops.
-
-Confirmation additionally requires `(max - min) / median <= 5%` across all
-quality-passing repeats of that candidate. Existing repeat counts and per-run gates
-are unchanged. Failed groups remain in `confirmation_diagnostics` with their full
-repeat values and reasons; they cannot define roofs, sustained references or replay
-exports. A short-run `confirmed` label from an older report must be reassessed under
-this policy before reuse. Historical raw data is retained.
-
-Shared-bandwidth layouts require `COUNT >= WG * ACC`; write tests require stride 1
-and use disjoint per-lane slots with step-dependent values; rotation stays within each
-thread's slots to avoid cross-subgroup iteration races, followed by synchronized
-neighbour readback. Invalid
-aliasing layouts are omitted; read stride controls retain bank-conflict coverage.
-Replay imports expand formerly undersized allocations subject to the device limit.
-These corrected layouts are not identical-workload comparisons with old results.
-Read iterations also contain a workgroup memory barrier to prevent invariant-load
-reuse; reported read throughput includes that barrier cost. Final machine-code
-verification remains necessary where the driver exposes it.
-
-Texture bandwidth uses one traversal per dispatch, with repetitions implemented as
-independent dispatches separated by memory barriers. Calibration and differential
-timing vary the dispatch count, not an invariant shader loop. Accounting includes
-output writes on every dispatch, and post-validation checks the final traversal.
-The reported bandwidth is still logical traffic: a DRAM-sized working-set label is
-not evidence of physical DRAM traffic, nor is it a hardware-counter measurement.
-
-After runner changes, use a fresh results directory and replay only affected
-configurations. Do not combine old and new builds into one confirmed group or
-promote a partial retest to a full-device result set.

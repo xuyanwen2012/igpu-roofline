@@ -60,7 +60,8 @@ kernels, where fixed cost can exceed half of a dispatch.
 **Warm-up.** Without pinned clocks, a short run inherits the clock state left by the
 previous configuration (observed: the same kernel at 7 GB/s or 33 GB/s depending on
 what ran before). Every configuration therefore runs its own dispatch for a fixed time
-(0.25 s in `quick`, 1 s otherwise) before sampling, and GPU clocks are recorded.
+(0.25 s in `quick`, 0.5 s in `fast`, 1 s in `standard`/`gold`) before sampling,
+and available GPU clocks are recorded.
 
 **Buffers.** Operands live in DEVICE_LOCAL memory that is not host-visible when the
 driver offers such a type; data moves through host-visible staging copies outside
@@ -86,7 +87,8 @@ shapes and component types the driver reports are run.
 
 **Global memory (`mem_*`).** BabelStream's copy, mul (scale), add, triad and dot
 (workgroup tree reduction), plus pure read and pure write; grid-stride, coalesced
-accesses; working sets ≥ 256 MiB define the DRAM roof (larger than any on-chip cache).
+accesses; working sets ≥ 256 MiB qualify for the DRAM-sized roof. This size threshold
+is not proof of physical DRAM traffic or of exceeding every device's cache capacity.
 `_volatile` variants are a control for compiler interference.
 
 **Cache (`sweep-cache`).** The read kernel over working sets from 4 KiB to 512 MiB,
@@ -119,7 +121,8 @@ separately measured roofs.
 **Memory type (`control-memory-type`).** Read, write, copy and triad at 256 MiB with
 DEVICE_LOCAL vs host-visible coherent buffers, arms alternating order, three repeats.
 
-**Sustained.** The confirmed configuration of each roof (see below) runs for 300 s after a cooldown;
+**Sustained.** Selected confirmed configurations run after a cooldown: 120 s for
+three representative roofs in `fast`, or 300 s per roof in `standard`/`gold`;
 the last-60 s median is reported with a steadiness test (halves within 5 %, CV ≤ 10 %)
 and the GPU-timestamp duty cycle. Sustained values replace short-run roofs only with
 at least three distinct batches (`gold`) for every required roof, all stable and
@@ -149,6 +152,13 @@ compute AI, and compare its measured rate to `min(...)`.
 
 ## Roof selection and device state
 
+**One admission policy.** Candidate selection, confirmation, reports, tuning advice,
+supplements and replay export share validation, build and quality checks. Missing
+hashes never match. All planned confirmation repeats must be present; the existing
+allowance of at most one failed repeat remains. Rejected/short/noisy/drifting rows
+remain in raw files and diagnostic CSV with exclusion reasons. An incomplete report
+lists missing evidence instead of implying a sustained or confirmed roof.
+
 **Calibrate, warm up at full size, re-calibrate.** Calibration can increase or decrease
 loops and dispatch batches. The default full-sample target is 5 ms, with 5–7.5 ms
 preferred. Each candidate uses the median of three GPU timings, with at most ten
@@ -158,7 +168,9 @@ bounds and the 256-dispatch batch cap remain in force. Fixed overhead takes prio
 if shortening raises its fraction above 10%, calibration increases loop work again.
 The target never relaxes quality gates. Each round logs its measurement, decision,
 loop/batch counts and stopping reason, including limits or nonconvergence. The usual
-quality gates decide whether the final sample is usable. `calibrate=False`, fixed-step
+quality gates decide whether the final sample is usable. Calibration retains a
+quality floor when reducing loops would violate the fixed-cost gate, rather than
+oscillating around the nominal duration target. `calibrate=False`, fixed-step
 latency and transfer-copy tests retain their original semantics.
 
 The runner then warms up with that
@@ -179,10 +191,18 @@ lists faster results that were gated out and why.
 
 **Confirmation (winner's curse).** A sweep runs hundreds of configurations; its maximum
 is biased upward by noise. The `confirm` stage re-measures the top candidates of every
-roof (quick: 1 x 3, standard/gold: 3 x 5) in fresh processes, round-robin, reversing the
+roof (quick: 1 x 3, fast: 2 x 3, standard/gold: 3 x 5) in fresh processes, round-robin, reversing the
 order every repeat. The roof is the median of the best candidate's repeats; REPORT.md
 shows the repeat range next to the single-run sweep maximum. First-look results are a
-smoke test and never define a roof.
+smoke test and never define a roof. Confirmation additionally requires
+`(max - min) / median <= 5%` across all quality-passing repeats. Failed groups remain
+in `confirmation_diagnostics`, with values and reasons; they cannot supply confirmed
+roofs, sustained references or replay exports. Reassess older confirmation labels
+under the current policy before reuse.
+
+Current reports can still display unconfirmed sweep peaks in short-run plots and
+ridge calculations. Check the confirmation table or `confirmed` field explicitly;
+those diagnostic values are not confirmed optimization baselines.
 
 **Launch grids.** Cooperative-matrix variants of every data type sweep 1 and 4
 subgroups per workgroup and up to 16384 workgroups (output <= 256 MiB); FMA and dot
@@ -225,16 +245,28 @@ RGBA32F; 1 MiB cache-resident and 256 MiB DRAM working sets); only the fetch pat
 differs. Image modes upload through a staging buffer and are not bound by
 `maxStorageBufferRange`; extents follow `maxImageDimension2D/3D`. On the Radeon 780M
 (RADV) DRAM-sized reads ran ~85 GB/s from a buffer but ~44 GB/s (2D) and ~40 GB/s (3D)
-from images; cache-resident reads were close (310–440 GB/s).
+from images; cache-resident reads were close (310–440 GB/s). These are historical
+observations, not results for every later shader build.
 
-**Shared-memory write test.** Every store goes to a distinct address,
-`(l*STRIDE + t*step + k*w) % COUNT` with a runtime `step` (push constant), and stores a
-runtime-uniform value. The first design stored `ACC x loops` times to one slot per lane;
-RADV/ACO folded the whole loop into a single `ds_store` despite SPIR-V `Volatile`
-(verified in the driver-returned ISA), which reported 12-20 TB/s on a Radeon 780M. The
-new form compiles to `ACC` stores per iteration there. Address arithmetic costs about
-two VALU instructions per store, so narrow (scalar) variants can be VALU-bound; the roof
-is the fastest width.
+The current texture test performs one traversal per dispatch. Repetitions are
+independent dispatches separated by memory barriers; calibration and differential
+timing vary the dispatch count rather than an invariant shader loop. Accounting
+includes output writes on every dispatch, and post-validation checks the final
+traversal. A DRAM-sized working set still reports logical traffic, not counters.
+
+**Shared-bandwidth layout and compiler controls.** Layouts require
+`COUNT >= WG * ACC`. Writes require stride 1 and use disjoint per-lane slots,
+rotating within each lane's slots with step-dependent values, followed by a
+synchronized neighbour readback. This avoids cross-subgroup iteration races.
+Invalid aliasing layouts are omitted; read stride controls retain bank-conflict
+coverage. Replay expands formerly undersized allocations subject to device limits.
+These corrected layouts are not identical-workload comparisons with old results.
+
+Read iterations include `memoryBarrierShared()` to prevent invariant-load reuse;
+reported read throughput includes its cost. The original same-slot write loop was
+folded by RADV/ACO into one `ds_store` despite SPIR-V `Volatile`, producing inflated
+rates. Address/value variation and SPIR-V audits are safeguards, but final
+machine-code verification is still necessary where the driver exposes it.
 
 **Timing cross-check.** On the 780M a 0.38 s read sample gave 85.0 GB/s by GPU
 timestamps and 84.7 GB/s by host wall clock (which includes submit/wait), so the
@@ -244,19 +276,38 @@ for the shader copy.
 **Device-state sentinel.** Without a readable GPU clock, a phone can change state
 invisibly: on a Mali-G1 phone the same binary and configuration fell from 3.48 to
 2.2 TFLOP/s hours later, at 35 C with the screen on. A fixed FP32 FMA configuration is
-measured before and after every stage, every 20 configurations inside a stage, and before
-every sustained batch. If it falls below 85 % of the median of the sentinel readings this
-runner has seen on this device, it is re-measured twice; if the median of the three is
+guarded before and after short-run stages and every 20 configurations inside a stage.
+If it falls below 85 % of the median of the valid sentinel readings in the current
+session, it is re-measured twice; if the median of the three is
 still below, the run stops (the fast state scatters ~+-6 %, the slow state is ~35 % lower): every result measured since the last good sentinel is moved
 to `superseded/degraded-<utc>/`, the workflow state becomes `paused_device_degraded`,
 and rerunning the same command after a reboot and cool-down resumes and re-measures
 them. REPORT.md still lists every sentinel reading.
+
+A probe is also recorded before each sustained batch. The current sustained path
+does not run that probe through the short-run Guard's retry/quarantine policy;
+sustained admission relies on its own validation, build, reference and steadiness
+checks. Do not interpret the presence of a sustained probe as a guarded boundary.
+
+Short-run guard probes use the same build, validation and quality gates as result
+selection. The first quality-passing probe fixes loop and batch counts for the
+session; a fresh process establishes a fresh baseline. A check makes at most three
+attempts to obtain a valid probe, then stops with `paused_probe_invalid` and
+quarantines the affected interval. Invalid probes establish unknown health, not
+hardware degradation, and do not advance the healthy boundary.
 
 **Thermal pacing.** On that phone the slow state began while the GPU was at 61-66 C
 under heavy cooperative-matrix load and lasted until reboot. Before every short-run
 configuration the GPU temperature is read from the thermal HAL; above 50 C the run
 waits (up to 10 min) for 45 C. Waits are logged in `pacing.jsonl`. Sustained stages are
 not paced.
+
+**Sentinel boundary reuse.** Only a successful healthy stage-end probe may serve the
+immediately following stage-start check, within five seconds in the same process,
+device and build. Actual measurement, cooling or errors invalidate reuse. First,
+last, every-20-configurations and slowdown rechecks remain actual probes. Reuse logs
+reference the original probe and neither add baseline samples nor advance the last
+healthy timestamp used for quarantine.
 
 ## Limits
 
@@ -274,18 +325,3 @@ microarchitecture through microbenchmarking" (ISPASS 2010); Mei & Chu, "Dissecti
 memory hierarchy through microbenchmarking" (TPDS 2017); Jia et al., "Dissecting the
 NVIDIA Volta GPU architecture via microbenchmarking" (2018); Google uVkCompute;
 clpeak; vkpeak.
-
-
-**One admission policy.** Candidate selection, confirmation, reports, tuning advice,
-supplements and replay export share validation, build and quality checks. Missing
-hashes never match. All planned confirmation repeats must be present; the existing
-allowance of at most one failed repeat remains. Rejected/short/noisy/drifting rows
-remain in raw files and diagnostic CSV with exclusion reasons. An incomplete report
-lists missing evidence instead of implying a sustained or confirmed roof.
-
-**Sentinel boundary reuse.** Only a successful healthy stage-end probe may serve the
-immediately following stage-start check, within five seconds in the same process,
-device and build. Actual measurement, cooling or errors invalidate reuse. First,
-last, every-20-configurations and slowdown rechecks remain actual probes. Reuse logs
-reference the original probe and neither add baseline samples nor advance the last
-healthy timestamp used for quarantine.

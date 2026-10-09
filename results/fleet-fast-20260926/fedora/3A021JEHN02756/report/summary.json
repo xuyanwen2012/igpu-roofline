@@ -1,0 +1,3406 @@
+{
+  "confirmation_diagnostics": [
+    {
+      "roof": "alu_fp16",
+      "config": {
+        "family": "alu",
+        "width": 2,
+        "chains": 8,
+        "dtype": "fp16",
+        "name": "alu_fp16_v2_c8",
+        "shader": "shaders/alu_fp16_v2_c8.spv",
+        "spirv_ledger": {
+          "fma": 128,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 132,
+          "load_Function": 401,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "14367e9ea9ba2f334a9cf68677700607e3e8c40586cdb6eab99871def3f6f20b",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DCHAINS=8",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp16_v2_c8.spv"
+        ],
+        "wg": 256,
+        "groups": 2048,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "alu_fp16",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        1465458935141.9841,
+        1470211737025.0298
+      ],
+      "repeat_spread": 0.003237966661660516,
+      "reasons": []
+    },
+    {
+      "roof": "alu_fp16",
+      "config": {
+        "family": "alu",
+        "width": 2,
+        "chains": 8,
+        "dtype": "fp16",
+        "name": "alu_fp16_v2_c8",
+        "shader": "shaders/alu_fp16_v2_c8.spv",
+        "spirv_ledger": {
+          "fma": 128,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 132,
+          "load_Function": 401,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "14367e9ea9ba2f334a9cf68677700607e3e8c40586cdb6eab99871def3f6f20b",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DCHAINS=8",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp16_v2_c8.spv"
+        ],
+        "wg": 256,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "alu_fp16",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        1473214883500.4229,
+        1471643048320.9683,
+        1464776990724.6597
+      ],
+      "repeat_spread": 0.005733654492772668,
+      "reasons": []
+    },
+    {
+      "roof": "alu_fp32",
+      "config": {
+        "family": "alu",
+        "width": 4,
+        "chains": 4,
+        "dtype": "fp32",
+        "name": "alu_fp32_v4_c4",
+        "shader": "shaders/alu_fp32_v4_c4.spv",
+        "spirv_ledger": {
+          "fma": 64,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 68,
+          "load_Function": 209,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "75c0b9c4e938aa149c868248799c3c2ccaafb679d311db386d7846390620aa17",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=vec4",
+          "-DS=float",
+          "-DCHAINS=4",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp32_v4_c4.spv"
+        ],
+        "wg": 256,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "alu_fp32",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        718449753885.8442,
+        714802945978.7327,
+        719056620589.7909
+      ],
+      "repeat_spread": 0.0059206292270984635,
+      "reasons": []
+    },
+    {
+      "roof": "alu_fp32",
+      "config": {
+        "family": "alu",
+        "width": 4,
+        "chains": 4,
+        "dtype": "fp32",
+        "name": "alu_fp32_v4_c4",
+        "shader": "shaders/alu_fp32_v4_c4.spv",
+        "spirv_ledger": {
+          "fma": 64,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 68,
+          "load_Function": 209,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "75c0b9c4e938aa149c868248799c3c2ccaafb679d311db386d7846390620aa17",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=vec4",
+          "-DS=float",
+          "-DCHAINS=4",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp32_v4_c4.spv"
+        ],
+        "wg": 128,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "alu_fp32",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        711639596926.7327,
+        717640477001.4708,
+        714004049729.4375
+      ],
+      "repeat_spread": 0.008404546272548614,
+      "reasons": []
+    },
+    {
+      "roof": "dot_int8",
+      "config": {
+        "family": "dot",
+        "width": 1,
+        "chains": 4,
+        "dtype": "int8",
+        "dots_per_step": 8,
+        "name": "dot8_c4",
+        "shader": "shaders/dot8_c4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 32,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 4
+        },
+        "spirv_sha256": "0a9d1cdfc07072e7c8762f388f7e3f9d27870d34a089d56eec5292e2d6998aa7",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DCHAINS=4",
+          "-DDOTS=8",
+          "shaders/dot8.comp",
+          "-o",
+          "build/shaders/dot8_c4.spv"
+        ],
+        "wg": 128,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "dot_int8",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 0,
+      "repeat_values": [],
+      "repeat_spread": null,
+      "reasons": [
+        "insufficient_quality_repeats",
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "dot_int8",
+      "config": {
+        "family": "dot",
+        "width": 1,
+        "chains": 8,
+        "dtype": "int8",
+        "dots_per_step": 8,
+        "name": "dot8_c8",
+        "shader": "shaders/dot8_c8.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 64,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 8
+        },
+        "spirv_sha256": "659fa795dc2d4aaa84a3fac0e1ef02aee6275f29d45e9cc548fdcb2b30e9616b",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DCHAINS=8",
+          "-DDOTS=8",
+          "shaders/dot8.comp",
+          "-o",
+          "build/shaders/dot8_c8.spv"
+        ],
+        "wg": 256,
+        "groups": 2048,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "dot_int8",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        1230524272663.5278,
+        1131039314302.4434
+      ],
+      "repeat_spread": 0.08425346572090248,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "memory_fp32_2",
+      "config": {
+        "family": "memory",
+        "op": 2,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_copy_v4",
+        "shader": "shaders/mem_copy_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "bb90617d94f6ce75560c57c2c08e4d10e4f22e3a8ecc11233bbb758fb80d1e14",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=2",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_copy_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 8388608,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "memory_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        62037696530.1823,
+        62712128608.12025,
+        62932751864.60863
+      ],
+      "repeat_spread": 0.014272443852439013,
+      "reasons": []
+    },
+    {
+      "roof": "memory_fp32_2",
+      "config": {
+        "family": "memory",
+        "op": 2,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_copy_v4",
+        "shader": "shaders/mem_copy_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "bb90617d94f6ce75560c57c2c08e4d10e4f22e3a8ecc11233bbb758fb80d1e14",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=2",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_copy_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 16777216,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "memory_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        29420174304.991165,
+        29238376728.755978,
+        29323045975.391373
+      ],
+      "repeat_spread": 0.006199818954270868,
+      "reasons": []
+    },
+    {
+      "roof": "cache_read_effective",
+      "config": {
+        "family": "memory",
+        "op": 0,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_read_v4",
+        "shader": "shaders/mem_read_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 5,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "37c57580b5d326b55e4604620a1bc0685539ed4bb9afe9b4cb8e47e987720cf9",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=0",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_read_v4.spv"
+        ],
+        "wg": 128,
+        "groups": 256,
+        "n": 16384,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicas": 2,
+        "role": "cache",
+        "replicate": 1,
+        "confirm_key": "cache_read_effective",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 1,
+      "repeat_values": [
+        74323665981.28105
+      ],
+      "repeat_spread": 0.0,
+      "reasons": [
+        "insufficient_quality_repeats"
+      ]
+    },
+    {
+      "roof": "cache_read_effective",
+      "config": {
+        "family": "memory",
+        "op": 0,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_read_v4",
+        "shader": "shaders/mem_read_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 5,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "37c57580b5d326b55e4604620a1bc0685539ed4bb9afe9b4cb8e47e987720cf9",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=0",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_read_v4.spv"
+        ],
+        "wg": 128,
+        "groups": 2048,
+        "n": 262144,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicas": 1,
+        "role": "cache",
+        "replicate": 0,
+        "confirm_key": "cache_read_effective",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 1,
+      "repeat_values": [
+        76440420315.67413
+      ],
+      "repeat_spread": 0.0,
+      "reasons": [
+        "insufficient_quality_repeats"
+      ]
+    },
+    {
+      "roof": "memory_fp32_5",
+      "config": {
+        "family": "memory",
+        "op": 5,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_triad_v4",
+        "shader": "shaders/mem_triad_v4.spv",
+        "spirv_ledger": {
+          "fma": 1,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 2,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "5fc961f2e7e253d188ce66f6ad792541fbfab2ac15ca27147fd5b492e5bb1752",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=5",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_triad_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 11184768,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "memory_fp32_5",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        35804611337.368744,
+        35839964766.97314,
+        35856668834.472404
+      ],
+      "repeat_spread": 0.0014524985569079592,
+      "reasons": []
+    },
+    {
+      "roof": "memory_fp32_1",
+      "config": {
+        "family": "memory",
+        "op": 1,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_write_v4",
+        "shader": "shaders/mem_write_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 4,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "63eaf8c956110508e65f948406188c19aa8c8609959d4bc9faeb5c0f6fedbeb3",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=1",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_write_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 16777216,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "memory_fp32_1",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        39750961439.48889,
+        40069177734.09929,
+        40241983472.093056
+      ],
+      "repeat_spread": 0.012254357597817617,
+      "reasons": []
+    },
+    {
+      "roof": "memory_fp32_1",
+      "config": {
+        "family": "memory",
+        "op": 1,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_write_v4",
+        "shader": "shaders/mem_write_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 4,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "63eaf8c956110508e65f948406188c19aa8c8609959d4bc9faeb5c0f6fedbeb3",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=1",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_write_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 33554432,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "memory_fp32_1",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        35235956429.53324,
+        35378291196.13013,
+        35462729776.24407
+      ],
+      "repeat_spread": 0.0064099576051778445,
+      "reasons": []
+    },
+    {
+      "roof": "shared_fp16_2",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 2,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp16_v2_op2",
+        "shader": "shaders/sharedbw_fp16_v2_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "893353519f1a46351f574f6e93872c0e204806cd526eaba1b7e19843694be3fa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v2_op2.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "shared_fp16_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        20346294664.83519,
+        23204576640.6407
+      ],
+      "repeat_spread": 0.1312617584964884,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "shared_fp16_2",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 2,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp16_v2_op2",
+        "shader": "shaders/sharedbw_fp16_v2_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "893353519f1a46351f574f6e93872c0e204806cd526eaba1b7e19843694be3fa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v2_op2.spv"
+        ],
+        "wg": 256,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 8192,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "shared_fp16_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 1,
+      "repeat_values": [
+        26822524626.228848
+      ],
+      "repeat_spread": 0.0,
+      "reasons": [
+        "insufficient_quality_repeats"
+      ]
+    },
+    {
+      "roof": "shared_fp16_0",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 4,
+        "op": 0,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp16_v4_op0",
+        "shader": "shaders/sharedbw_fp16_v4_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "8b428aa9bc29c78a0f6abb163aba4387cdb5d863245093dd2d045168284d2afa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=f16vec4",
+          "-DS=float16_t",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v4_op0.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 512,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "shared_fp16_0",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        33049869345.868217,
+        50896495188.233665
+      ],
+      "repeat_spread": 0.42519115488594,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "shared_fp16_0",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 4,
+        "op": 0,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp16_v4_op0",
+        "shader": "shaders/sharedbw_fp16_v4_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "8b428aa9bc29c78a0f6abb163aba4387cdb5d863245093dd2d045168284d2afa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=f16vec4",
+          "-DS=float16_t",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v4_op0.spv"
+        ],
+        "wg": 256,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 4096,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "shared_fp16_0",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 1,
+      "repeat_values": [
+        68497122391.2157
+      ],
+      "repeat_spread": 0.0,
+      "reasons": [
+        "insufficient_quality_repeats"
+      ]
+    },
+    {
+      "roof": "shared_fp32_0",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 0,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp32_v2_op0",
+        "shader": "shaders/sharedbw_fp32_v2_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "a15c69877a17c6ea00e64995c7dbc15b72d628c6a1636ea86c63e6bc7fdf1885",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=vec2",
+          "-DS=float",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v2_op0.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 512,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "shared_fp32_0",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        31390751078.752895,
+        32072468838.121273,
+        32252780767.734905
+      ],
+      "repeat_spread": 0.02687755948358435,
+      "reasons": []
+    },
+    {
+      "roof": "shared_fp32_2",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 2,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp32_v2_op2",
+        "shader": "shaders/sharedbw_fp32_v2_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "caf521df68a6b05130c3108c34ee937d19a8b4a980fda874260d335a4d4c2c3c",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=vec2",
+          "-DS=float",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v2_op2.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 512,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "shared_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        38370682828.333694,
+        38759576634.10759
+      ],
+      "repeat_spread": 0.010084078764528668,
+      "reasons": []
+    },
+    {
+      "roof": "shared_fp32_0",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 4,
+        "op": 0,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp32_v4_op0",
+        "shader": "shaders/sharedbw_fp32_v4_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "5b197eec59f78084e0c58fea892ef34e03f1f52a76adfa5cbd8c193932ef02bc",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=vec4",
+          "-DS=float",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v4_op0.spv"
+        ],
+        "wg": 128,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 2048,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "shared_fp32_0",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 1,
+      "repeat_values": [
+        55756333544.38577
+      ],
+      "repeat_spread": 0.0,
+      "reasons": [
+        "insufficient_quality_repeats"
+      ]
+    },
+    {
+      "roof": "shared_fp32_2",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 4,
+        "op": 2,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp32_v4_op2",
+        "shader": "shaders/sharedbw_fp32_v4_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "830dad730c3060601b5c98d1e024e5cee4672f952c9a39b69038ca6b3d69114e",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=vec4",
+          "-DS=float",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v4_op2.spv"
+        ],
+        "wg": 256,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 2048,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "shared_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        63143702809.06475,
+        63516323030.61707,
+        72876091388.73822
+      ],
+      "repeat_spread": 0.15322657413562998,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "texture_rgba16f_buffer_cache",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 0,
+        "mode": "buffer",
+        "name": "texture_rgba16f_buffer",
+        "shader": "shaders/texture_rgba16f_buffer.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 1,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "c0ea06cbbd93e503ae36369317cff2cf6f8f9924c2cadde5fcd92834728d44f9",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=0",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_buffer.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 131072,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "texture_rgba16f_buffer_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        35560293366.19351,
+        35601660685.40769,
+        35656939998.267586
+      ],
+      "repeat_spread": 0.0027146664007639126,
+      "reasons": []
+    },
+    {
+      "roof": "texture_rgba16f_tex2d_dram",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 2,
+        "mode": "tex2d",
+        "name": "texture_rgba16f_tex2d",
+        "shader": "shaders/texture_rgba16f_tex2d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 2,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "e7df8b5f824063f8d00bafa69041e073ab9d0f3bd728727e630577e875e6e6cd",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=2",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_tex2d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 33554432,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "texture_rgba16f_tex2d_dram",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 3,
+      "repeat_values": [
+        9218316212.017048,
+        9224648956.284595,
+        9217594928.207157
+      ],
+      "repeat_spread": 0.0007652187140470062,
+      "reasons": []
+    },
+    {
+      "roof": "texture_rgba16f_tex3d_cache",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 3,
+        "mode": "tex3d",
+        "name": "texture_rgba16f_tex3d",
+        "shader": "shaders/texture_rgba16f_tex3d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "3e7327e9ed91790d0b26e8c82933728eacdcf4fed15a31c68dbd0812343c68b5",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=3",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_tex3d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 131072,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "texture_rgba16f_tex3d_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        24548476169.377937,
+        34534755057.44526
+      ],
+      "repeat_spread": 0.33804105431300957,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    },
+    {
+      "roof": "texture_rgba32f_tex3d_cache",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp32",
+        "format": "rgba32f",
+        "tex_dim": 3,
+        "mode": "tex3d",
+        "name": "texture_rgba32f_tex3d",
+        "shader": "shaders/texture_rgba32f_tex3d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "3e7327e9ed91790d0b26e8c82933728eacdcf4fed15a31c68dbd0812343c68b5",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=3",
+          "-DTEXEL=vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba32f_tex3d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 65536,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "texture_rgba32f_tex3d_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "attempts": 3,
+      "eligible_repeats": 2,
+      "repeat_values": [
+        24048672488.661964,
+        34354617782.588646
+      ],
+      "repeat_spread": 0.3529234481845571,
+      "reasons": [
+        "repeat_unstable"
+      ]
+    }
+  ],
+  "repeat_spread_limit": 0.05,
+  "device": "Mali-G710",
+  "serial": "3A021JEHN02756",
+  "plans": [
+    "fast"
+  ],
+  "roof_basis": "short-run",
+  "sentinel": {
+    "config": "alu_fp32_v4_c16 wg256 groups512",
+    "unit": "TFLOP/s",
+    "median": 0.637433362410765,
+    "degraded_below": 0.5418183580491502,
+    "timeline": [
+      {
+        "utc": "2026-09-26T17:51:32.930125+00:00",
+        "label": "validate_start",
+        "value": 0.6368845631546787,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:51:52.017858+00:00",
+        "label": "validate_end",
+        "value": 0.6368694442093711,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:52:51.981663+00:00",
+        "label": "cache_end",
+        "value": 0.6376575927642236,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:53:04.325734+00:00",
+        "label": "sweep-memory_20",
+        "value": 0.6371850750606072,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:53:37.979879+00:00",
+        "label": "memory_end",
+        "value": 0.6377030640939392,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:54:24.531000+00:00",
+        "label": "sweep-compute_40_quality_retry2",
+        "value": 0.6392641276274165,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:55:35.181812+00:00",
+        "label": "sweep-compute_60",
+        "value": 0.635323049121823,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:56:56.417855+00:00",
+        "label": "sweep-compute_80",
+        "value": 0.6374889002793652,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T17:58:40.780603+00:00",
+        "label": "sweep-compute_100",
+        "value": 0.63695714408551,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:00:32.322504+00:00",
+        "label": "sweep-compute_120",
+        "value": 0.636730383585046,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:02:52.759441+00:00",
+        "label": "sweep-compute_140",
+        "value": 0.6367726999546689,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:04:41.058664+00:00",
+        "label": "sweep-compute_160",
+        "value": 0.6375000090144335,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:04:53.897061+00:00",
+        "label": "compute_end_quality_retry1",
+        "value": 0.6368996828178349,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:05:37.098464+00:00",
+        "label": "texture_end",
+        "value": 0.6356180730769811,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:05:57.235383+00:00",
+        "label": "sweep-shared_180",
+        "value": 0.6381682543758398,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:06:57.377457+00:00",
+        "label": "sweep-shared_200",
+        "value": 0.6375707100368551,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:07:58.586229+00:00",
+        "label": "sweep-shared_220",
+        "value": 0.637433362410765,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:08:35.862835+00:00",
+        "label": "shared_end_quality_retry1",
+        "value": 0.6354745408139016,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:09:42.649735+00:00",
+        "label": "latency-capacity_240",
+        "value": 0.6369601686499691,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:09:45.656758+00:00",
+        "label": "latency_end",
+        "value": 0.6375303075324921,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:11:12.971417+00:00",
+        "label": "confirm_260",
+        "value": 0.6397183785177123,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:12:22.646587+00:00",
+        "label": "confirm_280",
+        "value": 0.6375434377847361,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:14:08.839640+00:00",
+        "label": "confirm_300",
+        "value": 0.6347848852042548,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:15:01.060198+00:00",
+        "label": "confirm_end",
+        "value": 0.6376454681714645,
+        "degraded": false
+      },
+      {
+        "utc": "2026-09-26T18:15:04.091139+00:00",
+        "label": "sustain_0",
+        "value": 0.6378395170021098,
+        "degraded": false
+      }
+    ]
+  },
+  "stale_rows_excluded": 0,
+  "excluded_rows": {
+    "confirm/alu_fp16_v2_c8_925d21e6fd2d.json": [
+      "drifting"
+    ],
+    "confirm/dot8_c4_138bcba804a4.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "confirm/dot8_c4_1be73a6c5a58.json": [
+      "drifting"
+    ],
+    "confirm/dot8_c4_c078902226ea.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "confirm/dot8_c8_7a14ce714545.json": [
+      "drifting"
+    ],
+    "confirm/mem_read_v4_5eb4d160fdb8.json": [
+      "drifting"
+    ],
+    "confirm/mem_read_v4_685adce0b8b0.json": [
+      "drifting"
+    ],
+    "confirm/mem_read_v4_898837b3134e.json": [
+      "warmup_unsteady"
+    ],
+    "confirm/mem_read_v4_f51513531a9c.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "confirm/sharedbw_fp16_v2_op2_92c49a8c9daa.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp16_v2_op2_a9415ac633fe.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp16_v2_op2_e468be7029f3.json": [
+      "warmup_unsteady"
+    ],
+    "confirm/sharedbw_fp16_v4_op0_bb94fdb7a3ac.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp16_v4_op0_d7d41d158cc1.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp16_v4_op0_d9f71568e1dd.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp32_v2_op2_23c3298ae521.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp32_v4_op0_57c2e873723c.json": [
+      "drifting"
+    ],
+    "confirm/sharedbw_fp32_v4_op0_fc0fba0aa704.json": [
+      "drifting"
+    ],
+    "confirm/texture_rgba16f_tex3d_5f555bcfb2c6.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "confirm/texture_rgba32f_tex3d_8193b090fd69.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "latency-capacity/pchase_0b16733a3678.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "latency-capacity/pchase_2035704720f6.json": [
+      "warmup_unsteady"
+    ],
+    "latency-capacity/pchase_4ea784044921.json": [
+      "warmup_unsteady"
+    ],
+    "latency-capacity/pchase_5a8463950626.json": [
+      "warmup_unsteady"
+    ],
+    "latency-capacity/pchase_a68dbc74937f.json": [
+      "noisy_median",
+      "fixed_cost",
+      "warmup_unsteady",
+      "drifting"
+    ],
+    "latency-capacity/pchase_e46868918c34.json": [
+      "warmup_unsteady"
+    ],
+    "latency-capacity/pchase_f3dd164d8495.json": [
+      "fixed_cost",
+      "warmup_unsteady"
+    ],
+    "latency-capacity/pchase_fdebe8f22f2d.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "probe/alu_fp32_v4_c16_3d8588e01ec2.json": [
+      "drifting"
+    ],
+    "probe/alu_fp32_v4_c16_498cea272322.json": [
+      "drifting"
+    ],
+    "probe/alu_fp32_v4_c16_65fb9c3c3154.json": [
+      "drifting"
+    ],
+    "probe/alu_fp32_v4_c16_d5cd0ebfd9c2.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_0b53ea91e5c8.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_142cc36fb671.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_1e15a6278cc2.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_246671183847.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_43a9e9b0622b.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_be2de0e238cf.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_d46ff7388b3b.json": [
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_d6c32c15f577.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_f29d132d99a1.json": [
+      "noisy_median"
+    ],
+    "sweep-cache/mem_read_v4_f7b028f866c5.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-cache/mem_read_v4_fc55d683db22.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c16_dc40b688d190.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c1_3e52b4a4fa57.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c1_95126b26c6a9.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v1_c2_372831db7ee5.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c2_7b35405590c9.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c2_889d6c7a46f1.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c2_ded608f1514c.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c4_4b0519e04ca7.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c4_ab23bf27ff1c.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c4_bee028973773.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c4_c4b76a7374a2.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c8_142cea102c2c.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v1_c8_e47a57fef275.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c16_3cf3fc043b57.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v2_c16_a1912eb74b54.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c1_0d561081e6d9.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c1_21e5a167ef09.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c1_a065cc19fb6a.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v2_c2_1e5d9b9b2c1c.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c2_4c6ce641109b.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c2_5134cefc8384.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c4_8663333ed397.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v2_c4_a4cc19766294.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v2_c4_abfb64272c6c.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c16_b4746065b94d.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v4_c1_2322cc4bf8f8.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v4_c1_900de736b429.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c1_d03efd0d79a5.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c2_3d7da40174cf.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp16_v4_c2_71f3499311cc.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c2_e387da78213d.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c2_e552198f7c8a.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp16_v4_c4_4cc6f4ef00e4.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c16_9e1da3ee2e00.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c16_cdc17d8e9299.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c1_2c4eb28bf780.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c1_4fcb21fae0f6.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c1_eb901da35093.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c1_fee0d35423d6.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c2_480018469405.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c2_f61e8e27fc0d.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c4_f02bc6bf547f.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c4_f5c46da47a6e.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c8_4cc88ec2110d.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v1_c8_bbd5ccba3f0f.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c16_0bfabfb15f61.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c1_387fdb68d1fa.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c1_a242de58ee15.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c1_b7078c2ba265.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c1_ba4467165d03.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c2_6d528b2c9201.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c2_8e4ab128e591.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c2_d27bff80f370.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c2_d757a3f40dd4.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c4_025078fbf70f.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c4_1ff54a3548b1.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c4_7b8d470a6900.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v2_c8_7109a53a62f5.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c1_68bdfa4ac1a8.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c1_7e0835cbf957.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/alu_fp32_v4_c1_ab57f6f0b34d.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c1_aee4471093bf.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c2_7401288e9394.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c2_cae108fbfb8d.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c2_f4a7e34c5ac5.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c4_76b094dcdde5.json": [
+      "drifting"
+    ],
+    "sweep-compute/alu_fp32_v4_c8_5b1d0f2d937d.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c1_871eac5d1052.json": [
+      "fixed_cost"
+    ],
+    "sweep-compute/dot8_c1_94e72fdb60ec.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c1_ed40c89f2e55.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c2_0e184378e0a9.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c4_0047f1872010.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c4_b272f9160c18.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-compute/dot8_c8_01f2ab6b42cc.json": [
+      "drifting"
+    ],
+    "sweep-compute/dot8_c8_af64511e6a93.json": [
+      "drifting"
+    ],
+    "sweep-memory/mem_read_v4_db4fe26c25fc.json": [
+      "noisy_median"
+    ],
+    "sweep-memory/mem_read_v4_e182dab479ad.json": [
+      "noisy_median"
+    ],
+    "sweep-memory/mem_triad_v4_59fe4a6053ed.json": [
+      "noisy_median"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_5e53fc52a6d2.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_762866b32fe4.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_8b4a75198e3f.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_9a42f65cc671.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_acc32_b72266261042.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v2_op0_ef95e71ecfdd.json": [
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_2c87352cb867.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_33612fb53785.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_91c55ec2ec3b.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_9f8fab5db322.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_acc32_6431574af5a0.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op0_acc32_e4a95172b601.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op2_20afb161ae71.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op2_27bd6ed9b3ff.json": [
+      "warmup_unsteady"
+    ],
+    "sweep-shared/sharedbw_fp16_v4_op2_d893bc87d212.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op0_a1fd8b229ef1.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op0_acc32_0c3049794b63.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op0_acc32_2588e2dfe6d1.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op0_e332c33ff8ce.json": [
+      "fixed_cost"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op2_08922ca6bd98.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op2_23caca398482.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v2_op2_b4672ff5df7a.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v4_op0_3080468b3c6b.json": [
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v4_op0_7ba350c1d1d1.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-shared/sharedbw_fp32_v4_op0_80ec612703d7.json": [
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba16f_buffer_9516b217fec1.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba16f_tex2d_d032897cb9d9.json": [
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba16f_tex3d_b0ddaef2b076.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba32f_buffer_9d98639bfc0b.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba32f_buffer_cf6790a9e786.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba32f_tex2d_1ced89d2d959.json": [
+      "noisy_median"
+    ],
+    "sweep-texture/texture_rgba32f_tex2d_55a33bc8ce67.json": [
+      "noisy_median",
+      "drifting"
+    ],
+    "sweep-texture/texture_rgba32f_tex3d_7474f95ba9a2.json": [
+      "noisy_median",
+      "fixed_cost",
+      "drifting"
+    ],
+    "validate/alu_fp16_v2_c4_b5f2e3abff6c.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/alu_fp32_v1_c4_a6cc442c3447.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/alu_fp32_v4_c4_fed968d02ffb.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/dot8_c4_a22e52fa9d3c.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/ert_f1_a2748c9a6331.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/ert_f64_561e143d8816.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_add_v4_829ad5678264.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_copy_v4_3a5e935308a8.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_copy_v4_b30746bef306.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_copy_v4_volatile_a9ed29e53292.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_dot_v4_8ace4afaf734.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_read_v4_d3c2bf7a0363.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_scale_v4_01cc0da271de.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_triad_v4_5228d204c756.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/mem_write_v4_ea6c4a3a95b4.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/pchase_fcf0b74131e9.json": [
+      "noisy_median",
+      "short",
+      "fixed_cost"
+    ],
+    "validate/shared_fp32_v4_op0_xlanes_volatile_f1091c5d40d5.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/shared_fp32_v4_op1_xlanes_volatile_2a192f3961b8.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/sharedbw_fp16_v1_op2_e59d98b303d8.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/sharedbw_fp16_v4_op0_73d7a510f7a4.json": [
+      "short",
+      "fixed_cost"
+    ],
+    "validate/sharedbw_fp32_v4_op0_bc7c99f3be8f.json": [
+      "noisy_median",
+      "short"
+    ],
+    "validate/sharedbw_fp32_v4_op2_19a2ade8c527.json": [
+      "short"
+    ]
+  },
+  "validation_scope": "pre_and_post",
+  "missing_reasons": [
+    "dot_int8: insufficient_quality_repeats, repeat_unstable",
+    "dot_int8: repeat_unstable",
+    "cache_read_effective: insufficient_quality_repeats",
+    "cache_read_effective: insufficient_quality_repeats",
+    "shared_fp16_2: repeat_unstable",
+    "shared_fp16_2: insufficient_quality_repeats",
+    "shared_fp16_0: repeat_unstable",
+    "shared_fp16_0: insufficient_quality_repeats",
+    "shared_fp32_0: insufficient_quality_repeats",
+    "shared_fp32_2: repeat_unstable",
+    "texture_rgba16f_tex3d_cache: repeat_unstable",
+    "texture_rgba32f_tex3d_cache: repeat_unstable",
+    "Sustained roofs require three distinct stable batches per current confirmed configuration and duration"
+  ],
+  "clock_state": {
+    "domains": {
+      "/sys/class/misc/mali0/device": {
+        "governor": null,
+        "min": null,
+        "max": null,
+        "cur": "202000"
+      }
+    },
+    "pinned_domains": [],
+    "captured_utc": "2026-09-26T17:50:58.346907+00:00"
+  },
+  "short_run": {
+    "alu_fp16": {
+      "value": 1.4716430483209684,
+      "best": 1.4774120750527961,
+      "unit": "TFLOP/s",
+      "source": "confirm/alu_fp16_v2_c8_6cb17b42aab0.json",
+      "config": {
+        "family": "alu",
+        "width": 2,
+        "chains": 8,
+        "dtype": "fp16",
+        "name": "alu_fp16_v2_c8",
+        "shader": "shaders/alu_fp16_v2_c8.spv",
+        "spirv_ledger": {
+          "fma": 128,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 132,
+          "load_Function": 401,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "14367e9ea9ba2f334a9cf68677700607e3e8c40586cdb6eab99871def3f6f20b",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DCHAINS=8",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp16_v2_c8.spv"
+        ],
+        "wg": 256,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "alu_fp16",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.004532403884967791,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 1.488751409473101,
+      "fixed_fraction": 0.011491751439004643,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 1.4647769907246597,
+      "repeat_max": 1.4732148835004228,
+      "repeat_spread": 0.005733654492772626,
+      "sweep_best_unconfirmed": 1.4723364811434585
+    },
+    "alu_fp32": {
+      "value": 0.7184497538858442,
+      "best": 0.7265051909253968,
+      "unit": "TFLOP/s",
+      "source": "confirm/alu_fp32_v4_c4_0c69c4884185.json",
+      "config": {
+        "family": "alu",
+        "width": 4,
+        "chains": 4,
+        "dtype": "fp32",
+        "name": "alu_fp32_v4_c4",
+        "shader": "shaders/alu_fp32_v4_c4.spv",
+        "spirv_ledger": {
+          "fma": 64,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "store_Function": 68,
+          "load_Function": 209,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 16
+        },
+        "spirv_sha256": "75c0b9c4e938aa149c868248799c3c2ccaafb679d311db386d7846390620aa17",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=vec4",
+          "-DS=float",
+          "-DCHAINS=4",
+          "shaders/alu.comp",
+          "-o",
+          "build/shaders/alu_fp32_v4_c4.spv"
+        ],
+        "wg": 256,
+        "groups": 8192,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "alu_fp32",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.007464320096193888,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 0.7893327606729987,
+      "fixed_fraction": 0.08980117172220049,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 0.7148029459787326,
+      "repeat_max": 0.7190566205897909,
+      "repeat_spread": 0.005920629227098565,
+      "sweep_best_unconfirmed": 0.71549184270463
+    },
+    "global_copy": {
+      "value": 62.712128608120246,
+      "best": 63.53166943557996,
+      "unit": "GB/s",
+      "source": "confirm/mem_copy_v4_8e80d4f362bd.json",
+      "config": {
+        "family": "memory",
+        "op": 2,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_copy_v4",
+        "shader": "shaders/mem_copy_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "bb90617d94f6ce75560c57c2c08e4d10e4f22e3a8ecc11233bbb758fb80d1e14",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=2",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_copy_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 8388608,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "memory_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.008417048197525905,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 68.05763434971378,
+      "fixed_fraction": 0.07854380765169826,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 62.037696530182295,
+      "repeat_max": 62.932751864608626,
+      "repeat_spread": 0.014272443852439023,
+      "sweep_best_unconfirmed": 62.29023271215473
+    },
+    "global_triad": {
+      "value": 35.83996476697314,
+      "best": 36.28502775356577,
+      "unit": "GB/s",
+      "source": "confirm/mem_triad_v4_5777f85afd09.json",
+      "config": {
+        "family": "memory",
+        "op": 5,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_triad_v4",
+        "shader": "shaders/mem_triad_v4.spv",
+        "spirv_ledger": {
+          "fma": 1,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_StorageBuffer": 2,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "5fc961f2e7e253d188ce66f6ad792541fbfab2ac15ca27147fd5b492e5bb1752",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=5",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_triad_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 11184768,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "memory_fp32_5",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.07075746883281982,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 39.03160843622788,
+      "fixed_fraction": 0.0817707442025976,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 35.80461133736874,
+      "repeat_max": 35.8566688344724,
+      "repeat_spread": 0.0014524985569079685,
+      "sweep_best_unconfirmed": 43.729305944414044
+    },
+    "global_write": {
+      "value": 40.06917773409929,
+      "best": 41.50261903801741,
+      "unit": "GB/s",
+      "source": "confirm/mem_write_v4_af67fa59731a.json",
+      "config": {
+        "family": "memory",
+        "op": 1,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_write_v4",
+        "shader": "shaders/mem_write_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 4,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "63eaf8c956110508e65f948406188c19aa8c8609959d4bc9faeb5c0f6fedbeb3",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=1",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_write_v4.spv"
+        ],
+        "wg": 64,
+        "groups": 4096,
+        "n": 16777216,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "memory_fp32_1",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.01465699547134495,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 43.64931096413593,
+      "fixed_fraction": 0.08202038362021839,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 39.75096143948889,
+      "repeat_max": 40.241983472093054,
+      "repeat_spread": 0.01225435759781761,
+      "sweep_best_unconfirmed": 42.542434898342314
+    },
+    "shared_fp32_read": {
+      "value": 32.072468838121274,
+      "best": 35.349523965286224,
+      "unit": "GB/s",
+      "source": "confirm/sharedbw_fp32_v2_op0_24066c1e2c4b.json",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 0,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp32_v2_op0",
+        "shader": "shaders/sharedbw_fp32_v2_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "a15c69877a17c6ea00e64995c7dbc15b72d628c6a1636ea86c63e6bc7fdf1885",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=vec2",
+          "-DS=float",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v2_op0.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 512,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 2,
+        "confirm_key": "shared_fp32_0",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.03315127579616236,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 32.162232424733666,
+      "fixed_fraction": 0.002790962562143622,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 31.390751078752896,
+      "repeat_max": 32.252780767734905,
+      "repeat_spread": 0.026877559483584317,
+      "sweep_best_unconfirmed": 62.996937344422754
+    },
+    "shared_fp32_write": {
+      "value": 38.565129731220644,
+      "best": 39.78835208649915,
+      "unit": "GB/s",
+      "source": "confirm/sharedbw_fp32_v2_op2_1cf8e915eae7.json",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 2,
+        "dtype": "fp32",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp32_v2_op2",
+        "shader": "shaders/sharedbw_fp32_v2_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "caf521df68a6b05130c3108c34ee937d19a8b4a980fda874260d335a4d4c2c3c",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=vec2",
+          "-DS=float",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp32_v2_op2.spv"
+        ],
+        "wg": 64,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 512,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "shared_fp32_2",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.027583694620479764,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 38.992197869168706,
+      "fixed_fraction": 0.01593947186358665,
+      "confirmed": true,
+      "repeats": 2,
+      "repeat_min": 38.37068282833369,
+      "repeat_max": 38.75957663410759,
+      "repeat_spread": 0.01008407876452871,
+      "sweep_best_unconfirmed": 56.28148051911807
+    },
+    "texture_rgba16f_buffer_cache": {
+      "value": 35.601660685407694,
+      "best": 36.444547297599684,
+      "unit": "GB/s",
+      "source": "confirm/texture_rgba16f_buffer_4d2fde44ebb9.json",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 0,
+        "mode": "buffer",
+        "name": "texture_rgba16f_buffer",
+        "shader": "shaders/texture_rgba16f_buffer.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 1,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "c0ea06cbbd93e503ae36369317cff2cf6f8f9924c2cadde5fcd92834728d44f9",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=0",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_buffer.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 131072,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 0,
+        "confirm_key": "texture_rgba16f_buffer_cache",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.008003597383297166,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 35.3666465247269,
+      "fixed_fraction": -0.006645079015803156,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 35.56029336619351,
+      "repeat_max": 35.65693999826759,
+      "repeat_spread": 0.0027146664007639864,
+      "sweep_best_unconfirmed": 35.51839778801256
+    },
+    "texture_rgba16f_tex2d_dram": {
+      "value": 9.218316212017047,
+      "best": 9.237608407129098,
+      "unit": "GB/s",
+      "source": "confirm/texture_rgba16f_tex2d_e2f004a8e3ab.json",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 2,
+        "mode": "tex2d",
+        "name": "texture_rgba16f_tex2d",
+        "shader": "shaders/texture_rgba16f_tex2d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 2,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "e7df8b5f824063f8d00bafa69041e073ab9d0f3bd728727e630577e875e6e6cd",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=2",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_tex2d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 33554432,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicate": 1,
+        "confirm_key": "texture_rgba16f_tex2d_dram",
+        "calibrate": true,
+        "confirmation_reps": 3
+      },
+      "cv": 0.038158740042557385,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 9.224418301517062,
+      "fixed_fraction": 0.0006615148295053335,
+      "confirmed": true,
+      "repeats": 3,
+      "repeat_min": 9.217594928207157,
+      "repeat_max": 9.224648956284595,
+      "repeat_spread": 0.0007652187140469005,
+      "sweep_best_unconfirmed": 9.209686400502273
+    },
+    "cache_read_effective": {
+      "value": 94.85554234691736,
+      "best": 95.38616391442478,
+      "unit": "GB/s",
+      "source": "sweep-cache/mem_read_v4_3ec61b13fcad.json",
+      "config": {
+        "family": "memory",
+        "op": 0,
+        "width": 4,
+        "dtype": "fp32",
+        "name": "mem_read_v4",
+        "shader": "shaders/mem_read_v4.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 5,
+          "load_StorageBuffer": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "37c57580b5d326b55e4604620a1bc0685539ed4bb9afe9b4cb8e47e987720cf9",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DOP=0",
+          "shaders/memory.comp",
+          "-o",
+          "build/shaders/mem_read_v4.spv"
+        ],
+        "wg": 128,
+        "groups": 2048,
+        "n": 262144,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5,
+        "replicas": 1,
+        "role": "cache"
+      },
+      "cv": 0.0036988364111800814,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 98.47563478809997,
+      "fixed_fraction": 0.03676130089409753
+    },
+    "dot_int8": {
+      "value": 1.225215277513363,
+      "best": 1.3286851820363914,
+      "unit": "TOP/s",
+      "source": "sweep-compute/dot8_c8_485aafa5f724.json",
+      "config": {
+        "family": "dot",
+        "width": 1,
+        "chains": 8,
+        "dtype": "int8",
+        "dots_per_step": 8,
+        "name": "dot8_c8",
+        "shader": "shaders/dot8_c8.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 64,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 1,
+          "load_StorageBuffer": 2,
+          "load_PushConstant": 1,
+          "store_StorageBuffer": 8
+        },
+        "spirv_sha256": "659fa795dc2d4aaa84a3fac0e1ef02aee6275f29d45e9cc548fdcb2b30e9616b",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DCHAINS=8",
+          "-DDOTS=8",
+          "shaders/dot8.comp",
+          "-o",
+          "build/shaders/dot8_c8.spv"
+        ],
+        "wg": 256,
+        "groups": 2048,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5
+      },
+      "cv": 0.02837002456737077,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 1.2903943763470005,
+      "fixed_fraction": 0.05051099108022637
+    },
+    "shared_fp16_read": {
+      "value": 51.47091207027813,
+      "best": 54.5082067391828,
+      "unit": "GB/s",
+      "source": "sweep-shared/sharedbw_fp16_v4_op0_f5efd0eefeb8.json",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 4,
+        "op": 0,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": true,
+        "name": "sharedbw_fp16_v4_op0",
+        "shader": "shaders/sharedbw_fp16_v4_op0.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_StorageBuffer": 1,
+          "store_Function": 10,
+          "load_Function": 10,
+          "store_Workgroup": 1,
+          "load_PushConstant": 1,
+          "load_Workgroup": 8,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "8b428aa9bc29c78a0f6abb163aba4387cdb5d863245093dd2d045168284d2afa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=4",
+          "-DT=f16vec4",
+          "-DS=float16_t",
+          "-DOP=0",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v4_op0.spv"
+        ],
+        "wg": 256,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 4096,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5
+      },
+      "cv": 0.03064769303448394,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 56.39950817673993,
+      "fixed_fraction": 0.0873872178285135
+    },
+    "shared_fp16_write": {
+      "value": 28.251139107775217,
+      "best": 28.364404594327187,
+      "unit": "GB/s",
+      "source": "sweep-shared/sharedbw_fp16_v2_op2_5640295725e7.json",
+      "config": {
+        "family": "shared",
+        "kind": "bw",
+        "width": 2,
+        "op": 2,
+        "dtype": "fp16",
+        "accumulators": 8,
+        "cross_lane_producer": true,
+        "volatile_workgroup": true,
+        "read_memory_barrier": false,
+        "name": "sharedbw_fp16_v2_op2",
+        "shader": "shaders/sharedbw_fp16_v2_op2.spv",
+        "volatile_workgroup_accesses": 9,
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 1,
+          "volatile": 9,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "store_Workgroup": 8,
+          "load_Workgroup": 1,
+          "store_Function": 1,
+          "load_Function": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "893353519f1a46351f574f6e93872c0e204806cd526eaba1b7e19843694be3fa",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DWIDTH=2",
+          "-DT=f16vec2",
+          "-DS=float16_t",
+          "-DOP=2",
+          "-DACC=8",
+          "shaders/shared_bw.comp",
+          "-o",
+          "build/shaders/sharedbw_fp16_v2_op2.spv"
+        ],
+        "wg": 256,
+        "groups": 256,
+        "n": 1024,
+        "loops": 128,
+        "samples": 21,
+        "shared_count": 8192,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5
+      },
+      "cv": 0.045245067757846764,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 28.97119309010021,
+      "fixed_fraction": 0.024854136316914285
+    },
+    "texture_rgba16f_tex3d_cache": {
+      "value": 34.60967868421297,
+      "best": 34.75902040039609,
+      "unit": "GB/s",
+      "source": "sweep-texture/texture_rgba16f_tex3d_e6ab9cdf4250.json",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp16",
+        "format": "rgba16f",
+        "tex_dim": 3,
+        "mode": "tex3d",
+        "name": "texture_rgba16f_tex3d",
+        "shader": "shaders/texture_rgba16f_tex3d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "3e7327e9ed91790d0b26e8c82933728eacdcf4fed15a31c68dbd0812343c68b5",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=3",
+          "-DTEXEL=f16vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba16f_tex3d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 131072,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5
+      },
+      "cv": 0.0014522039587277524,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 34.32243448031322,
+      "fixed_fraction": -0.008368992708384735
+    },
+    "texture_rgba32f_tex3d_cache": {
+      "value": 34.36759916334786,
+      "best": 34.54828512484149,
+      "unit": "GB/s",
+      "source": "sweep-texture/texture_rgba32f_tex3d_2e44034d4aee.json",
+      "config": {
+        "family": "texture",
+        "width": 4,
+        "dtype": "fp32",
+        "format": "rgba32f",
+        "tex_dim": 3,
+        "mode": "tex3d",
+        "name": "texture_rgba32f_tex3d",
+        "shader": "shaders/texture_rgba32f_tex3d.spv",
+        "spirv_ledger": {
+          "fma": 0,
+          "dot": 0,
+          "coopmat_muladd": 0,
+          "coopmat_load": 0,
+          "control_barrier": 0,
+          "volatile": 0,
+          "load_Input": 2,
+          "load_PushConstant": 3,
+          "load_UniformConstant": 1,
+          "image_fetch": 1,
+          "store_StorageBuffer": 1
+        },
+        "spirv_sha256": "3e7327e9ed91790d0b26e8c82933728eacdcf4fed15a31c68dbd0812343c68b5",
+        "compile_command": [
+          "glslc",
+          "--target-env=vulkan1.3",
+          "-O",
+          "-DTEX=3",
+          "-DTEXEL=vec4",
+          "shaders/texture.comp",
+          "-o",
+          "build/shaders/texture_rgba32f_tex3d.spv"
+        ],
+        "wg": 256,
+        "groups": 4096,
+        "n": 65536,
+        "loops": 1,
+        "samples": 21,
+        "shared_count": 1024,
+        "stride": 1,
+        "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694",
+        "schema_version": 2,
+        "warmup_seconds": 0.5
+      },
+      "cv": 0.0018824203804738249,
+      "samples": 21,
+      "driver_reports_spill": false,
+      "memory": "device_local",
+      "differential": 33.96634924935716,
+      "fixed_fraction": -0.011813159873173754
+    }
+  },
+  "sustained": {
+    "alu_fp16": {
+      "value": 1.472283191755581,
+      "unit": "TFLOP/s",
+      "batches": 1,
+      "all_steady": true,
+      "duration_seconds": 120,
+      "values": [
+        1.472283191755581
+      ],
+      "gpu_duty_fractions": [
+        0.980911812138416
+      ],
+      "sources": [
+        "sustain-0/alu_fp16_v2_c8_a59bcf386236.json"
+      ]
+    }
+  },
+  "ridges": {
+    "short_run": {
+      "global": {
+        "alu_fp16": 23.46664163669312,
+        "alu_fp32": 11.456312675580527,
+        "dot_int8": 19.53713427859498
+      },
+      "cache": {
+        "alu_fp16": 15.514571019357986,
+        "alu_fp32": 7.574146287185217,
+        "dot_int8": 12.916644058945495
+      },
+      "shared_fp32": {
+        "alu_fp16": 38.15994030300358,
+        "alu_fp32": 18.629517361748135,
+        "dot_int8": 31.77002867752529
+      },
+      "shared_fp16": {
+        "alu_fp16": 28.591742192397795,
+        "alu_fp32": 13.958364540050823,
+        "dot_int8": 23.80403276787596
+      }
+    },
+    "roofs": {
+      "global": {
+        "alu_fp16": 23.46664163669312,
+        "alu_fp32": 11.456312675580527,
+        "dot_int8": 19.53713427859498
+      },
+      "cache": {
+        "alu_fp16": 15.514571019357986,
+        "alu_fp32": 7.574146287185217,
+        "dot_int8": 12.916644058945495
+      },
+      "shared_fp32": {
+        "alu_fp16": 38.15994030300358,
+        "alu_fp32": 18.629517361748135,
+        "dot_int8": 31.77002867752529
+      },
+      "shared_fp16": {
+        "alu_fp16": 28.591742192397795,
+        "alu_fp32": 13.958364540050823,
+        "dot_int8": 23.80403276787596
+      }
+    }
+  },
+  "physical_dram_bandwidth": null,
+  "physical_cache_bandwidth": null,
+  "matrix_feed_by_reuse": [],
+  "git_commit": null,
+  "runner_sha256": "ec26df94490ba8a6361a51befd0a73ff7258a836e20f1f9ccfc5595021d34694"
+}

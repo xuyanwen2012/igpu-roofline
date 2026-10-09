@@ -1,11 +1,19 @@
-# Device fleet
+# Roofline fleet history
 
-Every device the suite runs on or has probed: hardware, driver, where it is connected, and
-which roofs it can have. Per-device measurement notes and known issues are in
+Historical devices and driver queries from roofline campaigns, primarily
+2026-09-21 through 2026-09-23. Connection, root and driver fields below describe
+those records; they are not the current access registry. For current routing use
+[gpu-lab's registry](../../gpu-lab/gpus.toml), for capabilities use its
+[compute inventory](../../gpu-lab/docs/compute-capabilities.md), and verify live
+state before measuring. In particular, gpu-lab subsequently records S24+ and
+Pixel 7a on Fedora and Pixel 7a rooted.
+
+Per-device measurement notes and known issues are in
 [CLAUDE.md](../CLAUDE.md#devices). Full cooperative-matrix shape lists are in
 [COOPMAT-SHAPES.md](COOPMAT-SHAPES.md).
+RX 7900 XTX and RX 7600 shapes are in [the extra-devices snapshot](reports/data/cooperative-matrices-extra-2026-09-28.json) and [the atlas](reports/wmma-shape-atlas.html).
 
-## Overview
+## Historical overview
 
 | device | serial | SoC | GPU | driver | Vulkan | subgroup | WMMA | root | connected to |
 |---|---|---|---|---|---|---|---|---|---|
@@ -75,7 +83,11 @@ that neither driver exposes any `cooperative_matrix` extension. Both expose
 - The GPU clock is readable without root via `/sys/kernel/gpu/` (`gpu_clock`,
   `gpu_max_clock` = 1095000 kHz).
 
-## Adding a device
+## Recording a new roofline campaign
+
+Register access and refresh shared capability data in gpu-lab first, following its
+agent guide. On the execution host, capture the roofline runner's own capabilities
+and shape coverage for the campaign:
 
 ```sh
 adb devices -l                                        # serial, model
@@ -84,5 +96,7 @@ uv run igpu-roofline shapes --device <serial>         # GPU, driver, subgroup, W
 adb -s <serial> shell cmd gpu vkjson > vk.json        # full Vulkan properties/extensions
 ```
 
-Add a row to the overview, a section to [COOPMAT-SHAPES.md](COOPMAT-SHAPES.md), and a
-row to the device table in [CLAUDE.md](../CLAUDE.md#devices).
+Keep the device/driver identity, query date and build hashes with the campaign.
+Add measurement-specific findings here or in the agent guide when useful; avoid
+duplicating current routes, root status or full capability tables from gpu-lab.
+Historical records above remain unchanged.

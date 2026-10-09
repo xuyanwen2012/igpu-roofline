@@ -1,0 +1,2 @@
+metric,source,samples,unit,first60_rate,last60_rate,last60_cv,steady_last60,gpu_duty_fraction,gpu_temp_start_c,gpu_temp_max_c,gpu_freq_min,gpu_freq_max
+alu_fp16,sustain-0/alu_fp16_v2_c8_a59bcf386236.json,966,TFLOP/s,1.4726027342242607,1.472283191755581,0.007071229534453961,True,0.980911812138416,,,202000,848000

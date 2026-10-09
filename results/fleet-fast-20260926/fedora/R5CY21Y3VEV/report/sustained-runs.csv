@@ -1,0 +1,2 @@
+metric,source,samples,unit,first60_rate,last60_rate,last60_cv,steady_last60,gpu_duty_fraction,gpu_temp_start_c,gpu_temp_max_c,gpu_freq_min,gpu_freq_max
+global_read,sustain-0/mem_read_v4_89b71afb6ed0.json,9247,GB/s,49.447980956596865,49.450275895110764,0.0030351211318608456,True,0.8443115209118556,,,0,1095000

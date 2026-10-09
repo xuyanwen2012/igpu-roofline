@@ -1,0 +1,12 @@
+[
+  {
+    "host": "fedora-gpu-eval",
+    "devices": [
+      "b70-0"
+    ],
+    "source": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926",
+    "results": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/results",
+    "pid": "36204",
+    "log": "/home/doremy/.cache/igpu-roofline/fleet-fast-20260926/controller-b70-0.log"
+  }
+]

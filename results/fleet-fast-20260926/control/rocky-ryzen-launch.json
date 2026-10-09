@@ -1,0 +1,12 @@
+[
+  {
+    "host": "rocky-ryzen",
+    "devices": [
+      "780m"
+    ],
+    "source": "/home/doremy/igpu-roofline/fleet/fleet-fast-20260926",
+    "results": "/home/doremy/igpu-roofline/campaigns/780m/2026-09-26-fast-et-study",
+    "pid": "110523",
+    "log": "/home/doremy/igpu-roofline/fleet/fleet-fast-20260926/controller-780m.log"
+  }
+]

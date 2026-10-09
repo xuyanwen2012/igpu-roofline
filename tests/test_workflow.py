@@ -381,3 +381,78 @@ def test_missing_clock_telemetry_is_not_reported_as_a_known_clock_state():
     assert "unavailable" in _clock_line(
         {"clock_state": {"domains": {}, "pinned_domains": []}}
     )
+
+
+def test_intel_xe_clock_state_reads_gt_freq_and_detects_pin(monkeypatch):
+    from igpu_roofline import device
+
+    local = device.LocalDevice.__new__(device.LocalDevice)
+    local.card, local.vendor_id, local.identity = (
+        "/sys/class/drm/card0",
+        device.INTEL_VENDOR_ID,
+        "vulkan:" + "0" * 31 + "1",
+    )
+    gt = "/sys/class/drm/card0/device/tile0/gt0/freq0"
+    files = {
+        f"{gt}/min_freq": "400",
+        f"{gt}/max_freq": "2850",
+        f"{gt}/act_freq": "2400",
+        f"{gt}/rp0_freq": "2850",
+    }
+    monkeypatch.setattr(
+        device.glob, "glob", lambda p: [gt] if p.endswith("freq0") else []
+    )
+    monkeypatch.setattr(local, "_read", lambda path: files.get(path, ""))
+    state = local.clock_state()
+    assert state["domains"][gt]["cur"] == str(2400 * 10**6)
+    assert state["pinned_domains"] == []
+    assert local.gpu_freq() == {gt: str(2400 * 10**6)}
+    files[f"{gt}/min_freq"] = "2850"
+    assert local.clock_state()["pinned_domains"] == [gt]
+
+
+def test_nvidia_telemetry_uses_nvidia_smi_for_the_selected_uuid(monkeypatch):
+    from types import SimpleNamespace
+
+    from igpu_roofline import device
+
+    local = device.LocalDevice.__new__(device.LocalDevice)
+    local.card, local.vendor_id = "/sys/class/drm/card1", device.NVIDIA_VENDOR_ID
+    local.identity = "vulkan:0123456789abcdef0123456789abcdef"
+    calls = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return SimpleNamespace(
+            returncode=0, stdout="61, 2610, 10501, 3105, 10501, 97, 0x0, 250.1\n"
+        )
+
+    monkeypatch.setattr(device.subprocess, "run", fake_run)
+    monkeypatch.setattr(local, "_temps", lambda selected_gpu=False: {})
+    monkeypatch.setattr(local, "_read", lambda path: "")
+    assert local.gpu_temp_c() == 61
+    assert "--id=GPU-01234567-89ab-cdef-0123-456789abcdef" in calls[0]
+    freq = local.gpu_freq()
+    assert freq["nvidia-smi:sm"] == str(2610 * 10**6)
+    state = local.clock_state()
+    assert state["domains"]["nvidia-smi:sm"]["max"] == str(3105 * 10**6)
+    assert state["nvidia_smi"]["utilization.gpu"] == "97"
+
+
+def test_nvidia_telemetry_failure_is_unknown_not_zero(monkeypatch):
+    from types import SimpleNamespace
+
+    from igpu_roofline import device
+
+    local = device.LocalDevice.__new__(device.LocalDevice)
+    local.card, local.vendor_id = "/sys/class/drm/card1", device.NVIDIA_VENDOR_ID
+    local.identity = "vulkan:" + "a" * 32
+    monkeypatch.setattr(
+        device.subprocess,
+        "run",
+        lambda *a, **k: SimpleNamespace(returncode=6, stdout="No devices were found"),
+    )
+    monkeypatch.setattr(local, "_temps", lambda selected_gpu=False: {})
+    monkeypatch.setattr(local, "_read", lambda path: "")
+    assert local.gpu_temp_c() is None
+    assert local.gpu_freq() == {}

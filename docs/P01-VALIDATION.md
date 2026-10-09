@@ -1,5 +1,9 @@
 # P0/P1 implementation verification
 
+Historical verification of the runner hash recorded below. Test counts and results
+describe that build, not the current checkout. Links into `build/` and `results/`
+refer to local artifacts and may be unavailable in a fresh clone.
+
 Implementation and checks completed. AMD meets the performance target. B580's
 default 5 ms replay does **not** meet acceptance: all three discovery samples failed
 unchanged quality gates, so there is no confirmed throughput or comparable complete

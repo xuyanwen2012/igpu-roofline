@@ -23,7 +23,8 @@ packages = ["igpu_roofline"]
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-extend-exclude = ["third_party"]
+# results/ holds archived run artifacts (the scripts exactly as they ran); keep them byte-identical.
+extend-exclude = ["third_party", "results"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "C4", "RUF", "PL"]
@@ -45,3 +46,7 @@ python-version = "3.10"
 
 [tool.ty.src]
 exclude = ["third_party", "build"]
+
+[tool.pytest.ini_options]
+# Only the repo tests: campaign source snapshots under results/ carry their own tests/.
+testpaths = ["tests"]

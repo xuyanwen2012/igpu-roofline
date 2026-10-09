@@ -1,0 +1,13 @@
+--- a/examples/models/llama/CMakeLists.txt
++++ b/examples/models/llama/CMakeLists.txt
+@@ -242,6 +242,10 @@
+ endif()
+ 
+ add_executable(llama_main ${_srcs})
++if(EXECUTORCH_ENABLE_EVENT_TRACER)
++  target_compile_definitions(llama_main PRIVATE ET_EVENT_TRACER_ENABLED)
++  target_link_libraries(llama_main PRIVATE etdump)
++endif()
+ 
+ # Copy MLX metallib for runtime if MLX delegate is enabled
+ if(TARGET mlxdelegate)

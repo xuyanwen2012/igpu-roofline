@@ -1,0 +1,102 @@
+{
+  "campaign": "fleet-fast-20260926",
+  "source_commit": "c898a5aeba70c1cf4f3138f176c109b5f7609ff8",
+  "plan": "fast",
+  "clock_policy": "automatic, never pinned",
+  "devices": [
+    {
+      "id": "b70-0",
+      "name": "Intel Arc Pro B70 32 GB",
+      "kind": "dgpu",
+      "vendor": "intel",
+      "host": "fedora-gpu-eval",
+      "uuid": "868023e2-0000-0000-0100-000000000000",
+      "tags": [
+        "intel",
+        "battlemage",
+        "b70"
+      ],
+      "status": "active",
+      "notes": "Shared with on-demand LLM and ComfyUI work. The VM sheds GPU work when the UPS is on battery.",
+      "pci": "0000:01:00.0"
+    },
+    {
+      "id": "b580",
+      "name": "Intel Arc B580 12 GB",
+      "kind": "dgpu",
+      "vendor": "intel",
+      "host": "fedora",
+      "uuid": "86800be2-0000-0000-0300-000000000000",
+      "tags": [
+        "intel",
+        "battlemage"
+      ],
+      "status": "active",
+      "busy_threshold": 50,
+      "notes": "Drives the Odyssey G9: gnome-shell alone keeps the render engine about 20% busy, so the threshold is raised.",
+      "pci": "0000:03:00.0"
+    },
+    {
+      "id": "780m",
+      "name": "AMD Radeon 780M",
+      "kind": "igpu",
+      "vendor": "amd",
+      "host": "rocky-ryzen",
+      "uuid": "00000000-c400-0000-0000-000000000000",
+      "tags": [
+        "amd",
+        "rdna3"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "s24",
+      "name": "Samsung Xclipse 940 (Exynos 2400, Galaxy S24+)",
+      "kind": "mobile",
+      "vendor": "samsung",
+      "host": "fedora",
+      "uuid": "00000000-0000-0000-0000-000000000000",
+      "tags": [
+        "android",
+        "rdna3",
+        "samsung"
+      ],
+      "status": "active",
+      "notes": "USB to the fedora desktop since 2026-09-25 (moved from rocky-ryzen, where it was a GitHub Actions CI device).",
+      "adb_serial": "R5CY21Y3VEV"
+    },
+    {
+      "id": "pixel-7a",
+      "name": "Arm Mali-G710 MP7 (Tensor G2, Pixel 7a)",
+      "kind": "mobile",
+      "vendor": "arm",
+      "host": "fedora",
+      "uuid": "000062a8-0100-0000-0000-000000000000",
+      "tags": [
+        "android",
+        "mali"
+      ],
+      "status": "active",
+      "notes": "USB to the fedora desktop since 2026-09-25. Bootloader unlocked and rooted with Magisk 30.7 (patched init_boot on slot a); adb shell has permanent su.",
+      "adb_serial": "3A021JEHN02756"
+    },
+    {
+      "id": "4070tis",
+      "name": "NVIDIA GeForce RTX 4070 Ti SUPER 16 GB",
+      "kind": "dgpu",
+      "vendor": "nvidia",
+      "host": "gpu-dev-4004",
+      "uuid": "81a511a2-de7e-c3c8-f641-3562c315ffa7",
+      "tags": [
+        "nvidia",
+        "ada"
+      ],
+      "status": "active",
+      "notes": "ComfyUI (ZUN pipeline) keeps a context open; busy is measured from utilisation, not open handles."
+    }
+  ],
+  "skipped": [],
+  "notes": [
+    "4070tis added 2026-09-26 after the host was power-cycled; zun-flux-pipeline (ComfyUI) stopped for the run with owner approval and restored afterwards."
+  ]
+}
