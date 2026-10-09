@@ -153,3 +153,12 @@ texture3d; the campaign's own runs show the same marker. It is not a correctness
   fact were applied once: the fp16 32 flop/B reuse row has 2 admitted confirmation repeats of 3 (not 3), and the
   reuse-row values are the tool's best validated median, not the median of the repeats (difference at most
   0.5 %). No number in `efficiency.csv` changed.
+- **Rule 7 broken once, found in review round 2:** `tools/run-pipestats.sh` deleted each pipeline cache blob after
+  recording its size and entropy (first capture, `isa/raw/`, 18:23 UTC). The 15 blobs cannot be recovered (plain
+  `rm`, driver disk cache disabled for the capture). The deletion is removed; the first capture's outputs are kept
+  unchanged; a second compile-only capture under both device locks (`isa/recapture-20261009-retained-blobs/`,
+  18:47 UTC, `CAPTURE.txt` there) retains every blob with its sha256. Its five driver statistics equal the first
+  capture's for all 15 pipelines; blob sizes 10880 to 41028 B (6 of 15 differ from the first capture by one byte),
+  entropy 7.966 to 7.986 bits per byte recomputed from the retained files. The size and entropy columns of
+  `isa/counts.csv` (first capture) stay unverifiable and are superseded for that purpose by
+  `isa/counts-recapture-20261009-retained-blobs.csv`. No roof or microbench timing was re-run.

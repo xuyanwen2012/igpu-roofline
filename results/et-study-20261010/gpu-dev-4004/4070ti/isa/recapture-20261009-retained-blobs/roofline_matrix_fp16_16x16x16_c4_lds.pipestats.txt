@@ -1,0 +1,6 @@
+executable 0: CS (Compute Shader) subgroup 32
+  Register Count                           60   # Number of temporary registers used by this shader stage
+  Binary Size                              6912   # Size in bytes of the executable for this stage
+  Stack Size                               0   # Size in bytes required for the shader stack
+  Local Memory Size                        68719476736   # Size in bytes required per-thread for local memory
+  Shared Memory Size                       4096   # Size in bytes used for shared memory

@@ -1,0 +1,4 @@
+2026-10-09T18:47:23Z
+NVIDIA GeForce RTX 4070 Ti SUPER, 615.71.09
+96aee732c05ebb0e78e4770d02e0f95abc29c8afd325a1d7cd61e86feaaede78  /home/doremy/et-study-20261010/tools/vkpipestats
+42612442382afe72e099cfc5d770cd14ad5f1d8c86e2f56381d341d08be4dca1  /home/doremy/et-study-20261010/tools/run-pipestats.sh

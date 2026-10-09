@@ -2,12 +2,16 @@
 
 ## State
 
-- 2026-10-09 18:45 UTC: **all four parts measured and written, branch pushed, one review round passed (four
+- 2026-10-09 18:55 UTC: review round 2 found one failed check (rule 7: the pipeline-statistics script deleted its
+  raw cache blobs). Fixed as described in part C: deletion removed, originals not recoverable, a labelled
+  compile-only recapture retains the blobs. No roof or timing was re-run and no number of parts A, B or D
+  changed. Nothing is running on the device; locks free.
+- 2026-10-09 18:45 UTC (superseded by the entry above as far as part C's cache-blob evidence goes): **all four parts measured and written, branch pushed, one review round passed (four
   checks PASS); nothing is running on the device.** Device locks are free. No decision is needed from the owner
   for this study; two observations for the owner are at the end.
 - History: record copied from the template and committed 17:49:06 UTC, before the first measurement started (17:49:43); part A (roofline `fast`) 17:49 to
   18:15 UTC, rc 0; part B (microbench, 5 processes each of `--linear` and `--sdpa`) 18:15 to 18:22 UTC, all rc 0;
-  part C (pipeline statistics, compile only) 18:23 UTC.
+  part C (pipeline statistics, compile only) 18:23 UTC, recaptured with retained blobs 18:47 UTC.
 
 ## What was measured, in one sitting
 
@@ -128,7 +132,17 @@ there, so the shared-fed roofs are context for the attention rows, not a matched
 executable ("CS", subgroup size 32) with five statistics (Register Count, Binary Size, Stack Size, Local Memory
 Size, Shared Memory Size) and **zero internal representations**; the pipeline cache blob has 7.97 to 7.99 bits
 of entropy per byte (compressed or encrypted), so there is no disassembly route. Raw output for 5 kernels and 10
-roofline shaders: `isa/raw/`, table `isa/counts.csv`. Shapes compiled: 4w 3B wq_wo (`g42`) and 1B wk_wv
+roofline shaders: `isa/raw/`, table `isa/counts.csv`.
+
+Evidence gap and how it was closed: the first capture (`isa/raw/`, 18:23 UTC) measured each cache blob's size
+and entropy and then deleted the blob, which the campaign's rule against deleting results forbids; those 15
+blobs are not recoverable, so the size and entropy figures of `isa/raw/` and `isa/counts.csv` cannot be
+recomputed. The deletion is removed from the script and a second, separately labelled compile-only capture
+(`isa/recapture-20261009-retained-blobs/`, 18:47 UTC, both device locks, no dispatch) keeps all 15 blobs with
+their sha256; table `isa/counts-recapture-20261009-retained-blobs.csv`. Recomputed from the retained blobs:
+10.9 to 41.0 kB, 7.966 to 7.986 bits per byte (first capture: 7.965 to 7.986). The five driver statistics are
+identical in both captures for all 15 pipelines; the blob is not byte-reproducible (6 of 15 differ by one byte
+in size). The entropy claim rests on the second capture. Shapes compiled: 4w 3B wq_wo (`g42`) and 1B wk_wv
 (`g24`), 8da4w 3B wq_wo.
 
 1. *Does the kernel compile to the hardware's matrix instructions?* Not shown directly. Indirect evidence: the

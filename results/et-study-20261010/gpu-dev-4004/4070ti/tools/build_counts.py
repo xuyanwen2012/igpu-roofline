@@ -5,6 +5,9 @@ configuration and the roofline matrix shaders behind the matched roofs. No ISA e
 import csv, re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
+# optional: capture directory under isa/ (default raw, the first capture) and output file name
+CAP = sys.argv[2] if len(sys.argv) > 2 else "raw"
+OUT = sys.argv[3] if len(sys.argv) > 3 else "counts.csv"
 # MMAs per loop iteration expected from the tile arithmetic (shader source) and where the static count sits
 TILE = {
  "kernel_4w_t256x128k16g42s32ga_3b_wq_wo": ("isa/kernels/sarc_linear_q4gsw_coopmat_t256x128k16g42s32ga_texture3d_texture2d_half.spvasm", 16, "8 A x 2 B tiles per K=16 chunk; static 32 = 16 in the loop + 16 in the peeled last chunk"),
@@ -14,9 +17,9 @@ TILE = {
  "kernel_sdpa_fused3sb_d128_8b": ("isa/kernels/sarc_dev_4070ti_sdpa_fused3sb_d128_t16x64g11s32rko_buffer_buffer_half.spvasm", 64, "per context block 1x4x8 QK^T + 1x4x8 attention x V"),
 }
 rows = []
-for f in sorted((root / "isa/raw").glob("*.pipestats.txt")):
+for f in sorted((root / "isa" / CAP).glob("*.pipestats.txt")):
     name = f.name.replace(".pipestats.txt", "")
-    text = f.read_text(); err = (root / f"isa/raw/{name}.stderr.txt").read_text()
+    text = f.read_text(); err = (root / f"isa/{CAP}/{name}.stderr.txt").read_text()
     stat = {k: int(re.search(k + r"\s+(\d+)", text).group(1)) for k in ("Register Count", "Binary Size", "Stack Size", "Local Memory Size", "Shared Memory Size")}
     sub = int(re.search(r"subgroup (\d+)", text).group(1))
     if name in TILE:
@@ -32,7 +35,7 @@ for f in sorted((root / "isa/raw").glob("*.pipestats.txt")):
                  stat["Local Memory Size"], stat["Local Memory Size"] & 0xFFFFFFFF, stat["Shared Memory Size"],
                  text.count("--- IR"), re.search(r"cache_blob_bytes=(\d+)", err).group(1), re.search(r"entropy_bits_per_byte=([\d.]+)", err).group(1),
                  "no (driver returns no ISA)"])
-with (root / "isa/counts.csv").open("w", newline="") as f:
+with (root / "isa" / OUT).open("w", newline="") as f:
     w = csv.writer(f)
     w.writerow("shader,spirv_sha256,spirv_muladd_static,muladd_per_loop_iteration_tile_arithmetic,tile_arithmetic,spirv_coopmat_load_static,spirv_coopmat_store_static,spirv_control_barrier_static,spirv_image_fetch_static,driver_subgroup_size,driver_register_count,driver_binary_size_bytes,driver_stack_size_bytes,driver_local_memory_size_raw,driver_local_memory_low32_bytes,driver_shared_memory_bytes,driver_internal_representations,pipeline_cache_blob_bytes,pipeline_cache_entropy_bits_per_byte,isa_verified".split(","))
     w.writerows(rows)

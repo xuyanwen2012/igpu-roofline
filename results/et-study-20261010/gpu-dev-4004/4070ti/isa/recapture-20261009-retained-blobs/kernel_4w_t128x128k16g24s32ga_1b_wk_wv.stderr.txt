@@ -1,0 +1,6 @@
+device: NVIDIA GeForce RTX 4070 Ti SUPER driver 0x99d1c240
+cache: 25917 bytes -> /home/doremy/et-study-20261010/isa/recapture-20261009-retained-blobs/kernel_4w_t128x128k16g24s32ga_1b_wk_wv.cache.bin
+rc=0 args=256 1 1 3=0 4=32 5=16 6=512
+17f297aa82fa4b5fbaf61e4305c623c0ecc28f64d3a7e8e6d29fd802b5b22ef1
+cache_blob_bytes=25917 entropy_bits_per_byte=7.981
+cache_blob_sha256=30c2b26cbec2313b4b66c5509f915bfdff93cff2b22c5d863eebeefff241ff8f
